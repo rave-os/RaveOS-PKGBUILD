@@ -8,7 +8,7 @@
 # További stílusok adhatók hozzá a stylesheet.qss
 # fájl használatával, szintén a branding könyvtárban.
 ---
-componentName:  raveos
+componentName: raveos
 
 
 ### ÜDVÖZLÉS / ÁLTALÁNOS SZÖVEGEZÉS
@@ -21,13 +21,13 @@ componentName:  raveos
 # akkor "Üdvözöljük a Calamares telepítőben a %1-hez." Ez lehetővé teszi
 # hogy megkülönböztessük ezt a telepítőt más telepítőktől
 # ugyanahhoz a disztribúcióhoz.
-welcomeStyleCalamares:   false
+welcomeStyleCalamares: false
 
 # Az üdvözlő képet (productWelcome, lent) nagyítani kell-e
 # a természetes méretén túl? Ha false, a kép nem növekszik
 # az ablakkal, hanem ugyanaz marad a mérete végig (ez
 # meglepő hatásokat eredményezhet HiDPI monitorokon).
-welcomeExpandingLogo:   true
+welcomeExpandingLogo: true
 
 ### ABLAK KONFIGURÁCIÓ
 #
@@ -39,7 +39,7 @@ welcomeExpandingLogo:   true
 #  - "normal" vagy nincs beállítva, szükség szerint bővül, használja a *windowSize*-t
 #  - "fullscreen", a lehető legnagyobb méretben indul, figyelmen kívül hagyja a *windowSize*-t
 #  - "noexpand", nem bővül automatikusan, használja a *windowSize*-t
-windowExpanding:    normal
+windowExpanding: fullscreen
 
 # Calamares ablak mérete, w,h formátumban. Mind w és h
 # lehet pixel (px végződéssel) vagy betűméret-egység (em végződéssel).
