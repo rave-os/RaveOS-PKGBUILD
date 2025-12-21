@@ -83,13 +83,13 @@ navigation: widget
 # nem pedig a globális megjelenési beállításokat.
 
 strings:
-    productName:         RaveOS Cosmic Gaming Linux 2025.12
-    shortProductName:    RaveOS Cosmic Gaming Linux 2025.12
+    productName:         RaveOS Gaming Linux
+    shortProductName:    RaveOS Gaming Linux
     version:             2025.12
     shortVersion:        2025.12
-    versionedName:       RaveOS Cosmic Gaming Linux 2025.12
-    shortVersionedName:  ROSC
-    bootloaderEntryName: RaveOS Cosmic Gaming Linux 2025.12
+    versionedName:       RaveOS Gaming Linux
+    shortVersionedName:  ROS
+    bootloaderEntryName: RaveOS Gaming Linux
 
 images:
     productIcon:         "raveos-icon.jpg"
