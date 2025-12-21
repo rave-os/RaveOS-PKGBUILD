@@ -1,10 +1,10 @@
 # Maintainer: AlexC <alexc@alexc.hu>
 pkgname=raveos-calamares-theme
 pkgver=1.0.0
-pkgrel=7
+pkgrel=8
 pkgdesc="RaveOS Calamares Theme"
 arch=('any')
-url="https://example.com/raveos"
+url="https://github.com/rave-os"
 license=('GPL')
 #depends=('calamares')
 # No external sources; files are expected to be present alongside the PKGBUILD
