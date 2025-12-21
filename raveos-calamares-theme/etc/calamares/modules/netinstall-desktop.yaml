@@ -3,35 +3,27 @@
   selected: true
   critical: true
   hidden: false
-  expanded: false
-  options:
-    - name: "Base"
-      packages:
-        - base
-        - base-devel
-        - linux-firmware
-        - networkmanager
-        - sudo
-        - efibootmgr
+  expanded: true
+  packages:
+    - base
+    - base-devel
+    - linux-firmware
+    - networkmanager
+    - sudo
+    - efibootmgr
 - name: "Kernel"
   description: "Choose your kernel"
   selected: false
   critical: true
   hidden: false
   expanded: true
-  options:
-    - name: "Linux (default)"
-      packages:
-        - linux
-        - linux-headers
-    - name: "Linux Zen"
-      packages:
-        - linux-zen
-        - linux-zen-headers
-    - name: "Linux CachyOS"
-      packages:
-        - linux-cachyos
-        - linux-cachyos-headers
+  packages:
+    - linux
+    - linux-headers
+    - linux-zen
+    - linux-zen-headers
+    - linux-cachyos
+    - linux-cachyos-headers
 - name: "Desktop Environment"
   description: "Choose a desktop environment"
   exclusive: false
@@ -39,21 +31,16 @@
   expanded: true
   critical: false
   options:
-    - name: "GNOME"
-      packages:
-        - gnome
-        - gnome-extra
-        - gdm
-    - name: "KDE Plasma"
-      packages:
-        - plasma
-        - kde-applications
-        - sddm
-    - name: "Cosmic"
-      packages:
-        - cosmic
-        - cosmic-text-exitor
-        - cosmic-files
-        - cosmic-terminal
-        - cosmic-player
-        - cosmic-wallpapers
+  packages:
+    - gnome
+    - gnome-extra
+    - gdm
+    - plasma
+    - kde-applications
+    - sddm
+    - cosmic
+    - cosmic-text-exitor
+    - cosmic-files
+    - cosmic-terminal
+    - cosmic-player
+    - cosmic-wallpapers
