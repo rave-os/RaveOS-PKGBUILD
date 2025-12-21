@@ -1,0 +1,21 @@
+# Maintainer: AlexC <alexc@alexc.hu>
+pkgname=raveos-calamares-theme
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="RaveOS Calamares Theme"
+arch=('any')
+url="https://example.com/raveos"
+license=('GPL')
+#depends=('calamares')
+# No external sources; files are expected to be present alongside the PKGBUILD
+source=()
+sha256sums=()
+
+package() {
+  # Create the destination directory inside the package environment
+  install -d "${pkgdir}/etc"
+
+  # Copy the contents of the local 'etc' directory (next to PKGBUILD) to the package
+  # We use "${startdir}" to reference the directory containing the PKGBUILD
+  cp -r "${startdir}/etc/." "${pkgdir}/etc/"
+}

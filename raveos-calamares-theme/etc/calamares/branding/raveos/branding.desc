@@ -1,0 +1,122 @@
+# SPDX-FileCopyrightText: no
+# SPDX-License-Identifier: CC0-1.1
+#
+# Termék márka információk. Ez befolyásolja a Calamares néhány globális
+# felhasználó által látható aspektusát, mint például a termék
+# neve, ablak viselkedése és a diavetítés a telepítés során.
+#
+# További stílusok adhatók hozzá a stylesheet.qss
+# fájl használatával, szintén a branding könyvtárban.
+---
+componentName:  raveos
+
+
+### ÜDVÖZLÉS / ÁLTALÁNOS SZÖVEGEZÉS
+#
+# Ezek a beállítások befolyásolják az általános megfogalmazást és megjelenést,
+# amelyek leginkább az üdvözlő oldalon láthatóak.
+
+# Ez különböző üdvözlő szövegek között választ. Ha false, akkor
+# a hagyományos "Üdvözöljük a %1 telepítőjében." szöveget használja, ha true,
+# akkor "Üdvözöljük a Calamares telepítőben a %1-hez." Ez lehetővé teszi
+# hogy megkülönböztessük ezt a telepítőt más telepítőktől
+# ugyanahhoz a disztribúcióhoz.
+welcomeStyleCalamares:   false
+
+# Az üdvözlő képet (productWelcome, lent) nagyítani kell-e
+# a természetes méretén túl? Ha false, a kép nem növekszik
+# az ablakkal, hanem ugyanaz marad a mérete végig (ez
+# meglepő hatásokat eredményezhet HiDPI monitorokon).
+welcomeExpandingLogo:   true
+
+### ABLAK KONFIGURÁCIÓ
+#
+# Az itt található beállítások befolyásolják a Calamares
+# ablak elhelyezését az ablakkezelőn keresztül és a kezdeti
+# Calamares ablak méretezését.
+
+# A Calamares mérete és bővítési szabályzata.
+#  - "normal" vagy nincs beállítva, szükség szerint bővül, használja a *windowSize*-t
+#  - "fullscreen", a lehető legnagyobb méretben indul, figyelmen kívül hagyja a *windowSize*-t
+#  - "noexpand", nem bővül automatikusan, használja a *windowSize*-t
+windowExpanding:    normal
+
+# Calamares ablak mérete, w,h formátumban. Mind w és h
+# lehet pixel (px végződéssel) vagy betűméret-egység (em végződéssel).
+#   pl.    "800px,600px"
+#          "60em,480px"
+# Ez a beállítás figyelmen kívül marad, ha "fullscreen" van kiválasztva
+# *windowExpanding*-nél fentebb. Ha nincs beállítva, a CalamaresUtilsGui-ban
+# definiált konstansokat használja, 800x520.
+windowSize: 1024px,735px
+
+# Calamares ablak elhelyezése. Lehet "center" vagy "free".
+# Hogy a "center" valóban működik-e, az függ a használt
+# ablakkezelőtől (és csak akkor van értelme, ha nem használja
+# a *windowExpanding* "fullscreen" beállítását).
+windowPlacement: center
+
+### PANELEK KONFIGURÁCIÓJA
+#
+# A Calamares-nek van egy fő tartalmi területe és két panelje (navigáció
+# és folyamat / oldalsáv). A panelek egyénileg vezérelhetők,
+# vagy kikapcsolhatók. Ha mindkét panel ki van kapcsolva, a fő
+# tartalmi terület elveszíti a margóit, feltételezve, hogy
+# valami speciálisat csinál.
+
+# Az oldalsáv típusa (bal oldali panel, amely a folyamatot mutatja).
+#  - "widget" vagy nincs beállítva, használja a hagyományos oldalsávot (logó, elemek)
+#  - "none", teljesen elrejti
+#  - "qml", használja a calamares-sidebar.qml-t a branding mappából
+sidebar: widget
+
+# A navigáció típusa (gomb panel alul).
+#  - "widget" vagy nincs beállítva, használja a hagyományos navigációt
+#  - "none", teljesen elrejti
+#  - "qml", használja a calamares-navigation.qml-t a branding mappából
+navigation: widget
+
+
+### SZÖVEGEK, KÉPEK ÉS SZÍNEK
+#
+# Ez a szakasz tartalmazza a nevek és képek "tulajdonképpeni márkázását",
+# nem pedig a globális megjelenési beállításokat.
+
+strings:
+    productName:         RaveOS Cosmic Gaming Linux 2025.12
+    shortProductName:    RaveOS Cosmic Gaming Linux 2025.12
+    version:             2025.12
+    shortVersion:        2025.12
+    versionedName:       RaveOS Cosmic Gaming Linux 2025.12
+    shortVersionedName:  ROSC
+    bootloaderEntryName: RaveOS Cosmic Gaming Linux 2025.12
+
+images:
+    productIcon:         "raveos-icon.jpg"
+    productLogo:         "raveos-icon.jpg"
+    productWelcome:      "raveos-welcome.png"
+
+# Szöveg és háttér komponensek színei.
+style:
+   SidebarBackground:        "#292F34"
+   SidebarText:              "#FFFFFF"
+   SidebarTextCurrent:       "#FFFFFF"
+   SidebarBackgroundCurrent: "#0c60bc"
+
+### DIAVETÍTÉS
+#
+# A diavetítés a végrehajtási lépések során jelenik meg (pl. amikor a
+# telepítő ténylegesen ír a lemezre és más lassú dolgokat csinál).
+
+slideshow:               "show.qml"
+
+# Két elérhető API van a QML diavetítéshez:
+#  - 1 (alapértelmezett)
+#  - 2 indításkor betölti a diavetítést
+slideshowAPI: 2
+
+
+# Ezek az opciók a logok online feltöltésének testreszabására szolgálnak pastebin-ekre:
+uploadServer :
+    type :    "fiche"
+    url :     "http://termbin.com:9999"
