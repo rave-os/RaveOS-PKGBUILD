@@ -121,14 +121,6 @@
     - ttf-fira-code
     - ttf-inconsolata
     - ttf-liberation
-- name: "Fun"
-  description: "Fun script from ArcoLinux"
-  critical: false
-  hidden: false
-  selected: false
-  expanded: false
-  packages:
-    - arcolinux-meta-fun    
 - name: "Git"
   description: "Git Applications"
   critical: false
@@ -184,7 +176,7 @@
   selected: false
   expanded: false
   packages:
-    - bitwarden-bin
+    - bitwarden
     - enpass-bin
     - keepassxc
     - lastpass  
