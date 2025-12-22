@@ -1,29 +1,3 @@
-- name: "Base System"
-  description: "Required base packages"
-  selected: true
-  critical: true
-  hidden: false
-  expanded: true
-  packages:
-    - base
-    - base-devel
-    - linux-firmware
-    - networkmanager
-    - sudo
-    - efibootmgr
-- name: "Kernel"
-  description: "Choose your kernel"
-  selected: false
-  critical: true
-  hidden: false
-  expanded: true
-  packages:
-    - linux
-    - linux-headers
-    - linux-zen
-    - linux-zen-headers
-    - linux-cachyos
-    - linux-cachyos-headers
 - name: "Desktop Environment"
   description: "Choose a desktop environment"
   exclusive: false
