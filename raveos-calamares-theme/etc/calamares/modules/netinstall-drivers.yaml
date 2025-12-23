@@ -1,0 +1,29 @@
+- name: "Microcode"
+  selected: false
+  expanded: false
+  exclusive: false
+  packages:
+    - intel-ucode
+    - amd-ucode
+- name: "NVIDIA Driver"
+  selected: false
+  expanded: false
+  exlusive: false
+  packages:
+    - nvidia-open-dkms
+    - nvidia-utils
+    - nvtop
+    - egl-gbm
+    - egl-x11
+    - egl-wayland
+    - egl-wayland2
+    - lib32-nvidia-utils
+    - libva-nvidia-driver
+- name: "AMD Drivers"
+  selected: false
+  expanded: false
+  exclusive: false
+  packages:
+    - mesa
+    - vulkan-radeon
+    - lib32-vulkan-radeon
