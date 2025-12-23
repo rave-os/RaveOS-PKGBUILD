@@ -1,20 +1,53 @@
-- name: "Desktop Environment"
-  description: "Choose a desktop environment"
-  exclusive: false
+- name: "Plasma Desktop"
   selected: false
-  expanded: true
-  critical: false
-  options:
+  expanded: false
+  exclusive: false
   packages:
-    - gnome
-    - gnome-extra
-    - gdm
     - plasma
     - kde-applications
     - sddm
+- name: "GNOME Desktop"
+  selected: false
+  expanded: false
+  exlusive: false
+  packages:
+    - gdm
+    - gnome
+    - gnome-extra
+- name: "Cosmic Desktop"
+  selected: false
+  expanded: false
+  exclusive: false
+  packages:
     - cosmic
-    - cosmic-text-exitor
+    - cosmic-text-editor
     - cosmic-files
     - cosmic-terminal
     - cosmic-player
     - cosmic-wallpapers
+- name: "Hyprland Desktop with DMS shell"
+  selected: false
+  expanded: false
+  exlcusive: false
+  packages:
+    - hyprland
+    - sddm
+    - aquamarine
+    - nwg-displays
+    - hyprwayland-scanner
+    - xdg-desktop-portal-hyprland
+    - hyprland-qt-support
+    - hyprpolkitagent
+    - hyprland-guiutils
+    - hyprpwcenter
+    - hyprlauncher
+    - hyprtoolkit
+    - hyprgraphics
+    - hyprcursor
+    - hyprpicker
+    - hyprshot
+    - hypridle
+    - hyprlock
+    - hyprwire
+    - hyprpaper
+    - dms-shell-bin

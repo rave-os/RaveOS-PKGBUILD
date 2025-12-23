@@ -9,13 +9,16 @@
     - audacious
     - audacious-plugins
     - audacity
+    - cider
     - clementine
     - deadbeef
     - elisa
+    - easyeffects
     - juk
     - kwave
     - lmms
     - ncmpcpp
+    - helvum
     - pragha
     - radiotray
     - rhythmbox
@@ -31,6 +34,9 @@
   expanded: false
   packages:
     - android-tools
+    - btop
+    - occt
+    - corectrl
     - cpu-x
     - font-manager-git
     - galculator
@@ -41,6 +47,18 @@
     - pdfarranger
     - remmina
     - warpinator
+- name: "Bluetooth"
+  description: "Bluetooth support packages (use all packages)"
+  critical: false
+  hidden: false
+  selected: false
+  expanded: false
+  packages:
+    - bluez
+    - bluez-qt
+    - bluez-qt5
+    - bluez-libs
+    - bluez-tools
 - name: "Browsers"
   description: "Internet Browsers & E-mail"
   critical: false
@@ -48,13 +66,13 @@
   selected: false
   expanded: false
   packages:
-    - brave
+    - brave-bin
     - chromium
     - dropbox
     - evolution
     - filezilla
     - firefox-adblock-plus
-    - firefox-i18n-$LOCALE
+    - firefox-i18n-hu
     - googlemaps
     - google-earth-pro
     - insync
@@ -77,6 +95,7 @@
     - geany
     - meld
     - guvcview
+    - docker
 - name: "Disk & USB"
   description: "USB & HDD Apps"
   critical: false
@@ -121,6 +140,19 @@
     - ttf-fira-code
     - ttf-inconsolata
     - ttf-liberation
+- name: Gaming
+  description: "Gaming related packages"
+  critical: false
+  hidden: false
+  selected: false
+  expanded: false
+  packages:
+    - heroic-games-launcher-bin
+    - steam
+    - mangohud
+    - lib32-mangohud
+    - gamemode
+    - protonup-qt-bin
 - name: "Git"
   description: "Git Applications"
   critical: false
@@ -147,17 +179,17 @@
     - inkscape
     - krita
     - spectacle
-- name: "LibreOffice"
-  description: "libreOffice fresh"
+- name: "Office"
+  description: "Office tools"
   critical: false
   hidden: false
   selected: false
   packages:
     - libreoffice-fresh
-    - libreoffice-fresh-$LOCALE
-    - libreoffice-fresh-fr
-    - hunspell-$LOCALE
-    - hunspell-fr
+    - libreoffice-fresh-hu
+    - onlyoffice-bin
+    - hunspell-hu
+    - hunspell
 - name: "Package Managers"
   description: "Selection of Package Managers"
   critical: false
@@ -169,6 +201,7 @@
     - flatpak
     - octopi
     - snapd
+    - pamac-all
 - name: "Password Manager"
   description: "Password Managers"
   critical: false
@@ -179,7 +212,18 @@
     - bitwarden
     - enpass-bin
     - keepassxc
-    - lastpass  
+    - lastpass
+- name: "Printer support"
+  description: "Printer support, use all packages"
+  critical: false
+  hidden: false
+  selected: false
+  expanded: false
+  packages:
+    - cups
+    - hplip
+    - cnifilter2
+    - system-config-printer
 - name: "Privacy"
   description: "Privacy-related Apps"
   critical: false
@@ -199,9 +243,10 @@
     - discord
     - hexchat
     - pidgin
-    - skypeforlinux-stable-bin
+    - mumble
     - slack-desktop
     - telegram-desktop
+    - teamspeak3
     - zoom
 - name: "Terminals"
   description: "Various Terminals"
@@ -231,31 +276,14 @@
   packages:
     - adapta-gtk-theme
     - arc-icon-theme
-    - arcolinux-arc-kde
-    - arcolinux-arc-themes-nico-git
     - breeze
     - capitaine-cursors
     - faba-icon-theme-git
     - kvantum-qt5
-    - latte-dock
-    - materia-gtk-theme
-    - materia-kde
     - moka-icon-theme-git
-    - numix-circle-arc-icons-git
-    - numix-circle-icon-theme-git
-    - numix-gtk-theme-git
-    - openbox-themes-pambudi-git
-    - oxy-neon
     - paper-icon-theme
     - papirus-icon-theme
     - surfn-mint-y-icons-git
-    - xcursor-arch-cursor-complete
-    - xcursor-comix
-    - xcursor-flatbed
-    - xcursor-neutral
-    - xcursor-premium
-    - xcursor-simpleandsoft
-    - xscreensaver
 - name: "Torrent Clients"
   description: "Torrent Downloading"
   critical: false
@@ -276,7 +304,6 @@
   packages:
     - archey3
     - alsi
-    - arcolinux-paleofetch-git
     - bashtop
     - bleachbit
     - caffeine-ng
@@ -288,17 +315,16 @@
     - lolcat
     - putty
     - samba
-    - screenfetch
+    - fastfetch
     - sigil
     - synapse
     - sysprof
     - systemd-manager
     - timeshift
-    - ufetch-git
-    - ufetch-arco-git
     - vnstat
     - wireshark-qt
-    - wttr    
+    - wttr
+    - xpadneo-dkms
 - name: "Video"
   description: "Video Editors & More"
   critical: false
@@ -314,7 +340,7 @@
     - kodi-x11
     - kodi
     - kodi-addons
-    - obs-studio
+    - obs-studio-tytan652
     - openshot
     - mkvtoolnix-gui
     - mpc
