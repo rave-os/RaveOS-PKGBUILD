@@ -1,7 +1,7 @@
 # Maintainer: AlexC <alexc@alexc.hu>
 pkgname=raveos-calamares-theme
 pkgver=1.0.4
-pkgrel=7
+pkgrel=8
 pkgdesc="RaveOS Calamares Theme"
 arch=('any')
 url="https://github.com/rave-os"
