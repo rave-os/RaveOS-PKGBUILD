@@ -15,6 +15,12 @@ Presentation
 {
     id: presentation
 
+    Rectangle {
+        anchors.fill: parent
+        color: "#2c3e50"
+        z: -1 
+    }
+
     function nextSlide() {
         console.log("QML Component (default slideshow) Next slide");
         presentation.goToNextSlide();
@@ -35,10 +41,10 @@ Presentation
 
     Image {
         id: background1
-        source: "2.png"
-        width: 815; height: 815
+        source: "images/2.png"
+        anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
+        smooth: true
     	}
     }
 
@@ -49,10 +55,11 @@ Presentation
 
     Image {
         id: background2
-        source: "3.png"
+        source: "images/3.png"
         width: 815; height: 815
+        anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
+        smooth: true
     	}
     }
     
@@ -63,10 +70,10 @@ Presentation
 
     Image {
         id: background3
-        source: "4.png"
-        width: 815; height: 815
+        source: "images/4.png"
+        anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
+        smooth: true
     	}
     }
     
@@ -77,10 +84,10 @@ Presentation
 
     Image {
         id: background4
-        source: "5.png"
-        width: 815; height: 815
+        source: "images/5.png"
+        anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
+        smooth: true
     	}
     }
     
@@ -91,10 +98,10 @@ Presentation
 
     Image {
         id: background5
-        source: "6.png"
-        width: 815; height: 815
+        source: "images/6.png"
+        anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
+        smooth: true
     	}
     }
     
@@ -105,10 +112,10 @@ Presentation
 
     Image {
         id: background6
-        source: "7.png"
-        width: 815; height: 815
+        source: "images/7.png"
+        anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
+        smooth: true
     	}
     }
     
@@ -119,10 +126,10 @@ Presentation
 
     Image {
         id: background7
-        source: "8.png"
-        width: 815; height: 815
+        source: "images/8.png"
+        anchors.fill: parent
         fillMode: Image.PreserveAspectFit
-        anchors.centerIn: parent
+        smooth: true
     	}
     }
 

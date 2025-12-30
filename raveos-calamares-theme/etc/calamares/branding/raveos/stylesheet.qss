@@ -35,10 +35,6 @@ The examples are not exhaustive.
 	font : bold 16px;
 }
 
-#sidebarApp {
-
-}
-
 #logoApp {
 }
 
@@ -309,7 +305,266 @@ QHeaderView::section {
 #aboutButton {
 	background-color: #505c66;
 	font: 12px;
-	color: #edecf0;
+	color: #ff0000ff;
   height: 32px;
   border: none;
+}
+
+/* === nippy added new theme style === */
+
+
+/* === Bal oldali menü (Sidebar) === */
+#sidebarApp {
+    background-color: #292F34;
+	border: 2px solid #ffffffff;
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 13px;
+}
+
+#sidebarMenuApp {
+    background-color: #292F34;
+    padding: 10px;
+}
+
+/* Menüpontok */
+#sidebarMenuApp QListWidget {
+    background-color: #292F34;
+    color: #ecf0f1;
+    font-size: 14px;
+    border: none;
+}
+
+#sidebarMenuApp QListWidget::item {
+    background-color: #292F34;
+    color: #ecf0f1;
+    padding: 10px;
+    border: none;
+}
+
+/* menupont (aktiv oldal - kek hatter) */
+#sidebarMenuApp QListWidget::item:selected {
+    background-color: #0c60bc;
+    color: #ffffff;
+}
+
+/* Hover effekt a menüpontokon */
+#sidebarMenuApp QListWidget::item:hover {
+    background-color: #34495e;
+}
+
+
+QWidget {
+    background-color: #292F34;
+    color: #ecf0f1;
+}
+
+QStackedWidget {
+    background-color: #292F34;
+}
+
+/* === Beviteli mezok pl user és host megadásnál  === */
+QLineEdit {
+    background-color: #292F34;
+    color: #ffffff;
+    border: 2px solid #7f8c8d;
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 13px;
+}
+
+QLineEdit:focus {
+    border: 2px solid #0c60bc;
+}
+
+/* === Lenyitható menük === */
+QComboBox {
+    background-color: #292F34;
+    color: rgba(255, 255, 255, 1);
+    border: 2px solid #7f8c8d;
+    border-radius: 4px;
+    padding: 6px;
+    font-size: 13px;
+}
+
+QComboBox:hover {
+    border: 2px solid #0c60bc;
+}
+
+QComboBox::drop-down {
+    background-color: #0c60bc;
+    border: none;
+    width: 12px;
+    subcontrol-origin: padding;
+    subcontrol-position: center right;
+}
+
+QComboBox::down-arrow {
+    image: url(/etc/calamares/branding/raveos/icons/arrow-down.png);
+    width: 9px;
+    height: 9px;
+}
+
+
+/* Lenyithato lista */
+QComboBox QAbstractItemView {
+    background-color: rgba(41, 47, 52, 1);
+    color: rgba(255, 255, 255, 1);
+    selection-background-color: rgba(12, 96, 188, 1);;
+    selection-color: rgba(255, 255, 255, 1);
+    border: 2px solid rgba(255, 255, 255, 1);
+}
+
+/* === Gombok === */
+QPushButton {
+    background-color: #0c60bc;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #0c60bc;
+}
+
+QPushButton:pressed {
+    background-color: #0c60bc;
+}
+
+QPushButton:disabled {
+    background-color: #7f8c8d;
+    color: #bdc3c7;
+}
+
+/* Cancel/Back gombok  */
+#debugButton, #aboutButton {
+    background-color: #95a5a6;
+}
+
+#debugButton:hover, #aboutButton:hover {
+    background-color: #7f8c8d;
+}
+
+/* === Checkbox-ok === */
+QCheckBox {
+    color: #ecf0f1;
+    spacing: 8px;
+}
+
+QCheckBox::indicator {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #7f8c8d;
+    border-radius: 3px;
+    background-color: #ffffff;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #0c60bc;
+    border-color: #292F34;
+}
+
+/* === Radio gombok === */
+QRadioButton {
+    color: #ecf0f1;
+    spacing: 8px;
+}
+
+QRadioButton::indicator {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #7f8c8d;
+    border-radius: 9px;
+    background-color: #ffffff;
+}
+
+QRadioButton::indicator:checked {
+    background-color: #0c60bc;
+    border-color: #0c60bc;
+}
+
+/* === Táblázatok (Partition editor) === */
+QTableWidget, QTreeWidget {
+    background-color: #ecf0f1;
+    color: #2c3e50;
+    border: 2px solid #7f8c8d;
+    gridline-color: #bdc3c7;
+}
+
+QTableWidget::item:selected, QTreeWidget::item:selected {
+    background-color: #0c60bc;
+    color: #ffffff;
+}
+
+QHeaderView::section {
+    background-color: #34495e;
+    color: #ecf0f1;
+    padding: 6px;
+    border: 1px solid #2c3e50;
+    font-weight: bold;
+}
+
+/* === Progress bar (telepites) === */
+QProgressBar {
+    border: 2px solid #7f8c8d;
+    border-radius: 4px;
+    background-color: #292F34;
+    text-align: center;
+    color: #ffffffff;
+}
+
+QProgressBar::chunk {
+    background-color: #0c60bc;
+    border-radius: 2px;
+}
+
+/* === Szovegek es cimkek === */
+QLabel {
+    color: #ecf0f1;
+    background-color: transparent;
+}
+
+/* === Szovegdobozok === */
+QTextEdit, QPlainTextEdit {
+    background-color: #292F34;
+    color: #ffffff;
+    border: 2px solid #7f8c8d;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+/* === Scrollbar-ok === */
+QScrollBar:vertical {
+    background-color: #ffffffff;
+    width: 12px;
+    border: none;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #7f8c8d;
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #95a5a6;
+}
+
+QScrollBar:horizontal {
+    background-color: #34495e;
+    height: 12px;
+    border: none;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #7f8c8d;
+    border-radius: 6px;
+    min-width: 20px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #95a5a6;
 }
