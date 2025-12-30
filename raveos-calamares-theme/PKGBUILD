@@ -1,6 +1,6 @@
 # Maintainer: AlexC <alexc@alexc.hu>
 pkgname=raveos-calamares-theme
-pkgver=1.1
+pkgver=1.1.1
 pkgrel=1
 pkgdesc="RaveOS Calamares Theme"
 arch=('any')
