@@ -4,7 +4,7 @@
 _pkgname="calamares"
 pkgname="$_pkgname"
 pkgver=3.4.0
-pkgrel=4
+pkgrel=5
 pkgdesc="Distribution-independent installer framework"
 url="https://codeberg.org/Calamares/calamares"
 license=("GPL-3.0-or-later")
@@ -31,9 +31,18 @@ source=("$_pkgname-$pkgver.$_pkgext"::"$url/archive/v$pkgver.$_pkgext"
 	"0001-support-yay.patch")
 sha256sums=('45de0214f4a16095374e2ed3982032c34f0f2c2104987089152e4b928dd0548f'
 	    'SKIP')
+	    
 prepare() {
     cd ${srcdir}/calamares
     patch -Np1 -i ../0001-support-yay.patch
+    
+    # Copy across the custom images
+    cp -a ${startdir}/images/partition-alongside.svg $srcdir/calamares/data/images/partition-alongside.svg
+    cp -a ${startdir}/images/partition-disk.svg $srcdir/calamares/data/images/partition-disk.svg
+    cp -a ${startdir}/images/partition-erase-auto.svg $srcdir/calamares/data/images/partition-erase-auto.svg
+    cp -a ${startdir}/images/partition-manual.svg $srcdir/calamares/data/images/partition-manual.svg
+    cp -a ${startdir}/images/partition-partition.svg $srcdir/calamares/data/images/partition-partition.svg
+    cp -a ${startdir}/images/partition-replace-os.svg $srcdir/calamares/data/images/partition-replace-os.svg
  }
 
 build() {
