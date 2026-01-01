@@ -83,13 +83,13 @@ navigation: widget
 # nem pedig a globális megjelenési beállításokat.
 
 strings:
-    productName:         RaveOS Gaming Linux
-    shortProductName:    RaveOS Gaming Linux
-    version:             2025.12
-    shortVersion:        2025.12
-    versionedName:       RaveOS Gaming Linux
+    productName:         RaveOS Linux
+    shortProductName:    RaveOS Linux
+    version:             2026.1
+    shortVersion:        2026.1
+    versionedName:       RaveOS Linux
     shortVersionedName:  ROS
-    bootloaderEntryName: RaveOS Gaming Linux
+    bootloaderEntryName: RaveOS Linux
 
 images:
     productIcon:         "icons/raveos-icon.jpg"
@@ -101,7 +101,7 @@ style:
    SidebarBackground:        "#292F34"
    SidebarText:              "#FFFFFF"
    SidebarTextCurrent:       "#FFFFFF"
-   SidebarBackgroundCurrent: "#0c60bc"
+   SidebarBackgroundCurrent: "#bd93f9"
 
 ### DIAVETÍTÉS
 #
