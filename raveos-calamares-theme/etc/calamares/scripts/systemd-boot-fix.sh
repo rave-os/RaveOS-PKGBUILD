@@ -1,95 +1,100 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/sh
 
-echo "[calamares] Applying systemd-boot post-install fix"
+echo "[calamares] systemd-boot post-install fix starting"
 
-BOOT="/boot"
-ENTRIES="$BOOT/loader/entries"
-MID="$(cat /etc/machine-id)"
+BOOT=/boot
+ENTRIES=$BOOT/loader/entries
 
 # --------------------------------------------------
-# Disable kernel-install permanently
+# Disable kernel-install safely
 # --------------------------------------------------
-echo "[calamares] Disabling kernel-install"
+rm -rf /usr/lib/kernel/install.d 2>/dev/null
 
-rm -rf /usr/lib/kernel/install.d || true
+[ -x /usr/bin/kernel-install ] && ln -sf /dev/null /usr/bin/kernel-install
+[ -x /bin/kernel-install ] && ln -sf /dev/null /bin/kernel-install
 
-if [[ -x /usr/bin/kernel-install ]]; then
-    ln -sf /dev/null /usr/bin/kernel-install
+# --------------------------------------------------
+# Remove machine-id entries (do NOT fail if missing)
+# --------------------------------------------------
+if [ -f /etc/machine-id ]; then
+    MID=$(cat /etc/machine-id)
+    rm -f "$ENTRIES/$MID"-*.conf 2>/dev/null
+    rm -rf "$BOOT/$MID" 2>/dev/null
 fi
 
-if [[ -x /bin/kernel-install ]]; then
-    ln -sf /dev/null /bin/kernel-install
-fi
-
 # --------------------------------------------------
-# Remove machine-id based boot artifacts
+# Kernel detection (safe)
 # --------------------------------------------------
-echo "[calamares] Removing machine-id boot entries"
-
-rm -f "$ENTRIES"/"$MID"-*.conf || true
-rm -rf "$BOOT/$MID" || true
-
-# --------------------------------------------------
-# Detect installed kernel
-# --------------------------------------------------
-KERNEL="linux-cachyos"
-
-[[ -e "$BOOT/vmlinuz-linux-lts" ]] && KERNEL="linux-lts"
-[[ -e "$BOOT/vmlinuz-linux-zen" ]] && KERNEL="linux-zen"
-[[ -e "$BOOT/vmlinuz-linux-hardened" ]] && KERNEL="linux-hardened"
+KERNEL=linux
+for k in linux linux-lts linux-zen linux-hardened; do
+    [ -e "$BOOT/vmlinuz-$k" ] && KERNEL=$k
+done
 
 VMLINUX="/vmlinuz-$KERNEL"
 INITRD="/initramfs-$KERNEL.img"
 
 # --------------------------------------------------
-# Detect microcode
+# Microcode detection
 # --------------------------------------------------
-MICROCODE_LINES=()
+MICROCODE=""
+[ -e "$BOOT/intel-ucode.img" ] && MICROCODE="initrd  /intel-ucode.img"
+[ -e "$BOOT/amd-ucode.img" ] && MICROCODE="initrd  /amd-ucode.img"
 
-[[ -e "$BOOT/intel-ucode.img" ]] && MICROCODE_LINES+=("initrd  /intel-ucode.img")
-[[ -e "$BOOT/amd-ucode.img" ]] && MICROCODE_LINES+=("initrd  /amd-ucode.img")
+# --------------------------------------------------
+# Root + filesystem detection (NO findmnt)
+# --------------------------------------------------
+ROOT_SRC=$(awk '$2=="/"{print $1}' /proc/self/mounts)
+ROOT_OPTS=$(awk '$2=="/"{print $4}' /proc/self/mounts)
+ROOT_FS=$(awk '$2=="/"{print $3}' /proc/self/mounts)
+
+OPTS="rw quiet"
 
 # --------------------------------------------------
-# Root device (PARTUUID-safe)
+# LUKS detection (mapper path only)
 # --------------------------------------------------
-ROOT_SRC="$(findmnt -no SOURCE /)"
-ROOT_UUID="$(blkid -s PARTUUID -o value "$ROOT_SRC")"
+case "$ROOT_SRC" in
+    /dev/mapper/*)
+        NAME=$(basename "$ROOT_SRC")
+        UUID=$(blkid -s UUID -o value "/dev/disk/by-id/*" 2>/dev/null | head -n1)
+        OPTS="$OPTS root=/dev/mapper/$NAME"
+        ;;
+    *)
+        PARTUUID=$(blkid -s PARTUUID -o value "$ROOT_SRC" 2>/dev/null)
+        [ -n "$PARTUUID" ] && OPTS="$OPTS root=PARTUUID=$PARTUUID"
+        ;;
+esac
+
+# --------------------------------------------------
+# Btrfs subvolume detection
+# --------------------------------------------------
+if [ "$ROOT_FS" = "btrfs" ]; then
+    SUBVOL=$(echo "$ROOT_OPTS" | tr ',' '\n' | grep '^subvol=' | cut -d= -f2)
+    [ -n "$SUBVOL" ] && OPTS="$OPTS rootflags=subvol=$SUBVOL"
+fi
 
 # --------------------------------------------------
 # Write static systemd-boot entry
 # --------------------------------------------------
 ENTRY="$ENTRIES/$KERNEL.conf"
 
-echo "[calamares] Writing static boot entry: $ENTRY"
-
 {
     echo "title   Linux ($KERNEL)"
     echo "linux   $VMLINUX"
-    for line in "${MICROCODE_LINES[@]}"; do
-        echo "$line"
-    done
+    [ -n "$MICROCODE" ] && echo "$MICROCODE"
     echo "initrd  $INITRD"
-    echo "options root=PARTUUID=$ROOT_UUID rw quiet"
+    echo "options $OPTS"
 } > "$ENTRY"
 
 # --------------------------------------------------
-# Ensure loader.conf sane defaults
+# loader.conf sanity
 # --------------------------------------------------
-LOADER_CONF="$BOOT/loader/loader.conf"
-
-if [[ ! -f "$LOADER_CONF" ]]; then
-    cat > "$LOADER_CONF" <<EOF
+if [ ! -f "$BOOT/loader/loader.conf" ]; then
+    cat > "$BOOT/loader/loader.conf" <<EOF
 default $KERNEL.conf
 timeout 3
 editor  no
 EOF
 fi
 
-# --------------------------------------------------
-# Regenerate initramfs (safety)
-# --------------------------------------------------
-echo "[calamares] Regenerating initramfs"
-mkinitcpio -P || true
-
-echo "[calamares] systemd-boot fix applied successfully"
+echo "[calamares] systemd-boot fix completed"
+exit 0
