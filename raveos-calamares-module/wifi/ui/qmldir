@@ -1,0 +1,3 @@
+module WifiModule
+singleton Style 1.0 Style.qml
+singleton Translations 1.0 Translations.qml

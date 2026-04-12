@@ -1,0 +1,88 @@
+# Maintainer:
+# Contributor: Rustmilian Rustmilian@proton.me
+
+_pkgname="calamares"
+pkgname="$_pkgname"
+pkgver=3.4.2
+pkgrel=7
+pkgdesc="Distribution-independent installer framework"
+url="https://codeberg.org/Calamares/calamares"
+license=("GPL-3.0-or-later")
+arch=('x86_64')
+
+depends=(
+  'kcoreaddons'
+  'kpmcore'
+  'libpwquality'
+  'python'
+  'qt6-declarative'
+  'qt6-svg'
+  'yaml-cpp'
+)
+makedepends=(
+  'extra-cmake-modules'
+  'ninja'
+  'python'
+  'qt6-tools'
+  'qt6-translations'
+)
+
+_pkgsrc="$_pkgname"
+_pkgext="tar.gz"
+source=("$_pkgname-$pkgver.$_pkgext"::"$url/releases/download/v$pkgver/$_pkgname-$pkgver.$_pkgext"
+        "0001-support-yay.patch"
+        "0002-limit-translations.patch")
+sha256sums=('733bbbb00dc9f84874bd5c22960952f317ea2537565431179fa2152b2fbfdccc'
+	    'SKIP'
+            'SKIP')
+	    
+prepare() {
+    cd $srcdir/$_pkgname-$pkgver
+    patch -Np1 -i ../0001-support-yay.patch
+    patch -Np1 -i ../0002-limit-translations.patch
+    
+    # Copy across the custom images
+    cp -a ${startdir}/images/partition-alongside.svg $srcdir/$_pkgname-$pkgver/data/images/partition-alongside.svg
+    cp -a ${startdir}/images/partition-disk.svg $srcdir/$_pkgname-$pkgver/data/images/partition-disk.svg
+    cp -a ${startdir}/images/partition-erase-auto.svg $srcdir/$_pkgname-$pkgver/data/images/partition-erase-auto.svg
+    cp -a ${startdir}/images/partition-manual.svg $srcdir/$_pkgname-$pkgver/data/images/partition-manual.svg
+    cp -a ${startdir}/images/partition-partition.svg $srcdir/$_pkgname-$pkgver/data/images/partition-partition.svg
+    cp -a ${startdir}/images/partition-replace-os.svg $srcdir/$_pkgname-$pkgver/data/images/partition-replace-os.svg
+ }
+
+build() {
+  local _skip_modules=(
+    dracut
+    dracutlukscfg
+    dummycpp
+    dummyprocess
+    initramfs
+    initramfscfg
+    interactiveterminal
+    services-openrc
+  )
+
+  local _pkgsrc_dir="$srcdir/$_pkgname-$pkgver"
+
+  local _cmake_options=(
+    -B build
+    -S "$_pkgsrc_dir"
+    -G Ninja
+    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_INSTALL_PREFIX='/usr'
+    -DCMAKE_INSTALL_LIBDIR='lib'
+    -DWITH_QT6=ON
+    -DINSTALL_CONFIG=ON
+    -DWITH_PYTHON=ON
+    -DWITH_NETINSTALL=ON
+    -DBUILD_TESTING=OFF
+    -Wno-dev
+  )
+
+  cmake "${_cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

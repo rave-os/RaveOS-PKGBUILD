@@ -1,0 +1,25 @@
+pkgname=raveos-calamares-module
+pkgver=1.0.0
+pkgrel=35
+pkgdesc="RaveOS Calamares Wi-Fi viewmodule"
+arch=('x86_64')
+options=('!debug')
+url="https://git.rp1.hu/RaveOS-beta"
+license=('GPL')
+
+makedepends=('cmake' 'qt6-tools' 'kcoreaddons' 'calamares')
+depends=('qt6-base' 'qt6-declarative' 'networkmanager')
+
+source=()
+sha256sums=()
+
+build() {
+  cd "$startdir"
+  cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+package() {
+  cd "$startdir"
+  DESTDIR="$pkgdir" cmake --install build
+}

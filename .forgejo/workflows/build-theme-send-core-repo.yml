@@ -1,0 +1,131 @@
+name: Build raveos-calamares packages and publish to raveos-core-repo (SAFE)
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+concurrency:
+  group: raveos-theme-module-build-publish
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: iso-builder
+
+    steps:
+      - name: Checkout PKGBUILDs repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install build tools
+        run: |
+          sudo pacman -S --needed --noconfirm \
+            base-devel git pacman-contrib cmake qt6-tools
+
+      - name: Build raveos-calamares-theme
+        run: |
+          set -euo pipefail
+          cd raveos-calamares-theme
+
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+
+          THEME_PKG=$(ls -t *.pkg.tar.zst | head -n 1)
+          mkdir -p /tmp/builtpkgs
+          cp -v "$THEME_PKG" /tmp/builtpkgs/
+          echo "THEME_PKG=$THEME_PKG" >> "$GITHUB_ENV"
+
+      - name: Build raveos-calamares-module
+        run: |
+          set -euo pipefail
+          cd raveos-calamares-module
+
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+
+          MODULE_PKG=$(ls -t *.pkg.tar.zst | head -n 1)
+          mkdir -p /tmp/builtpkgs
+          cp -v "$MODULE_PKG" /tmp/builtpkgs/
+          echo "MODULE_PKG=$MODULE_PKG" >> "$GITHUB_ENV"
+
+      - name: Build raveos-calamares
+        run: |
+          set -euo pipefail
+          cd raveos-calamares
+
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+
+          CALAMARES_PKG=$(ls -t *.pkg.tar.zst | grep -v -- '-debug-' | head -n 1)
+          mkdir -p /tmp/builtpkgs
+          cp -v "$CALAMARES_PKG" /tmp/builtpkgs/
+          echo "CALAMARES_PKG=$CALAMARES_PKG" >> "$GITHUB_ENV"
+
+      - name: Publish packages to raveos-core-repo (only if changed)
+        run: |
+          set -euo pipefail
+
+          rm -rf /tmp/raveos-core-repo
+          git clone git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
+          CORE="/tmp/raveos-core-repo/x86_64"
+          mkdir -p "$CORE"
+
+          UPDATED=false
+
+          if ! ls "$CORE/$THEME_PKG" >/dev/null 2>&1; then
+            echo "Theme package changed → publishing"
+            rm -f "$CORE/raveos-calamares-theme-"*.pkg.tar.zst*
+            cp -v "/tmp/builtpkgs/$THEME_PKG" "$CORE/"
+            UPDATED=true
+          else
+            echo "Theme unchanged → skip publish"
+          fi
+
+          if ! ls "$CORE/$MODULE_PKG" >/dev/null 2>&1; then
+            echo "Module package changed → publishing"
+            rm -f "$CORE/raveos-calamares-module-"*.pkg.tar.zst*
+            cp -v "/tmp/builtpkgs/$MODULE_PKG" "$CORE/"
+            UPDATED=true
+          else
+            echo "Module unchanged → skip publish"
+          fi
+
+          if ! ls "$CORE/$CALAMARES_PKG" >/dev/null 2>&1; then
+            echo "Calamares package changed → publishing"
+            rm -f "$CORE/calamares-"*.pkg.tar.zst*
+            rm -f "$CORE/calamares-debug-"*.pkg.tar.zst*
+            cp -v "/tmp/builtpkgs/$CALAMARES_PKG" "$CORE/"
+            UPDATED=true
+          else
+            echo "Calamares unchanged → skip publish"
+          fi
+
+          if [ "$UPDATED" = false ]; then
+            echo "No package changes detected → nothing to publish"
+            exit 0
+          fi
+
+          cd /tmp/raveos-core-repo
+          git config user.name "Forgejo Actions"
+          git config user.email "actions@forgejo.local"
+
+          git add -A
+          git commit -m "Publish calamares packages ${GITHUB_SHA:0:7}"
+          git push origin main
+
+          TAG="vrepo-$(date +%Y%m%d-%H%M%S)"
+          git tag -a "$TAG" -m "Trigger repo-add (${GITHUB_SHA:0:7})"
+          git push origin "$TAG"
+
+          echo "::notice title=Published packages::Tag $TAG"
+
+
+      - name: Cleanup (SAFE)
+        if: always()
+        run: |
+          sudo rm -rf /tmp/builtpkgs || true
+          sudo rm -rf /tmp/raveos-core-repo || true
+          sudo rm -rf /var/cache/pacman/pkg/* || true
+          df -h

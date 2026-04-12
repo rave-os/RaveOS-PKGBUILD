@@ -1,0 +1,4 @@
+type: viewmodule
+name: wifi
+interface: qml
+weight: 15

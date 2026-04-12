@@ -1,0 +1,110 @@
+- name: "KÖTELEZŐ Csomagok"
+  selected: true
+  expanded: false
+  exclusive: true
+  hidden: true
+  packages:
+    - wget
+    - noto-fonts
+    - noto-fonts-cjk
+    - noto-fonts-emoji 
+    - noto-fonts-extra
+    - qt6-wayland
+    - qt5-wayland
+    - ttf-ubuntu-font-family
+    - rsync
+    - gvfs
+    - gvfs-mtp
+    - ufw
+    - gufw
+    - flatpak
+    - pavucontrol
+    - xdg-user-dirs
+    - xdg-user-dirs-gtk
+    - sddm
+    - sddm-astronaut-theme
+    - pipewire-jack
+    - hblock
+- name: "KDE Plasma Desktop - Alap desktop, nincs általunk témázva"
+  selected: false
+  expanded: false
+  exclusive: true
+  packages:
+    - plasma
+    - kde-applications
+    - konsole
+- name: "GNOME Desktop"
+  selected: false
+  expanded: false
+  exclusive: true
+  packages:
+    - gnome-session
+    - gnome-console
+    - gedit
+    - gnome-disk-utility
+    - gnome-system-monitor
+    - fuse2
+    - eog
+    - gnome-calculator
+    - baobab
+    - gnome-control-center
+    - gnome-tweaks
+    - gnome-browser-connector
+    - xdg-desktop-portal
+    - gnome-keyring
+    - xdg-desktop-portal-gnome
+    - xdg-desktop-portal-gtk
+    - xdg-desktop-portal-wlr
+    - gnome-settings-daemon
+    - nautilus
+    - gnome-shell-extensions
+    - yaru-gtk-theme
+    - raveos-gnome-theme
+- name: "Cosmic Desktop - Erősen BÉTA"
+  selected: false
+  expanded: false
+  exclusive: true
+  packages:
+    - cosmic
+    - cosmic-text-editor
+    - cosmic-files
+    - cosmic-terminal
+    - cosmic-player
+    - cosmic-wallpapers
+- name: "Hyprland Desktop with DMS shell Nem felhasználó barát egyelőre!(WORK IN PROGRESS.)"
+  selected: false
+  expanded: false
+  exclusive: true
+  packages:
+    - hyprland
+    - aquamarine
+    - nwg-displays
+    - nwg-look
+    - hyprwayland-scanner
+    - xdg-desktop-portal-hyprland
+    - xdg-desktop-portal
+    - hyprland-qt-support
+    - hyprpolkitagent
+    - hyprland-guiutils
+    - hyprpwcenter
+    - hyprlauncher
+    - hyprtoolkit
+    - hyprgraphics
+    - hyprcursor
+    - hyprpicker
+    - hyprshot
+    - hypridle
+    - hyprlock
+    - hyprwire
+    - hyprpaper
+    - dms-shell-git
+    - kitty
+    - thunar
+    - thunar-volman
+    - thunar-archive-plugin
+    - thunar-media-tags-plugin
+    - thunar-shares-plugin
+    - thunar-archive-plugin
+    - xarchiver
+    - tumbler
+    - polkit-gnome
