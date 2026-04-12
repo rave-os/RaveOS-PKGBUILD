@@ -33,6 +33,7 @@
     - plasma
     - kde-applications
     - konsole
+    - raveos-kde-theme
 - name: "GNOME Desktop"
   selected: false
   expanded: false
@@ -71,6 +72,7 @@
     - cosmic-terminal
     - cosmic-player
     - cosmic-wallpapers
+    - raveos-cosmic-theme
 - name: "Hyprland Desktop with DMS shell Nem felhasználó barát egyelőre!(WORK IN PROGRESS.)"
   selected: false
   expanded: false
@@ -108,3 +110,4 @@
     - xarchiver
     - tumbler
     - polkit-gnome
+    - raveos-hyprland-theme
