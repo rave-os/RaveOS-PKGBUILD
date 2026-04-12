@@ -1,10 +1,10 @@
 pkgname=raveos-calamares-module
-pkgver=1.0.0
-pkgrel=35
+pkgver=2.0.0
+pkgrel=0
 pkgdesc="RaveOS Calamares Wi-Fi viewmodule"
 arch=('x86_64')
 options=('!debug')
-url="https://git.rp1.hu/RaveOS-beta"
+url="https://git.rp1.hu/RaveOS"
 license=('GPL')
 
 makedepends=('cmake' 'qt6-tools' 'kcoreaddons' 'calamares')
