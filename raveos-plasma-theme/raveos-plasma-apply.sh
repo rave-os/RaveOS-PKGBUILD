@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-payload_dir="/usr/share/raveos/kde-theme/theme-data"
+payload_dir="/usr/share/raveos/plasma-theme/theme-data"
 wallpaper_dst="/usr/share/backgrounds/raveos/raveos-main-bg.jpeg"
 fastfetch_hook='[[ -f /etc/profile.d/raveos-fastfetch.sh ]] && source /etc/profile.d/raveos-fastfetch.sh'
 
@@ -89,7 +89,7 @@ EOF
 
 write_kickoff_config() {
   local target_home="$1"
-  local kickoff_image="/usr/share/raveos/kde-theme/theme-data/plasma/org.kde.plasma.kickoff.svg"
+  local kickoff_image="/usr/share/raveos/plasma-theme/theme-data/plasma/org.kde.plasma.kickoff.svg"
 
   if [[ ! -f "${kickoff_image}" ]]; then
     kickoff_image="/usr/share/pixmaps/raveos-logo.svg"

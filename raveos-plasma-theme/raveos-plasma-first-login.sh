@@ -4,7 +4,7 @@ set -euo pipefail
 marker_dir="${HOME}/.config/raveos-kde-theme"
 marker_file="${marker_dir}/.first-login-done"
 wallpaper="/usr/share/backgrounds/raveos/raveos-main-bg.jpeg"
-kickoff_image="/usr/share/raveos/kde-theme/theme-data/plasma/org.kde.plasma.kickoff.svg"
+kickoff_image="/usr/share/raveos/plasma-theme/theme-data/plasma/org.kde.plasma.kickoff.svg"
 applet_config="${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
 mkdir -p "${marker_dir}"

@@ -1,0 +1,12 @@
+[Unit]
+Description=Apply RaveOS Plasma theme payload
+After=local-fs.target systemd-user-sessions.service
+ConditionPathExists=!/var/lib/raveos-plasma-theme/.applied
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/raveos-plasma-theme/auto-apply.sh
+ExecStartPost=/usr/bin/install -Dm644 /dev/null /var/lib/raveos-plasma-theme/.applied
+
+[Install]
+WantedBy=multi-user.target
