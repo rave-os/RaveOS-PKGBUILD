@@ -14,7 +14,9 @@
     - ttf-ubuntu-font-family
     - rsync
     - gvfs
+    - gvfs-smb
     - gvfs-mtp
+    - gvfs-nfs
     - ufw
     - gufw
     - flatpak
@@ -33,6 +35,10 @@
     - plasma
     - kde-applications
     - konsole
+    - gvfs
+    - gvfs-smb
+    - gvfs-nfs
+    - gvfs-mtp
     - raveos-kde-theme
 - name: "GNOME Desktop"
   selected: false
@@ -44,6 +50,10 @@
     - gedit
     - gnome-disk-utility
     - gnome-system-monitor
+    - gvfs
+    - gvfs-smb
+    - gvfs-nfs
+    - gvfs-mtp
     - fuse2
     - eog
     - gnome-calculator
@@ -73,6 +83,10 @@
     - cosmic-player
     - cosmic-wallpapers
     - raveos-cosmic-theme
+    - gvfs
+    - gvfs-smb
+    - gvfs-nfs
+    - gvfs-mtp
 - name: "Hyprland Desktop with DMS shell Nem felhasználó barát egyelőre!(WORK IN PROGRESS.)"
   selected: false
   expanded: false
@@ -111,3 +125,7 @@
     - tumbler
     - polkit-gnome
     - raveos-hyprland-theme
+    - gvfs
+    - gvfs-smb
+    - gvfs-mtp
+    - gvfs-nfs
