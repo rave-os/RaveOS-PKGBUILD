@@ -1,0 +1,39 @@
+pkgname=raveos-kde-theme
+pkgver=0.0.0
+pkgrel=30
+pkgdesc="RaveOS KDE theme payload and installer"
+arch=('any')
+url="https://raveos.local"
+license=('custom')
+depends=('fastfetch')
+install="${pkgname}.install"
+source=()
+sha256sums=()
+
+# Build redirection
+BUILDDIR="${startdir}/build"
+PKGDEST="${startdir}/build"
+SRCDEST="${startdir}/build"
+SRCPKGDEST="${startdir}/build"
+LOGDEST="${startdir}/build"
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/raveos/kde-theme"
+  cp -r --no-preserve=ownership "${startdir}/theme-data" "${pkgdir}/usr/share/raveos/kde-theme/"
+
+  install -Dm755 "${startdir}/raveos-kde-apply.sh" \
+    "${pkgdir}/usr/lib/raveos-kde-theme/auto-apply.sh"
+  install -Dm755 "${startdir}/raveos-kde-first-login.sh" \
+    "${pkgdir}/usr/lib/raveos-kde-theme/first-login.sh"
+  install -Dm644 "${startdir}/raveos-kde-theme-apply.service" \
+    "${pkgdir}/usr/lib/systemd/system/raveos-kde-theme-apply.service"
+  install -Dm644 "${startdir}/raveos-kde-first-login.desktop" \
+    "${pkgdir}/etc/xdg/autostart/raveos-kde-first-login.desktop"
+
+  install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
+    "${pkgdir}/usr/share/pixmaps/raveos-logo.svg"
+  install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
+    "${pkgdir}/usr/share/icons/hicolor/scalable/apps/raveos-logo.svg"
+  install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
+    "${pkgdir}/usr/share/icons/hicolor/scalable/apps/distributor-logo-raveos.svg"
+}

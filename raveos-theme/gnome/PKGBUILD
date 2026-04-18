@@ -1,0 +1,28 @@
+pkgname=raveos-gnome-theme
+pkgver=0.0.0
+pkgrel=18
+pkgdesc="RaveOS GNOME theme payload and installer"
+arch=('any')
+url="https://raveos.local"
+license=('custom')
+depends=('fastfetch')
+install="${pkgname}.install"
+source=()
+sha256sums=()
+
+# Build redirection
+BUILDDIR="${startdir}/build"
+PKGDEST="${startdir}/build"
+SRCDEST="${startdir}/build"
+SRCPKGDEST="${startdir}/build"
+LOGDEST="${startdir}/build"
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/raveos/gnome-theme"
+  cp -r --no-preserve=ownership "${startdir}/theme-data" "${pkgdir}/usr/share/raveos/gnome-theme/"
+
+  install -Dm755 "${startdir}/raveos-gnome-apply.sh" \
+    "${pkgdir}/usr/lib/raveos-gnome-theme/auto-apply.sh"
+  install -Dm644 "${startdir}/raveos-gnome-theme-apply.service" \
+    "${pkgdir}/usr/lib/systemd/system/raveos-gnome-theme-apply.service"
+}

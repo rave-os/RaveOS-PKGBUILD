@@ -1,0 +1,11 @@
+pkgbase = raveos-hyprland-theme
+	pkgdesc = RaveOS Hyprland theme payload and installer
+	pkgver = 0.0.0
+	pkgrel = 6
+	url = https://raveos.local
+	install = raveos-hyprland-theme.install
+	arch = any
+	license = custom
+	depends = fastfetch
+
+pkgname = raveos-hyprland-theme

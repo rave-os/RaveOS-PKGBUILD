@@ -1,0 +1,14 @@
+{
+	"name": "Unity-like App Switcher (Reforged)",
+	"description": "A modern, AI-reforged version of the Unity-like AppSwitcher for GNOME 48+. Bigger, more colorful, and highly customizable.",
+	"original-authors": "gonza",
+	"uuid": "unity-like-appswitcher-reforged@gabeszm",
+	"gettext-domain": "unity-window-switcher",
+	"url": "https://github.com/gonzaarcr/unity-like-switcher-gnome-ext",
+	"settings-schema": "org.gnome.shell.extensions.unity-window-switcher-reforged",
+	"shell-version": [
+		"48",
+		"49",
+		"50"
+	]
+}

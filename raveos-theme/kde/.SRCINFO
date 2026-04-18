@@ -1,0 +1,11 @@
+pkgbase = raveos-kde-theme
+	pkgdesc = RaveOS KDE theme payload and installer
+	pkgver = 0.0.0
+	pkgrel = 21
+	url = https://raveos.local
+	install = raveos-kde-theme.install
+	arch = any
+	license = custom
+	depends = fastfetch
+
+pkgname = raveos-kde-theme

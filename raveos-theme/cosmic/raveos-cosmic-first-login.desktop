@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=RaveOS Cosmic First Login
+Exec=/usr/lib/raveos-cosmic-theme/first-login.sh
+OnlyShowIn=COSMIC;
+NoDisplay=true

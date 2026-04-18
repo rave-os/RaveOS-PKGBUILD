@@ -1,0 +1,32 @@
+pkgname=raveos-cosmic-theme
+pkgver=0.0.0
+pkgrel=6
+pkgdesc="RaveOS Cosmic theme payload and installer"
+arch=('any')
+url="https://raveos.local"
+license=('custom')
+depends=('fastfetch')
+install="${pkgname}.install"
+source=()
+sha256sums=()
+
+# Build redirection
+BUILDDIR="${startdir}/build"
+PKGDEST="${startdir}/build"
+SRCDEST="${startdir}/build"
+SRCPKGDEST="${startdir}/build"
+LOGDEST="${startdir}/build"
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/raveos/cosmic-theme"
+  cp -r --no-preserve=ownership "${startdir}/theme-data" "${pkgdir}/usr/share/raveos/cosmic-theme/"
+
+  install -Dm755 "${startdir}/raveos-cosmic-apply.sh" \
+    "${pkgdir}/usr/lib/raveos-cosmic-theme/auto-apply.sh"
+  install -Dm755 "${startdir}/raveos-cosmic-first-login.sh" \
+    "${pkgdir}/usr/lib/raveos-cosmic-theme/first-login.sh"
+  install -Dm644 "${startdir}/raveos-cosmic-theme-apply.service" \
+    "${pkgdir}/usr/lib/systemd/system/raveos-cosmic-theme-apply.service"
+  install -Dm644 "${startdir}/raveos-cosmic-first-login.desktop" \
+    "${pkgdir}/etc/xdg/autostart/raveos-cosmic-first-login.desktop"
+}

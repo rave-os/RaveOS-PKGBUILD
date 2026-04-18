@@ -1,0 +1,300 @@
+#!/bin/bash
+
+# SPDX-FileCopyrightText: 2023 Deminder <tremminder@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Adapted from cpupower extension by:
+# Martin Koppehel <psl.kontakt@gmail.com>, Fin Christensen <christensen.fin@gmail.com>
+
+# installer.sh - This script installs a policykit rule for the Shutdown Timer gnome-shell extension.
+#
+# This file is part of the gnome-shell extension ShutdownTimer@Deminder.
+
+
+set -e
+
+################################
+# EXTENSION SPECIFIC OPTIONS:  #
+################################
+
+EXTENSION_NAME="Shutdown Timer"
+ACTION_BASE="dem.shutdowntimer"
+RULE_BASE="$ACTION_BASE.settimers"
+CFC_BASE="shutdowntimerctl"
+POLKIT_DIR="polkit"
+VERSION=1
+
+
+EXIT_SUCCESS=0
+EXIT_INVALID_ARG=1
+EXIT_FAILED=2
+EXIT_NEEDS_UPDATE=3
+EXIT_NEEDS_SECURITY_UPDATE=4
+EXIT_NOT_INSTALLED=5
+EXIT_MUST_BE_ROOT=6
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" #stackoverflow 59895
+
+export TEXTDOMAINDIR="$DIR/../locale"
+export TEXTDOMAIN="ShutdownTimer"
+function gtxt() {
+    gettext "$1"
+}
+
+function polkit_version_greater_than() {
+    printf -v versions '%s\n%s' "$(pkaction --version | cut -d' ' -f3)" "$1"
+    [[ $versions != "$(sort -V <<< "$versions")" ]]
+}
+
+function polkit_action_lookup_program_gets_realpath() {
+    polkit_version_greater_than "126"
+}
+
+function polkit_supports_standalonerule() {
+    polkit_version_greater_than "0.106"
+}
+
+function check_support() {
+    local polkit_info=", stand-alone polkit rules"
+    if polkit_supports_standalonerule; then
+        polkit_info+=" available"
+        if polkit_action_lookup_program_gets_realpath; then
+            polkit_info+=", with realpath program lookup"
+        fi
+    else
+        polkit_info+=" not avaliable"
+    fi
+    if which rtcwake >/dev/null 2>&1
+    then
+        echo "rtcwake supported${polkit_info}"
+        exit ${EXIT_SUCCESS}
+    else
+        echo "rtcwake unsupported${polkit_info}"
+        exit ${EXIT_FAILED}
+    fi
+}
+
+function require_root() {
+    if [ "${EUID}" -ne 0 ]; then
+        echo "This action must be run as root!"
+        exit ${EXIT_MUST_BE_ROOT}
+    fi
+}
+
+function fail() {
+    echo "$(gtxt "Failed")${1}" >&2 && exit ${EXIT_FAILED}
+}
+DEFAULT_SUCCESS_MSG=$(gtxt 'Success')
+
+function success() {
+    echo -n "${1:-$DEFAULT_SUCCESS_MSG}"
+    echo -e "\U1F7E2"
+}
+
+
+
+########################
+# GENERALIZED SCRIPT:  #
+########################
+
+function usage() {
+    echo "Usage: installer.sh [options] {supported,install,check,update,uninstall}"
+    echo
+    echo "Available options:"
+    echo "  --tool-user USER   Set the user of the tool (default: \$USER)"
+    echo
+    exit ${EXIT_INVALID_ARG}
+}
+
+if [ $# -lt 1 ]
+then
+    usage
+fi
+
+ACTION=""
+TOOL_USER="$USER"
+while [[ $# -gt 0 ]]
+do
+    key="$1"
+
+    # we have to use command line arguments here as pkexec does not support
+    # setting environment variables
+    case $key in
+        --tool-user)
+            TOOL_USER="$2"
+            shift
+            shift
+            ;;
+        supported|install|check|update|uninstall)
+            if [ -z "$ACTION" ]
+            then
+                ACTION="$1"
+            else
+                echo "Too many actions specified. Please give at most 1."
+                usage
+            fi
+            shift
+            ;;
+        *)
+            echo "Unknown argument $key"
+            usage
+            ;;
+    esac
+done
+
+
+CFC_DIR="/usr/local/bin"
+RULE_DIR="/etc/polkit-1/rules.d"
+
+if polkit_supports_standalonerule; then
+    RULE_IN="${DIR}/../${POLKIT_DIR}/10-$RULE_BASE.rules"
+else
+    RULE_IN="${RULE_IN}.legacy"
+    ACTION_IN="${DIR}/../${POLKIT_DIR}/${ACTION_BASE}.policy.in"
+fi
+TOOL_IN="${DIR}/$CFC_BASE"
+
+TOOL_OUT="${CFC_DIR}/${CFC_BASE}-${TOOL_USER}"
+RULE_OUT="${RULE_DIR}/10-${RULE_BASE}-${TOOL_USER}.rules"
+ACTION_ID="${RULE_BASE}.${TOOL_USER}"
+ACTION_OUT="/usr/share/polkit-1/actions/${ACTION_ID}.policy"
+
+function print_policy_xml() {
+    sed -e "s:{{PATH}}:${TOOL_OUT}:g" \
+        -e "s:{{ACTION_BASE}}:${ACTION_BASE}:g" \
+        -e "s:{{ACTION_ID}}:${ACTION_ID}:g" "${ACTION_IN}"
+}
+
+function print_rules_javascript() {
+    if [[ "$RULE_IN" == *.legacy ]]; then
+        sed -e "s:{{RULE_BASE}}:${RULE_BASE}:g" "${RULE_IN}"
+    else
+        local tool_out=${TOOL_OUT}
+        if polkit_action_lookup_program_gets_realpath; then
+                tool_out="$(realpath "${TOOL_OUT}")"
+        fi
+        sed -e "s:{{TOOL_OUT}}:${tool_out}:g" \
+            -e "s:{{TOOL_USER}}:${TOOL_USER}:g" "${RULE_IN}"
+    fi
+
+}
+
+if [ "$ACTION" = "supported" ]
+then
+    check_support
+fi
+
+
+if [ "$ACTION" = "check" ]
+then
+    require_root
+    NOT_FOUND=0
+    NEEDS_UPDATE=0
+    function check_installed() {
+	if [ -f "$1" ]; then
+	    echo -n "Found: $1"
+	    if cmp --silent "$1" "$2"; then
+		echo " (OK)"
+	    else
+		echo " (needs update)"
+		NEEDS_UPDATE=1
+	    fi
+	else
+	    echo "Not found: $1"
+	    NOT_FOUND=1
+	fi
+    }
+    check_installed "${TOOL_OUT}" "${TOOL_IN}"
+    check_installed "${RULE_OUT}" <(print_rules_javascript)
+    if [ "$NEEDS_UPDATE" -gt 0 ]; then
+	echo "Your $EXTENSION_NAME installation needs updating!"
+	exit ${EXIT_NEEDS_UPDATE}
+    fi
+    if [ "$NOT_FOUND" -gt 0 ]; then
+	echo "Not installed!"
+	exit ${EXIT_NOT_INSTALLED}
+    fi
+
+    echo "OK"
+    exit ${EXIT_SUCCESS}
+fi
+
+TOOL_NAME=$(basename ${TOOL_OUT})
+
+if [ "$ACTION" = "install" ]
+then
+    require_root
+    echo -n "$(gtxt 'Installing') ${TOOL_NAME} $(gtxt 'tool')... "
+    mkdir -p "${CFC_DIR}"
+    install "${TOOL_IN}" "${TOOL_OUT}" || fail
+    success
+
+    if [ ! -z "$ACTION_IN" ];then
+        echo "$(gtxt 'Using legacy policykit install')..."
+        echo -n "$(gtxt 'Installing') $(gtxt 'policykit action')..."
+        (print_policy_xml > "${ACTION_OUT}" 2>/dev/null && chmod 0644 "${ACTION_OUT}") || fail
+        success
+    fi
+
+    echo -n "$(gtxt 'Installing') $(gtxt 'policykit rule')..."
+    mkdir -p "${RULE_DIR}"
+    (print_rules_javascript > "${RULE_OUT}" 2>/dev/null && chmod 0644 "${RULE_OUT}")  || fail
+    success
+
+    exit ${EXIT_SUCCESS}
+fi
+
+if [ "$ACTION" = "update" ]
+then
+    require_root
+    "${BASH_SOURCE[0]}" --tool-user "${TOOL_USER}" uninstall || exit $?
+    "${BASH_SOURCE[0]}" --tool-user "${TOOL_USER}" install || exit $?
+
+    exit ${EXIT_SUCCESS}
+fi
+
+if [ "$ACTION" = "uninstall" ]
+then
+    require_root
+    LEG_CFG_OUT="/usr/bin/shutdowntimerctl-$TOOL_USER"
+    if [ -f "$LEG_CFG_OUT" ]
+    then
+        # remove legacy "tool" install
+        echo -n "$(gtxt 'Uninstalling') $(gtxt 'tool')..."
+        rm "${LEG_CFG_OUT}" || fail " - $(gtxt 'cannot remove') ${LEG_CFG_OUT}" && success
+    fi
+
+    if [ -f "$ACTION_OUT" ]
+    then
+        # remove legacy "policykit action" install
+        echo -n "$(gtxt 'Uninstalling') $(gtxt 'policykit action')..."
+        rm "${ACTION_OUT}" || fail " - $(gtxt 'cannot remove') ${ACTION_OUT}" && success
+    fi
+    LEG_RULE_OUT="/usr/share/polkit-1/rules.d/10-dem.shutdowntimer.settimers.rules"
+    if [ -f "$LEG_RULE_OUT" ]
+    then
+        # remove legacy "policykit action" install
+        echo -n "$(gtxt 'Uninstalling') $(gtxt 'policykit rule')..."
+        rm "${LEG_RULE_OUT}" || fail " - $(gtxt 'cannot remove') ${LEG_RULE_OUT}" && success
+    fi
+
+    function uninstallFile() {
+        echo -n "$(gtxt 'Uninstalling') $2... "
+        if [ -f "$1" ]
+        then
+            rm "$1" || fail " - $(gtxt 'cannot remove') $1" && success
+        else
+            echo "$2 $(gtxt 'not installed at') $1"
+        fi
+    }
+
+    uninstallFile "${TOOL_OUT}" "${TOOL_NAME} $(gtxt 'tool')"
+    uninstallFile "${RULE_OUT}" "$(gtxt 'policykit rule')"
+
+    exit ${EXIT_SUCCESS}
+fi
+
+echo "Unknown parameter."
+usage 
+
+

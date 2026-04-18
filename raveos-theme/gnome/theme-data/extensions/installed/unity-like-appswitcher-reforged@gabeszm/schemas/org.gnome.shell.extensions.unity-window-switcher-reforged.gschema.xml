@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="unity-window-switcher">
+	<schema id="org.gnome.shell.extensions.unity-window-switcher-reforged" path="/org/gnome/shell/extensions/unity-window-switcher-reforged/">
+		<key name="first-change-window" type="b">
+			<default>true</default>
+			<summary>Focus the second window when switching</summary>
+			<description>When the switcher is opened, the second window is focused by default, similar to the original Unity behavior.</description>
+		</key>
+		<key name="hover-shade-level" type="d">
+			<default>1.0</default>
+			<summary>Hover Shade Level</summary>
+			<description>The brightness multiplier for the hover glow (e.g., 0.1 means 10% brighter).</description>
+		</key>
+		<key name="hover-border-width" type="i">
+			<default>2</default>
+			<summary>Hover Border Width</summary>
+			<description>The thickness of the border around the hovered item in pixels.</description>
+		</key>
+		<key name="hover-glow-size" type="i">
+			<range min="0" max="30"/>
+			<default>8</default>
+			<summary>Hover Glow Size</summary>
+			<description>The size of the inner glow (box-shadow) for the hovered item.</description>
+		</key>
+		<key name="hover-opacity" type="d">
+			<default>0.9</default>
+			<summary>Hover Opacity</summary>
+			<description>The opacity of the hover highlight (0.0 to 1.0).</description>
+		</key>
+		<key name="icon-spacing" type="i">
+			<default>10</default>
+			<summary>Icon Spacing</summary>
+			<description>The distance between icons in pixels.</description>
+		</key>
+		<key name="container-padding" type="i">
+			<default>10</default>
+			<summary>Container Padding</summary>
+			<description>The padding around the icons inside the switcher.</description>
+		</key>
+		<key name="background-color" type="s">
+			<default>'rgb(24,24,26)'</default>
+			<summary>Background Color</summary>
+			<description>The background color of the switcher (CSS format).</description>
+		</key>
+		<key name="border-size" type="i">
+			<default>0</default>
+			<summary>Border Size</summary>
+			<description>The thickness of the switcher border.</description>
+		</key>
+		<key name="border-color" type="s">
+			<default>'rgba(255, 255, 255, 0.2)'</default>
+			<summary>Border Color</summary>
+			<description>The color of the switcher border (CSS format).</description>
+		</key>
+		<key name="background-border-radius" type="i">
+			<default>24</default>
+			<summary>Background Border Radius</summary>
+			<description>The border radius of the main switcher container in pixels.</description>
+		</key>
+		<key name="icon-border-radius" type="i">
+			<default>16</default>
+			<summary>Icon Border Radius</summary>
+			<description>The border radius of the application icons in pixels.</description>
+		</key>
+	</schema>
+</schemalist>

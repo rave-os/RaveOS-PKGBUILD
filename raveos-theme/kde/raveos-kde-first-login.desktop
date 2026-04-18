@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=RaveOS KDE First Login
+Exec=/usr/lib/raveos-kde-theme/first-login.sh
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2
+NoDisplay=true

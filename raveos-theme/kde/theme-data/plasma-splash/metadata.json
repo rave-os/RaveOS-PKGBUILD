@@ -1,0 +1,16 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "RaveOS"
+            }
+        ],
+        "Category": "",
+        "Description": "RaveOS Plasma splash theme",
+        "EnabledByDefault": true,
+        "Id": "org.kde.raveos.desktop",
+        "License": "GPL-2.0-or-later",
+        "Name": "RaveOS Splash",
+        "Version": "1.0"
+    }
+}

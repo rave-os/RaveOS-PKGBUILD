@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface domain="ShutdownTimer">
+  <object class="GtkTextBuffer" id="check_command_textbuffer" />
+  <object class="GtkTextBuffer" id="install_log_textbuffer">
+    <property name="text">START test
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+DONE test</property>
+  </object>
+  <object class="GtkEntryBuffer" id="install_policy_prefix_buffer" />
+  <object class="GtkAdjustment" id="installer_scrollbar_adjustment">
+    <property name="upper">1000000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="nonlinear_shutdown_slider_adjustment">
+    <property name="lower">-5</property>
+    <property name="upper">5</property>
+    <property name="step-increment">0.001</property>
+    <property name="page-increment">0.10</property>
+  </object>
+  <object class="GtkAdjustment" id="nonlinear_wake_slider_adjustment">
+    <property name="lower">-5</property>
+    <property name="upper">5</property>
+    <property name="step-increment">0.001</property>
+    <property name="page-increment">0.10</property>
+  </object>
+  <object class="GtkEntryBuffer" id="show_shutdown_mode_buffer" />
+  <object class="GtkEntryBuffer" id="shutdown_ref_timer_buffer" />
+  <object class="GtkEntryBuffer" id="wake_ref_timer_buffer" />
+  <object class="GtkAdjustment" id="shutdown_max_timer_adjustment">
+    <property name="upper">10000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="shutdown_slider_adjustment">
+    <property name="upper">100</property>
+    <property name="step-increment">0.1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="wake_max_timer_adjustment">
+    <property name="upper">10000</property>
+    <property name="step-increment">1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="GtkAdjustment" id="wake_slider_adjustment">
+    <property name="upper">100</property>
+    <property name="step-increment">0.1</property>
+    <property name="page-increment">10</property>
+  </object>
+  <object class="AdwPreferencesPage" id="shutdowntimer_prefs_install">
+    <property name="name">shutdowntimer-prefs-install</property>
+    <property name="title" translatable="yes">Install</property>
+    <property name="icon-name">go-up-symbolic</property>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Install/Uninstall privileges for this user</property>
+            <property name="subtitle" translatable="yes">Setup a privileged script and give user access via polkit</property>
+            <property name="activatable-widget">install_policy_switch</property>
+            <child>
+              <object class="GtkSwitch" id="install_policy_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesRow">
+            <property name="title" translatable="yes">Install output</property>
+            <child>
+              <object class="GtkScrolledWindow">
+                <property name="focusable">1</property>
+                <property name="vadjustment">installer_scrollbar_adjustment</property>
+                <property name="min-content-height">350</property>
+                <child>
+                  <object class="GtkTextView">
+                    <property name="focusable">1</property>
+                    <property name="top-margin">5</property>
+                    <property name="editable">0</property>
+                    <property name="wrap-mode">char</property>
+                    <property name="cursor-visible">0</property>
+                    <property name="buffer">install_log_textbuffer</property>
+                    <property name="accepts-tab">0</property>
+                    <property name="monospace">1</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="AdwPreferencesPage" id="shutdowntimer_prefs_shutdown">
+    <property name="name">shutdowntimer-prefs-shutdown</property>
+    <property name="title" translatable="yes">Shutdown</property>
+    <property name="icon-name">preferences-system-time-symbolic</property>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title" translatable="yes">Timer Action</property>
+        <child>
+          <object class="AdwComboRow" id="shutdown_mode_combo">
+            <property name="title" translatable="yes">Use mode</property>
+            <property name="subtitle" translatable="yes">Mode to use for timer action</property>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Show end-session dialog</property>
+            <property name="subtitle" translatable="yes">Shown for reboot and shutdown if screensaver is inactive</property>
+            <property name="activatable-widget">show_end_session_dialog_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_end_session_dialog_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Toggle root shutdown with shutdown timer</property>
+            <property name="subtitle" translatable="yes">Runs extra &apos;shutdown -P/-r&apos; command for shutdown or reboot</property>
+            <property name="activatable-widget">root_mode_switch</property>
+            <child>
+              <object class="GtkSwitch" id="root_mode_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title" translatable="yes">Timer Input</property>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Reference start time</property>
+            <property name="subtitle" translatable="yes">Options: now, HH:MM</property>
+            <property name="activatable-widget">shutdown_ref_timer_entry</property>
+            <child>
+              <object class="GtkEntry" id="shutdown_ref_timer_entry">
+                <property name="valign">center</property>
+                <property name="buffer">shutdown_ref_timer_buffer</property>
+                <property name="placeholder-text">23:59</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Shutdown slider position (in &amp;#37;)</property>
+            <property name="activatable-widget">shutdown_slider_spinbutton</property>
+            <child>
+              <object class="GtkSpinButton" id="shutdown_slider_spinbutton">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+                <property name="adjustment">shutdown_slider_adjustment</property>
+                <property name="climb-rate">1</property>
+                <property name="snap-to-ticks">1</property>
+                <property name="numeric">1</property>
+                <property name="digits">1</property>
+                <property name="update-policy">if-valid</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesRow">
+            <property name="title" translatable="yes">Shutdown slider position (in &amp;#37;)</property>
+            <child>
+              <object class="GtkScale">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+                <property name="draw-value">1</property>
+                <property name="adjustment">shutdown_slider_adjustment</property>
+                <property name="show-fill-level">1</property>
+                <property name="round-digits">1</property>
+                <property name="digits">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Non-linear scaling or 0 to disable</property>
+            <property name="activatable-widget">nonlinear_shutdown_slider_spinbutton</property>
+            <child>
+              <object class="GtkSpinButton" id="nonlinear_shutdown_slider_spinbutton">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+                <property name="adjustment">nonlinear_shutdown_slider_adjustment</property>
+                <property name="climb-rate">1</property>
+                <property name="digits">3</property>
+                <property name="snap-to-ticks">1</property>
+                <property name="numeric">1</property>
+                <property name="update-policy">if-valid</property>
+                <property name="value">120</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Maximum shutdown timer value (in minutes)</property>
+            <property name="activatable-widget">shutdown_max_timer_spinbutton</property>
+            <child>
+              <object class="GtkSpinButton" id="shutdown_max_timer_spinbutton">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+                <property name="adjustment">shutdown_max_timer_adjustment</property>
+                <property name="climb-rate">1</property>
+                <property name="snap-to-ticks">1</property>
+                <property name="numeric">1</property>
+                <property name="update-policy">if-valid</property>
+                <property name="value">120</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="AdwPreferencesPage" id="shutdowntimer_prefs_wake">
+    <property name="name">shutdowntimer-prefs-wake</property>
+    <property name="title" translatable="yes">Wake</property>
+    <property name="icon-name">alarm-symbolic</property>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title" translatable="yes">Timer Action</property>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Toggle wake with timer action</property>
+            <property name="activatable-widget">auto_wake_switch</property>
+            <child>
+              <object class="GtkSwitch" id="auto_wake_switch">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title" translatable="yes">Timer Input</property>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Reference start time</property>
+            <property name="subtitle" translatable="yes">Options: now, shutdown, HH:MM</property>
+            <property name="activatable-widget">wake_ref_timer_entry</property>
+            <child>
+              <object class="GtkEntry" id="wake_ref_timer_entry">
+                <property name="valign">center</property>
+                <property name="buffer">wake_ref_timer_buffer</property>
+                <property name="placeholder-text">23:59</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Wake slider position (in &amp;#37;)</property>
+            <property name="activatable-widget">wake_slider_spinbutton</property>
+            <child>
+              <object class="GtkSpinButton" id="wake_slider_spinbutton">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+                <property name="adjustment">wake_slider_adjustment</property>
+                <property name="climb-rate">1</property>
+                <property name="snap-to-ticks">1</property>
+                <property name="numeric">1</property>
+                <property name="digits">1</property>
+                <property name="update-policy">if-valid</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesRow">
+            <property name="title" translatable="yes">Wake slider position (in &amp;#37;)</property>
+            <child>
+              <object class="GtkScale">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+                <property name="draw-value">1</property>
+                <property name="adjustment">wake_slider_adjustment</property>
+                <property name="show-fill-level">1</property>
+                <property name="round-digits">1</property>
+                <property name="digits">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Non-linear scaling or 0 to disable</property>
+            <property name="activatable-widget">nonlinear_wake_slider_spinbutton</property>
+            <child>
+              <object class="GtkSpinButton" id="nonlinear_wake_slider_spinbutton">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+                <property name="adjustment">nonlinear_wake_slider_adjustment</property>
+                <property name="climb-rate">1</property>
+                <property name="digits">3</property>
+                <property name="snap-to-ticks">1</property>
+                <property name="numeric">1</property>
+                <property name="update-policy">if-valid</property>
+                <property name="value">120</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Maximum wake timer value (in minutes)</property>
+            <property name="activatable-widget">wake_max_timer_spinbutton</property>
+            <child>
+              <object class="GtkSpinButton" id="wake_max_timer_spinbutton">
+                <property name="focusable">1</property>
+                <property name="valign">center</property>
+                <property name="adjustment">wake_max_timer_adjustment</property>
+                <property name="climb-rate">1</property>
+                <property name="snap-to-ticks">1</property>
+                <property name="numeric">1</property>
+                <property name="update-policy">if-valid</property>
+                <property name="value">120</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="AdwPreferencesPage" id="shutdowntimer_prefs_display">
+    <property name="name">shutdowntimer-prefs-display</property>
+    <property name="title" translatable="yes">Display</property>
+    <property name="icon-name">preferences-color-symbolic</property>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title" translatable="yes">General</property>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Show settings button</property>
+            <property name="activatable-widget">show_settings_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_settings_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Show notification text boxes</property>
+            <property name="activatable-widget">show_textboxes_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_textboxes_switch">
+                <property name="valign">center</property>
+                <property name="focusable">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title" translatable="yes">Shutdown</property>
+        <child>
+          <object class="AdwActionRow">
+            <property name="title" translatable="yes">Show shutdown items</property>
+            <property name="subtitle" translatable="yes">Comma-separated shutdown modes which are shown in the popup menu (p: poweroff, s: suspend, r: reboot)</property>
+            <property name="activatable-widget">show_shutdown_mode_entry</property>
+            <child>
+              <object class="GtkEntry" id="show_shutdown_mode_entry">
+                <property name="valign">center</property>
+                <property name="buffer">show_shutdown_mode_buffer</property>
+                <property name="placeholder-text">p,r,s</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Show shutdown slider</property>
+            <property name="activatable-widget">show_shutdown_slider_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_shutdown_slider_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Show shutdown indicator</property>
+            <property name="subtitle" translatable="yes">Shows the remaining time until shutdown action</property>
+            <property name="activatable-widget">show_shutdown_indicator_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_shutdown_indicator_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Absolute shutdown time selection</property>
+            <property name="activatable-widget">show_shutdown_absolute_timer_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_shutdown_absolute_timer_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="AdwPreferencesGroup">
+        <property name="title" translatable="yes">Wake</property>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Show wake items</property>
+            <property name="activatable-widget">show_wake_items_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_wake_items_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Show wake slider</property>
+            <property name="activatable-widget">show_wake_slider_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_wake_slider_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwActionRow">
+            <property name="focusable">1</property>
+            <property name="title" translatable="yes">Absolute wake time selection</property>
+            <property name="activatable-widget">show_wake_absolute_timer_switch</property>
+            <child>
+              <object class="GtkSwitch" id="show_wake_absolute_timer_switch">
+                <property name="valign">center</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

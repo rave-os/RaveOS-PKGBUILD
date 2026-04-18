@@ -1,0 +1,12 @@
+NAME="RaveOS"
+PRETTY_NAME="RaveOS"
+ID=arch
+BUILD_ID=rolling
+ANSI_COLOR="38;2;23;147;209"
+HOME_URL="https://rp1.hu"
+DOCUMENTATION_URL="https://rp1.hu/"
+SUPPORT_URL="https://rp1.hu/"
+BUG_REPORT_URL="https://git.rp1.hu"
+PRIVACY_POLICY_URL="https://git.rp1.hu"
+LOGO=raveos-logo
+IMAGE_ID=raveos

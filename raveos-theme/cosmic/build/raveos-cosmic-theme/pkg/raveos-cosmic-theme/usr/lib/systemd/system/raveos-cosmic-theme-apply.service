@@ -1,0 +1,12 @@
+[Unit]
+Description=Apply RaveOS Cosmic theme payload
+After=local-fs.target systemd-user-sessions.service
+ConditionPathExists=!/var/lib/raveos-cosmic-theme/.applied
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/raveos-cosmic-theme/auto-apply.sh
+ExecStartPost=/usr/bin/install -Dm644 /dev/null /var/lib/raveos-cosmic-theme/.applied
+
+[Install]
+WantedBy=multi-user.target

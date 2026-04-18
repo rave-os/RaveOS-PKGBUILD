@@ -1,0 +1,11 @@
+pkgbase = raveos-cosmic-theme
+	pkgdesc = RaveOS Cosmic theme payload and installer
+	pkgver = 0.0.0
+	pkgrel = 6
+	url = https://raveos.local
+	install = raveos-cosmic-theme.install
+	arch = any
+	license = custom
+	depends = fastfetch
+
+pkgname = raveos-cosmic-theme

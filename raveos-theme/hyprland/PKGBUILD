@@ -1,0 +1,36 @@
+pkgname=raveos-hyprland-theme
+pkgver=0.0.0
+pkgrel=8
+pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
+arch=('any')
+url="https://raveos.local"
+license=('custom')
+depends=('fastfetch' 'quickshell' 'go' 'matugen' 'socat')
+install="${pkgname}.install"
+source=()
+sha256sums=()
+
+# Build redirection
+BUILDDIR="${startdir}/build"
+PKGDEST="${startdir}/build"
+SRCDEST="${startdir}/build"
+SRCPKGDEST="${startdir}/build"
+LOGDEST="${startdir}/build"
+
+build() {
+  cd "${startdir}/theme-data/DankMaterialShell/core"
+  go build -o dms ./cmd/dms/
+}
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/raveos/hyprland-theme"
+  cp -r --no-preserve=ownership "${startdir}/theme-data" "${pkgdir}/usr/share/raveos/hyprland-theme/"
+
+  # Install DMS binary
+  install -Dm755 "${startdir}/theme-data/DankMaterialShell/core/dms" "${pkgdir}/usr/bin/dms"
+
+  install -Dm755 "${startdir}/raveos-hyprland-apply.sh" \
+    "${pkgdir}/usr/lib/raveos-hyprland-theme/auto-apply.sh"
+  install -Dm644 "${startdir}/raveos-hyprland-theme-apply.service" \
+    "${pkgdir}/usr/lib/systemd/system/raveos-hyprland-theme-apply.service"
+}

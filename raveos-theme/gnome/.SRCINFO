@@ -1,0 +1,11 @@
+pkgbase = raveos-gnome-theme
+	pkgdesc = RaveOS GNOME theme payload and installer
+	pkgver = 0.0.0
+	pkgrel = 18
+	url = https://raveos.local
+	install = raveos-gnome-theme.install
+	arch = any
+	license = custom
+	depends = fastfetch
+
+pkgname = raveos-gnome-theme

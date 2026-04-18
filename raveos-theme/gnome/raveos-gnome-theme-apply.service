@@ -1,0 +1,12 @@
+[Unit]
+Description=Apply RaveOS GNOME theme payload
+After=local-fs.target systemd-user-sessions.service
+ConditionPathExists=!/var/lib/raveos-gnome-theme/.applied
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/raveos-gnome-theme/auto-apply.sh
+ExecStartPost=/usr/bin/install -Dm644 /dev/null /var/lib/raveos-gnome-theme/.applied
+
+[Install]
+WantedBy=multi-user.target
