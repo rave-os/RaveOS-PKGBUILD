@@ -152,6 +152,27 @@ jobs:
           makepkg -s --noconfirm -f
           cp -v build/raveos-tools-*.pkg.tar.zst /tmp/builtpkgs/
 
+      - name: Mirror linux-cachyos + sddm-astronaut-theme from Chaotic-AUR
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          MIRROR="https://de-mirror.chaotic.cx/chaotic-aur/x86_64"
+
+          for PKG in linux-cachyos linux-cachyos-headers sddm-astronaut-theme; do
+            LATEST=$(curl -sL "${MIRROR}/" | grep -o "href=\"${PKG}-[0-9][^\"]*\.pkg\.tar\.zst\"" | sed 's/href="//;s/"//' | head -1)
+            if [ -z "$LATEST" ]; then
+              echo "$PKG nem talalhato Chaotic-AUR-ban -> skip"
+              continue
+            fi
+            if [ -f "$CORE/$LATEST" ]; then
+              echo "$PKG $LATEST mar bent van a core repoban -> skip"
+              continue
+            fi
+            echo "$PKG uj verzio: $LATEST - letoltes..."
+            curl -fL --progress-bar "${MIRROR}/${LATEST}" -o "/tmp/builtpkgs/${LATEST}"
+            echo "$PKG letolve OK"
+          done
+
       - name: Publish packages to raveos-core-repo (only if changed)
         run: |
           set -euo pipefail
