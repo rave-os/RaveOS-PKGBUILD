@@ -156,12 +156,16 @@ jobs:
         run: |
           set -euo pipefail
           CORE="/tmp/raveos-core-repo/x86_64"
-          MIRROR="https://de-mirror.chaotic.cx/chaotic-aur/x86_64"
+          MIRRORS="https://de-mirror.chaotic.cx/chaotic-aur/x86_64 https://cdn-mirror.chaotic.cx/chaotic-aur/x86_64 https://geo-mirror.chaotic.cx/chaotic-aur/x86_64"
 
           for PKG in linux-cachyos linux-cachyos-headers sddm-astronaut-theme; do
-            LATEST=$(curl -sL "${MIRROR}/" | grep -o "href=\"${PKG}-[0-9][^\"]*\.pkg\.tar\.zst\"" | sed 's/href="//;s/"//' | head -1)
+            LATEST=""
+            for MIRROR in $MIRRORS; do
+              LATEST=$(curl -sL --max-time 15 "${MIRROR}/" | grep -o "href=\"${PKG}-[0-9][^\"]*\.pkg\.tar\.zst\"" | sed 's/href="//;s/"//' | head -1)
+              [ -n "$LATEST" ] && break
+            done
             if [ -z "$LATEST" ]; then
-              echo "$PKG nem talalhato Chaotic-AUR-ban -> skip"
+              echo "$PKG nem talalhato egyik mirrorban sem -> skip"
               continue
             fi
             if [ -f "$CORE/$LATEST" ]; then
@@ -169,8 +173,17 @@ jobs:
               continue
             fi
             echo "$PKG uj verzio: $LATEST - letoltes..."
-            curl -fL --progress-bar "${MIRROR}/${LATEST}" -o "/tmp/builtpkgs/${LATEST}"
-            echo "$PKG letolve OK"
+            DOWNLOADED=0
+            for MIRROR in $MIRRORS; do
+              if curl -fL --max-time 300 --progress-bar "${MIRROR}/${LATEST}" -o "/tmp/builtpkgs/${LATEST}" 2>/dev/null; then
+                echo "$PKG letoltve OK ($MIRROR)"
+                DOWNLOADED=1
+                break
+              fi
+              echo "$PKG letoltes sikertelen innen: $MIRROR -> kovetkezo mirror"
+              rm -f "/tmp/builtpkgs/${LATEST}" || true
+            done
+            [ "$DOWNLOADED" -eq 0 ] && echo "$PKG letoltes minden mirrorrol sikertelen -> skip" || true
           done
 
       - name: Publish packages to raveos-core-repo (only if changed)
