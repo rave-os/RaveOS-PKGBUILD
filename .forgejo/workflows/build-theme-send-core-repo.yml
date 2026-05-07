@@ -87,9 +87,9 @@ jobs:
             echo "raveos-plasma-theme ${PKGVER}-${PKGREL} unchanged -> skip"
             exit 0
           fi
-          rm -f *.pkg.tar.zst || true
+          rm -rf build || true
           makepkg -s --noconfirm -f
-          cp -v raveos-plasma-theme-*.pkg.tar.zst /tmp/builtpkgs/
+          cp -v build/raveos-plasma-theme-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Build raveos-gnome-theme
         run: |
@@ -102,9 +102,9 @@ jobs:
             echo "raveos-gnome-theme ${PKGVER}-${PKGREL} unchanged -> skip"
             exit 0
           fi
-          rm -f *.pkg.tar.zst || true
+          rm -rf build || true
           makepkg -s --noconfirm -f
-          cp -v raveos-gnome-theme-*.pkg.tar.zst /tmp/builtpkgs/
+          cp -v build/raveos-gnome-theme-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Build raveos-hyprland-theme
         run: |
@@ -117,9 +117,9 @@ jobs:
             echo "raveos-hyprland-theme ${PKGVER}-${PKGREL} unchanged -> skip"
             exit 0
           fi
-          rm -f *.pkg.tar.zst || true
+          rm -rf build || true
           makepkg -s --noconfirm -f
-          cp -v raveos-hyprland-theme-*.pkg.tar.zst /tmp/builtpkgs/
+          cp -v build/raveos-hyprland-theme-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Build raveos-cosmic-theme
         run: |
@@ -132,9 +132,9 @@ jobs:
             echo "raveos-cosmic-theme ${PKGVER}-${PKGREL} unchanged -> skip"
             exit 0
           fi
-          rm -f *.pkg.tar.zst || true
+          rm -rf build || true
           makepkg -s --noconfirm -f
-          cp -v raveos-cosmic-theme-*.pkg.tar.zst /tmp/builtpkgs/
+          cp -v build/raveos-cosmic-theme-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Build raveos-tools
         run: |
@@ -147,9 +147,9 @@ jobs:
             echo "raveos-tools ${PKGVER}-${PKGREL} unchanged -> skip"
             exit 0
           fi
-          rm -f *.pkg.tar.zst || true
+          rm -rf build || true
           makepkg -s --noconfirm -f
-          cp -v raveos-tools-*.pkg.tar.zst /tmp/builtpkgs/
+          cp -v build/raveos-tools-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Publish packages to raveos-core-repo (only if changed)
         run: |
