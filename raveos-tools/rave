@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+
+bold=$(tput bold)
+normal=$(tput sgr0)
+yellow=$(tput setaf 3)
+red=$(tput setaf 1)
+
+CALLCOMMAND="rave"
+appver="1.0.0"
+
+function print_help() {
+    echo "USAGE:"
+    echo "  $CALLCOMMAND [command]"
+    echo ""
+    echo "COMMANDS:"
+    echo "  update              Sync package databases"
+    echo "  upgrade             Full system upgrade (pacman + flatpak + cleanup)"
+    echo "  install <pkg>       Install a package"
+    echo "  remove <pkg>        Remove a package"
+    echo "  search <pkg>        Search for a package"
+    echo "  autoremove          Remove orphaned packages"
+    echo "  clean               Clean package cache"
+    echo "  list-installed      List installed packages"
+    echo "  show <pkg>          Show package info"
+    echo "  install-flatpak     Install a flatpak"
+    echo "  remove-flatpak      Remove a flatpak"
+    echo "  search-flatpak      Search flatpak"
+    echo "  update-flatpak      Update flatpak packages"
+    echo "  version             Show version"
+    echo "  help                Show this help"
+}
+
+if [[ -z "$1" ]]; then
+    echo "${red}${bold}ERROR:${normal}${red} no command specified${normal}"
+    echo "Run '${CALLCOMMAND} help' for usage"
+    exit 1
+fi
+
+case ${1,,} in
+    update)
+        sudo pacman -Sy
+        ;;
+    upgrade)
+        sudo pacman -Syu --noconfirm
+        sudo pacman -Rns $(pacman -Qtdq 2>/dev/null) --noconfirm 2>/dev/null || true
+        sudo pacman -Sc --noconfirm
+        flatpak update -y
+        flatpak uninstall --unused -y
+        sudo flatpak update -y
+        sudo flatpak uninstall --unused -y
+        command -v hblock >/dev/null 2>&1 && hblock
+        echo "${bold}${yellow}RaveOS fully updated!${normal}"
+        ;;
+    install)
+        shift
+        sudo pacman -S "$@"
+        ;;
+    remove)
+        shift
+        sudo pacman -R "$@"
+        ;;
+    search)
+        shift
+        pacman -Ss "$@"
+        ;;
+    autoremove)
+        sudo pacman -Rns $(pacman -Qtdq 2>/dev/null) --noconfirm 2>/dev/null || echo "No orphans found."
+        ;;
+    clean)
+        sudo pacman -Sc --noconfirm
+        ;;
+    list-installed)
+        pacman -Q
+        ;;
+    show)
+        shift
+        pacman -Qi "$@"
+        ;;
+    install-flatpak)
+        shift
+        flatpak install "$@"
+        ;;
+    remove-flatpak)
+        shift
+        flatpak remove "$@"
+        ;;
+    search-flatpak)
+        shift
+        flatpak search "$@"
+        ;;
+    update-flatpak)
+        flatpak update
+        ;;
+    version|-v|--version)
+        echo "rave $appver"
+        ;;
+    help|-h|--help)
+        print_help
+        ;;
+    *)
+        echo "${red}${bold}ERROR:${normal}${red} unknown command '$1'${normal}"
+        echo "Run '${CALLCOMMAND} help' for usage"
+        exit 1
+        ;;
+esac

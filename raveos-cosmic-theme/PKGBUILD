@@ -1,6 +1,6 @@
 pkgname=raveos-cosmic-theme
 pkgver=0.0.0
-pkgrel=6
+pkgrel=7
 pkgdesc="RaveOS Cosmic theme payload and installer"
 arch=('any')
 url="https://raveos.local"

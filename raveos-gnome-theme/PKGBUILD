@@ -1,6 +1,6 @@
 pkgname=raveos-gnome-theme
 pkgver=0.0.0
-pkgrel=18
+pkgrel=19
 pkgdesc="RaveOS GNOME theme payload and installer"
 arch=('any')
 url="https://raveos.local"

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+complete -W "update upgrade install remove search autoremove clean list-installed show install-flatpak remove-flatpak search-flatpak update-flatpak version help" rave
