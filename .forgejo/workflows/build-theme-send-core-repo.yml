@@ -1,4 +1,4 @@
-name: Build raveos-calamares packages and publish to raveos-core-repo (SAFE)
+name: Build raveos packages and publish to raveos-core-repo (SAFE)
 
 on:
   push:
@@ -22,88 +22,145 @@ jobs:
       - name: Install build tools
         run: |
           sudo pacman -S --needed --noconfirm \
-            base-devel git pacman-contrib cmake qt6-tools
+            base-devel git pacman-contrib cmake qt6-tools go
+
+      - name: Clone core repo
+        run: |
+          rm -rf /tmp/raveos-core-repo
+          git clone git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
+          mkdir -p /tmp/builtpkgs
 
       - name: Build raveos-calamares-theme
         run: |
           set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
           cd raveos-calamares-theme
-
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-calamares-theme-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-calamares-theme ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
           rm -f *.pkg.tar.zst || true
           makepkg -s --noconfirm -f
-
-          THEME_PKG=$(ls -t *.pkg.tar.zst | head -n 1)
-          mkdir -p /tmp/builtpkgs
-          cp -v "$THEME_PKG" /tmp/builtpkgs/
-          echo "THEME_PKG=$THEME_PKG" >> "$GITHUB_ENV"
+          cp -v raveos-calamares-theme-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Build raveos-calamares-module
         run: |
           set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
           cd raveos-calamares-module
-
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-calamares-module-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-calamares-module ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
           rm -f *.pkg.tar.zst || true
           makepkg -s --noconfirm -f
-
-          MODULE_PKG=$(ls -t *.pkg.tar.zst | head -n 1)
-          mkdir -p /tmp/builtpkgs
-          cp -v "$MODULE_PKG" /tmp/builtpkgs/
-          echo "MODULE_PKG=$MODULE_PKG" >> "$GITHUB_ENV"
+          cp -v raveos-calamares-module-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Build raveos-calamares
         run: |
           set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
           cd raveos-calamares
-
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/calamares-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-calamares ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
           rm -f *.pkg.tar.zst || true
           makepkg -s --noconfirm -f
+          PKG=$(ls -t *.pkg.tar.zst | grep -v -- '-debug-' | head -n 1)
+          cp -v "$PKG" /tmp/builtpkgs/
 
-          CALAMARES_PKG=$(ls -t *.pkg.tar.zst | grep -v -- '-debug-' | head -n 1)
-          mkdir -p /tmp/builtpkgs
-          cp -v "$CALAMARES_PKG" /tmp/builtpkgs/
-          echo "CALAMARES_PKG=$CALAMARES_PKG" >> "$GITHUB_ENV"
+      - name: Build raveos-plasma-theme
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-plasma-theme
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-plasma-theme-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-plasma-theme ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+          cp -v raveos-plasma-theme-*.pkg.tar.zst /tmp/builtpkgs/
+
+      - name: Build raveos-gnome-theme
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-gnome-theme
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-gnome-theme-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-gnome-theme ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+          cp -v raveos-gnome-theme-*.pkg.tar.zst /tmp/builtpkgs/
+
+      - name: Build raveos-hyprland-theme
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-hyprland-theme
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-hyprland-theme-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-hyprland-theme ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+          cp -v raveos-hyprland-theme-*.pkg.tar.zst /tmp/builtpkgs/
+
+      - name: Build raveos-cosmic-theme
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-cosmic-theme
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-cosmic-theme-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-cosmic-theme ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+          cp -v raveos-cosmic-theme-*.pkg.tar.zst /tmp/builtpkgs/
+
+      - name: Build raveos-tools
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-tools
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-tools-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-tools ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+          cp -v raveos-tools-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Publish packages to raveos-core-repo (only if changed)
         run: |
           set -euo pipefail
 
-          rm -rf /tmp/raveos-core-repo
-          git clone git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
           CORE="/tmp/raveos-core-repo/x86_64"
           mkdir -p "$CORE"
 
-          UPDATED=false
-
-          if ! ls "$CORE/$THEME_PKG" >/dev/null 2>&1; then
-            echo "Theme package changed → publishing"
-            rm -f "$CORE/raveos-calamares-theme-"*.pkg.tar.zst*
-            cp -v "/tmp/builtpkgs/$THEME_PKG" "$CORE/"
-            UPDATED=true
-          else
-            echo "Theme unchanged → skip publish"
-          fi
-
-          if ! ls "$CORE/$MODULE_PKG" >/dev/null 2>&1; then
-            echo "Module package changed → publishing"
-            rm -f "$CORE/raveos-calamares-module-"*.pkg.tar.zst*
-            cp -v "/tmp/builtpkgs/$MODULE_PKG" "$CORE/"
-            UPDATED=true
-          else
-            echo "Module unchanged → skip publish"
-          fi
-
-          if ! ls "$CORE/$CALAMARES_PKG" >/dev/null 2>&1; then
-            echo "Calamares package changed → publishing"
-            rm -f "$CORE/calamares-"*.pkg.tar.zst*
-            rm -f "$CORE/calamares-debug-"*.pkg.tar.zst*
-            cp -v "/tmp/builtpkgs/$CALAMARES_PKG" "$CORE/"
-            UPDATED=true
-          else
-            echo "Calamares unchanged → skip publish"
-          fi
-
-          if [ "$UPDATED" = false ]; then
-            echo "No package changes detected → nothing to publish"
+          BUILT=$(ls /tmp/builtpkgs/*.pkg.tar.zst 2>/dev/null || true)
+          if [ -z "$BUILT" ]; then
+            echo "No packages built -> nothing to publish"
             exit 0
           fi
 
@@ -111,8 +168,15 @@ jobs:
           git config user.name "Forgejo Actions"
           git config user.email "actions@forgejo.local"
 
+          for pkg in $BUILT; do
+            PKGFILE=$(basename "$pkg")
+            PKGNAME=$(echo "$PKGFILE" | sed 's/-[0-9][^-]*-[^-]*-[^-]*\.pkg\.tar\.zst$//')
+            rm -f "$CORE/${PKGNAME}-"*.pkg.tar.zst* 2>/dev/null || true
+            cp -v "$pkg" "$CORE/"
+          done
+
           git add -A
-          git commit -m "Publish calamares packages ${GITHUB_SHA:0:7}"
+          git commit -m "Publish packages ${GITHUB_SHA:0:7}"
           git push origin main
 
           TAG="vrepo-$(date +%Y%m%d-%H%M%S)"
@@ -120,7 +184,6 @@ jobs:
           git push origin "$TAG"
 
           echo "::notice title=Published packages::Tag $TAG"
-
 
       - name: Cleanup (SAFE)
         if: always()
