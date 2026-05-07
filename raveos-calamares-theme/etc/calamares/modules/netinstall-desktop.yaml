@@ -27,6 +27,7 @@
     - sddm-astronaut-theme
     - pipewire-jack
     - hblock
+    - reflector
     - raveos-tools
 - name: "KDE Plasma Desktop - Alap desktop, nincs általunk témázva"
   selected: false

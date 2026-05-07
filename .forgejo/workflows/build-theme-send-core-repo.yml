@@ -120,6 +120,7 @@ jobs:
           rm -rf build || true
           makepkg -s --noconfirm -f
           cp -v build/raveos-hyprland-theme-*.pkg.tar.zst /tmp/builtpkgs/
+          rm -f /tmp/builtpkgs/raveos-hyprland-theme-debug-*.pkg.tar.zst || true
 
       - name: Build raveos-cosmic-theme
         run: |
