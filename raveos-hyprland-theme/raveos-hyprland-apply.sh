@@ -2,7 +2,6 @@
 set -euo pipefail
 
 payload_dir="/usr/share/raveos/hyprland-theme/theme-data"
-config_dir="/usr/share/raveos/hyprland-theme/RaveOS-Hyprland"
 
 if [[ ! -d "$payload_dir" ]]; then
   echo "Missing payload: $payload_dir" >&2
@@ -62,13 +61,12 @@ if [[ -f "${payload_dir}/background" ]]; then
   install -Dm644 "${payload_dir}/background" /etc/skel/.config/background
 fi
 
-if [[ -d "$config_dir" ]]; then
-  for d in "${config_dir}"/*/; do
-    name=$(basename "$d")
-    mkdir -p "/etc/skel/.config/${name}"
-    cp -rf "${d}." "/etc/skel/.config/${name}/"
-  done
-fi
+for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd; do
+  if [[ -d "${payload_dir}/${d}" ]]; then
+    mkdir -p "/etc/skel/.config/${d}"
+    cp -rf "${payload_dir}/${d}/." "/etc/skel/.config/${d}/"
+  fi
+done
 
 if [[ -f "${payload_dir}/sddm/sddm.conf" ]]; then
   install -Dm644 "${payload_dir}/sddm/sddm.conf" /etc/sddm.conf.d/raveos-theme.conf
@@ -131,13 +129,12 @@ while IFS=: read -r user _ uid gid _ home shell; do
   if [[ -f "${payload_dir}/hypr/scripts/raveos-monitor-setup.sh" ]]; then
     bash "${payload_dir}/hypr/scripts/raveos-monitor-setup.sh" --hypr-dir "${home}/.config/hypr"
   fi
-  if [[ -d "$config_dir" ]]; then
-    for d in "${config_dir}"/*/; do
-      name=$(basename "$d")
-      mkdir -p "${home}/.config/${name}"
-      cp -rf "${d}." "${home}/.config/${name}/"
-    done
-  fi
+  for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd; do
+    if [[ -d "${payload_dir}/${d}" ]]; then
+      mkdir -p "${home}/.config/${d}"
+      cp -rf "${payload_dir}/${d}/." "${home}/.config/${d}/"
+    fi
+  done
   chown -R "${uid}:${gid}" "$home"
 done < /etc/passwd
 
