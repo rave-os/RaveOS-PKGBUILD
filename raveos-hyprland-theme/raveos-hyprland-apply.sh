@@ -2,6 +2,7 @@
 set -euo pipefail
 
 payload_dir="/usr/share/raveos/hyprland-theme/theme-data"
+config_dir="/usr/share/raveos/hyprland-theme/RaveOS-Hyprland"
 
 if [[ ! -d "$payload_dir" ]]; then
   echo "Missing payload: $payload_dir" >&2
@@ -59,6 +60,14 @@ if [[ -f "${payload_dir}/background" ]]; then
   mkdir -p /usr/share/backgrounds/raveos
   install -m644 "${payload_dir}/background" /usr/share/backgrounds/raveos/raveos-main-bg.jpeg
   install -Dm644 "${payload_dir}/background" /etc/skel/.config/background
+fi
+
+if [[ -d "$config_dir" ]]; then
+  for d in "${config_dir}"/*/; do
+    name=$(basename "$d")
+    mkdir -p "/etc/skel/.config/${name}"
+    cp -rf "${d}." "/etc/skel/.config/${name}/"
+  done
 fi
 
 if [[ -f "${payload_dir}/sddm/sddm.conf" ]]; then
@@ -121,6 +130,13 @@ while IFS=: read -r user _ uid gid _ home shell; do
   fi
   if [[ -f "${payload_dir}/hypr/scripts/raveos-monitor-setup.sh" ]]; then
     bash "${payload_dir}/hypr/scripts/raveos-monitor-setup.sh" --hypr-dir "${home}/.config/hypr"
+  fi
+  if [[ -d "$config_dir" ]]; then
+    for d in "${config_dir}"/*/; do
+      name=$(basename "$d")
+      mkdir -p "${home}/.config/${name}"
+      cp -rf "${d}." "${home}/.config/${name}/"
+    done
   fi
   chown -R "${uid}:${gid}" "$home"
 done < /etc/passwd
