@@ -61,6 +61,10 @@ if [[ -f "${payload_dir}/background" ]]; then
   install -Dm644 "${payload_dir}/background" /etc/skel/.config/background
 fi
 
+if [[ -f "${payload_dir}/kitty/kitty.conf" ]]; then
+  install -Dm644 "${payload_dir}/kitty/kitty.conf" /etc/skel/.config/kitty/kitty.conf
+fi
+
 for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd; do
   if [[ -d "${payload_dir}/${d}" ]]; then
     mkdir -p "/etc/skel/.config/${d}"
