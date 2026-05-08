@@ -116,7 +116,7 @@ while IFS=: read -r user _ uid gid _ home shell; do
   if [[ -d "${payload_dir}/hypr" ]]; then
     cp -rf "${payload_dir}/hypr/." "${home}/.config/hypr/"
   fi
-  printf 'preload = %s/.config/background\nwallpaper = ,%s/.config/background\nsplash = false\n' \
+  printf 'preload = %s/.config/background.jpg\nwallpaper = ,%s/.config/background.jpg\nsplash = false\n' \
     "$home" "$home" > "${home}/.config/hypr/hyprpaper.conf"
 
   dms_src="${payload_dir}/dms"
@@ -141,6 +141,7 @@ while IFS=: read -r user _ uid gid _ home shell; do
 
   if [[ -f "${payload_dir}/background" ]]; then
     install -Dm644 "${payload_dir}/background" "${home}/.config/background"
+    install -Dm644 "${payload_dir}/background" "${home}/.config/background.jpg"
   fi
 
   if [[ -d "${payload_dir}/kitty" ]]; then
