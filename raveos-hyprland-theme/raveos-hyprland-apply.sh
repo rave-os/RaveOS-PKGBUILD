@@ -64,14 +64,14 @@ if [[ -d "${payload_dir}/skel" ]]; then
   cp -r --no-preserve=ownership "${payload_dir}/skel/." /etc/skel/
 fi
 
-if [[ -f "${payload_dir}/background" ]]; then
+if [[ -f "${payload_dir}/background.jpg" ]]; then
   mkdir -p /usr/share/backgrounds/raveos
-  install -m644 "${payload_dir}/background" /usr/share/backgrounds/raveos/raveos-main-bg.jpeg
-  install -Dm644 "${payload_dir}/background" /etc/skel/.config/background
-  install -Dm644 "${payload_dir}/background" /etc/skel/.config/background.jpg
+  install -m644 "${payload_dir}/background.jpg" /usr/share/backgrounds/raveos/raveos-main-bg.jpeg
+  install -Dm644 "${payload_dir}/background.jpg" /etc/skel/.config/background
+  install -Dm644 "${payload_dir}/background.jpg" /etc/skel/.config/background.jpg
 fi
 
-for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd; do
+for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd hyprshell; do
   if [[ -d "${payload_dir}/${d}" ]]; then
     mkdir -p "/etc/skel/.config/${d}"
     cp -rf "${payload_dir}/${d}/." "/etc/skel/.config/${d}/"
@@ -141,9 +141,9 @@ while IFS=: read -r user _ uid gid _ home shell; do
     cp -r --no-preserve=ownership "${payload_dir}/skel/." "$home/"
   fi
 
-  if [[ -f "${payload_dir}/background" ]]; then
-    install -Dm644 "${payload_dir}/background" "${home}/.config/background"
-    install -Dm644 "${payload_dir}/background" "${home}/.config/background.jpg"
+  if [[ -f "${payload_dir}/background.jpg" ]]; then
+    install -Dm644 "${payload_dir}/background.jpg" "${home}/.config/background"
+    install -Dm644 "${payload_dir}/background.jpg" "${home}/.config/background.jpg"
   fi
 
   if [[ -d "${payload_dir}/kitty" ]]; then
@@ -164,7 +164,7 @@ while IFS=: read -r user _ uid gid _ home shell; do
     bash "${payload_dir}/hypr/scripts/raveos-monitor-setup.sh" --hypr-dir "${home}/.config/hypr"
   fi
 
-  for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd; do
+  for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd hyprshell; do
     if [[ -d "${payload_dir}/${d}" ]]; then
       mkdir -p "${home}/.config/${d}"
       cp -rf "${payload_dir}/${d}/." "${home}/.config/${d}/"
