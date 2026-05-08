@@ -114,6 +114,7 @@ while IFS=: read -r user _ uid gid _ home shell; do
            "${home}/.config/kitty" \
            "${home}/.config/fastfetch"
 
+  pkill -u "$user" hyprpaper 2>/dev/null || true
   if [[ -d "${payload_dir}/hypr" ]]; then
     cp -rf "${payload_dir}/hypr/." "${home}/.config/hypr/"
   fi
@@ -174,6 +175,11 @@ while IFS=: read -r user _ uid gid _ home shell; do
 
   if command -v matugen &>/dev/null && [[ -f "${home}/.config/background" ]]; then
     runuser -u "$user" -- matugen image "${home}/.config/background" 2>/dev/null || true
+  fi
+
+  hypr_sig=$(runuser -u "$user" -- bash -c 'ls /run/user/'"$uid"'/hypr/ 2>/dev/null | tail -1')
+  if [[ -n "$hypr_sig" ]]; then
+    runuser -u "$user" -- bash -c "HYPRLAND_INSTANCE_SIGNATURE='${hypr_sig}' hyprctl dispatch exec 'env LIBGL_ALWAYS_SOFTWARE=1 hyprpaper'" 2>/dev/null || true
   fi
 done < /etc/passwd
 
