@@ -68,6 +68,7 @@ if [[ -f "${payload_dir}/background" ]]; then
   mkdir -p /usr/share/backgrounds/raveos
   install -m644 "${payload_dir}/background" /usr/share/backgrounds/raveos/raveos-main-bg.jpeg
   install -Dm644 "${payload_dir}/background" /etc/skel/.config/background
+  install -Dm644 "${payload_dir}/background" /etc/skel/.config/background.jpg
 fi
 
 for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd; do
