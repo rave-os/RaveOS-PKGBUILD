@@ -22,24 +22,31 @@ fi
 
 mkdir -p /etc/skel/.config/dms
 mkdir -p /etc/skel/.config/quickshell/pockets/DMS
-if [[ -d "${payload_dir}/DankMaterialShell/quickshell" ]]; then
-  cp -r "${payload_dir}/DankMaterialShell/quickshell/." /etc/skel/.config/quickshell/pockets/DMS/
-  cp -r "${payload_dir}/DankMaterialShell/quickshell/." /etc/skel/.config/dms/
-  if [[ -d "${payload_dir}/DankMaterialShell/quickshell/matugen/configs" ]]; then
+mkdir -p /etc/skel/.config/DankMaterialShell
+dms_src="${payload_dir}/dms"
+[[ -f "${dms_src}/shell.qml" ]] || dms_src="${payload_dir}/DankMaterialShell/quickshell"
+if [[ -d "$dms_src" ]]; then
+  cp -r "${dms_src}/." /etc/skel/.config/quickshell/pockets/DMS/
+  cp -r "${dms_src}/." /etc/skel/.config/dms/
+  if [[ -d "${dms_src}/matugen/configs" ]]; then
     mkdir -p /etc/skel/.config/matugen
-    cp -r "${payload_dir}/DankMaterialShell/quickshell/matugen/configs/." /etc/skel/.config/matugen/
+    cp -r "${dms_src}/matugen/configs/." /etc/skel/.config/matugen/
   fi
 fi
 if [[ -f "${payload_dir}/DankMaterialShell/settings.json" ]]; then
-  install -Dm644 "${payload_dir}/DankMaterialShell/settings.json" /etc/skel/.config/dms/settings.json
+  install -Dm644 "${payload_dir}/DankMaterialShell/settings.json" /etc/skel/.config/DankMaterialShell/settings.json
 fi
 if [[ -f "${payload_dir}/DankMaterialShell/.firstlaunch" ]]; then
-  install -Dm644 "${payload_dir}/DankMaterialShell/.firstlaunch" /etc/skel/.config/dms/.firstlaunch
+  install -Dm644 "${payload_dir}/DankMaterialShell/.firstlaunch" /etc/skel/.config/DankMaterialShell/.firstlaunch
 fi
 
 mkdir -p /etc/skel/.config/kitty
-if [[ -f "${payload_dir}/kitty/kitty.conf" ]]; then
-  install -Dm644 "${payload_dir}/kitty/kitty.conf" /etc/skel/.config/kitty/kitty.conf
+if [[ -d "${payload_dir}/kitty" ]]; then
+  cp -r "${payload_dir}/kitty/." /etc/skel/.config/kitty/
+fi
+
+if [[ -f "${payload_dir}/hyprland-pp.png" ]]; then
+  install -Dm644 "${payload_dir}/hyprland-pp.png" /etc/skel/.face
 fi
 
 mkdir -p /etc/skel/.config/fastfetch
@@ -101,6 +108,7 @@ while IFS=: read -r user _ uid gid _ home shell; do
   mkdir -p "${home}/.config/hypr" \
            "${home}/.config/quickshell/pockets/DMS" \
            "${home}/.config/dms" \
+           "${home}/.config/DankMaterialShell" \
            "${home}/.config/matugen" \
            "${home}/.config/kitty" \
            "${home}/.config/fastfetch"
@@ -108,22 +116,23 @@ while IFS=: read -r user _ uid gid _ home shell; do
   if [[ -d "${payload_dir}/hypr" ]]; then
     cp -rf "${payload_dir}/hypr/." "${home}/.config/hypr/"
   fi
-  # hyprpaper.conf: abszolút home path kell, ~ nem mindig expandál
   printf 'preload = %s/.config/background\nwallpaper = ,%s/.config/background\nsplash = false\n' \
     "$home" "$home" > "${home}/.config/hypr/hyprpaper.conf"
 
-  if [[ -d "${payload_dir}/DankMaterialShell/quickshell" ]]; then
-    cp -r "${payload_dir}/DankMaterialShell/quickshell/." "${home}/.config/quickshell/pockets/DMS/"
-    cp -r "${payload_dir}/DankMaterialShell/quickshell/." "${home}/.config/dms/"
-    if [[ -d "${payload_dir}/DankMaterialShell/quickshell/matugen/configs" ]]; then
-      cp -r "${payload_dir}/DankMaterialShell/quickshell/matugen/configs/." "${home}/.config/matugen/"
+  dms_src="${payload_dir}/dms"
+  [[ -f "${dms_src}/shell.qml" ]] || dms_src="${payload_dir}/DankMaterialShell/quickshell"
+  if [[ -d "$dms_src" ]]; then
+    cp -r "${dms_src}/." "${home}/.config/quickshell/pockets/DMS/"
+    cp -r "${dms_src}/." "${home}/.config/dms/"
+    if [[ -d "${dms_src}/matugen/configs" ]]; then
+      cp -r "${dms_src}/matugen/configs/." "${home}/.config/matugen/"
     fi
   fi
   if [[ -f "${payload_dir}/DankMaterialShell/settings.json" ]]; then
-    install -Dm644 "${payload_dir}/DankMaterialShell/settings.json" "${home}/.config/dms/settings.json"
+    install -Dm644 "${payload_dir}/DankMaterialShell/settings.json" "${home}/.config/DankMaterialShell/settings.json"
   fi
   if [[ -f "${payload_dir}/DankMaterialShell/.firstlaunch" ]]; then
-    install -Dm644 "${payload_dir}/DankMaterialShell/.firstlaunch" "${home}/.config/dms/.firstlaunch"
+    install -Dm644 "${payload_dir}/DankMaterialShell/.firstlaunch" "${home}/.config/DankMaterialShell/.firstlaunch"
   fi
 
   if [[ -d "${payload_dir}/skel" ]]; then
@@ -134,8 +143,12 @@ while IFS=: read -r user _ uid gid _ home shell; do
     install -Dm644 "${payload_dir}/background" "${home}/.config/background"
   fi
 
-  if [[ -f "${payload_dir}/kitty/kitty.conf" ]]; then
-    install -Dm644 "${payload_dir}/kitty/kitty.conf" "${home}/.config/kitty/kitty.conf"
+  if [[ -d "${payload_dir}/kitty" ]]; then
+    cp -r "${payload_dir}/kitty/." "${home}/.config/kitty/"
+  fi
+
+  if [[ -f "${payload_dir}/hyprland-pp.png" ]]; then
+    install -Dm644 "${payload_dir}/hyprland-pp.png" "${home}/.face"
   fi
 
   for f in config.jsonc config-kitty.jsonc raveos-logo.png raveos-logo.txt; do
