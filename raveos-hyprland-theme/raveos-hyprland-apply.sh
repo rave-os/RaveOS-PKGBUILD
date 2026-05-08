@@ -156,6 +156,10 @@ while IFS=: read -r user _ uid gid _ home shell; do
   done
 
   chown -R "${uid}:${gid}" "$home"
+
+  if command -v matugen &>/dev/null && [[ -f "${home}/.config/background" ]]; then
+    runuser -u "$user" -- matugen image "${home}/.config/background" 2>/dev/null || true
+  fi
 done < /etc/passwd
 
 echo "Automatic apply finished."
