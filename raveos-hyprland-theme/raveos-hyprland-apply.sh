@@ -171,6 +171,8 @@ while IFS=: read -r user _ uid gid _ home shell; do
     fi
   done
 
+  runuser -u "$user" -- xdg-user-dirs-update 2>/dev/null || true
+
   chown -R "${uid}:${gid}" "$home"
 
   if command -v matugen &>/dev/null && [[ -f "${home}/.config/background" ]]; then
