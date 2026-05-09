@@ -1,6 +1,6 @@
 pkgname=raveos-tools
 pkgver=1.0.0
-pkgrel=3
+pkgrel=4
 arch=('any')
 url="https://git.rp1.hu/RaveOS/RaveOS-PKGBUILD"
 license=('custom')
