@@ -1,0 +1,11 @@
+(
+    version: 3,
+    windows: (
+        switch: (
+            modifier: "super",
+            //filter_by: [current_monitor] , //ezzel csak az jelenik meg ami a monitoron van
+            filter_by: [current_workspace], // ez meg kizarolag arra a workspacre amin vagy 
+        ),
+        overview: None,
+    ),
+)
