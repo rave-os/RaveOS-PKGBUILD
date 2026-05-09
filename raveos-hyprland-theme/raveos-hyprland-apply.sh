@@ -173,6 +173,19 @@ while IFS=: read -r user _ uid gid _ home shell; do
 
   runuser -u "$user" -- xdg-user-dirs-update 2>/dev/null || true
 
+  dms_session="${home}/.local/state/DankMaterialShell/session.json"
+  if [[ -f "$dms_session" ]]; then
+    python3 -c "
+import json, sys
+with open('${dms_session}') as f:
+    d = json.load(f)
+if not d.get('wallpaperPath'):
+    d['wallpaperPath'] = '/usr/share/raveos/hyprland-theme/theme-data/background.jpg'
+    with open('${dms_session}', 'w') as f:
+        json.dump(d, f, indent=2)
+" 2>/dev/null || true
+  fi
+
   chown -R "${uid}:${gid}" "$home"
 
   if command -v matugen &>/dev/null && [[ -f "${home}/.config/background" ]]; then

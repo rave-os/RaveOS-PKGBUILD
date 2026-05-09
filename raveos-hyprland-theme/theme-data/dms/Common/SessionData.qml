@@ -52,7 +52,7 @@ Singleton {
         }
     }
 
-    property string wallpaperPath: "/usr/share/raveos/hyprland-theme/theme-data/background"
+    property string wallpaperPath: "/usr/share/raveos/hyprland-theme/theme-data/background.jpg"
     property bool perMonitorWallpaper: false
     property var monitorWallpapers: ({})
     property bool perModeWallpaper: false
