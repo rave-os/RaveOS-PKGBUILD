@@ -1,11 +1,11 @@
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=23
+pkgrel=24
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
-depends=('fastfetch' 'quickshell' 'go' 'matugen' 'socat')
+depends=('fastfetch' 'dms-shell-hyprland' 'matugen' 'socat' 'hyprshell')
 install="${pkgname}.install"
 source=()
 sha256sums=()
@@ -15,11 +15,6 @@ PKGDEST="${startdir}/build"
 SRCDEST="${startdir}/build"
 SRCPKGDEST="${startdir}/build"
 LOGDEST="${startdir}/build"
-
-build() {
-  cd "${startdir}/theme-data/DankMaterialShell/core"
-  go build -o dms ./cmd/dms/
-}
 
 package() {
   install -dm755 "${pkgdir}/usr/share/raveos/hyprland-theme"
