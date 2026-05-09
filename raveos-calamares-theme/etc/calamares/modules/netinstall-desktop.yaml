@@ -123,8 +123,10 @@
     - thunar-archive-plugin
     - thunar-media-tags-plugin
     - thunar-shares-plugin
-    - thunar-archive-plugin
-    - xarchiver
+    - file-roller
+    - unzip
+    - unrar
+    - flatseal
     - tumbler
     - polkit-gnome
     - raveos-hyprland-theme
