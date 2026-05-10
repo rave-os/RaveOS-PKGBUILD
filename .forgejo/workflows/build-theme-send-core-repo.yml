@@ -21,11 +21,13 @@ jobs:
 
       - name: Install build tools
         run: |
+          set -euo pipefail
           sudo pacman -S --needed --noconfirm \
             base-devel git pacman-contrib cmake qt6-tools go
 
       - name: Clone core repo
         run: |
+          set -euo pipefail
           rm -rf /tmp/raveos-core-repo
           git clone --depth 1 git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
           mkdir -p /tmp/builtpkgs
@@ -161,26 +163,37 @@ jobs:
           for PKG in linux-cachyos linux-cachyos-headers sddm-astronaut-theme; do
             LATEST=""
             for MIRROR in $MIRRORS; do
-              LATEST=$(curl -sL --max-time 15 "${MIRROR}/" | grep -o "href=\"${PKG}-[0-9][^\"]*\.pkg\.tar\.zst\"" | sed 's/href="//;s/"//' | head -1)
+              LATEST=$(curl -fsSL --retry 3 --retry-delay 5 --max-time 15 "${MIRROR}/" \
+                | grep -o "href=\"${PKG}-[0-9][^\"]*\.pkg\.tar\.zst\"" \
+                | sed 's/href="//;s/"//' | head -1)
               [ -n "$LATEST" ] && break
             done
+
             if [ -z "$LATEST" ]; then
               echo "$PKG nem talalhato egyik mirrorban sem -> skip"
               continue
             fi
+
+            if [[ ! "$LATEST" =~ ^[a-zA-Z0-9_.+-]+\.pkg\.tar\.zst$ ]]; then
+              echo "HIBA: Ervenytelen csomagfajlnev: $LATEST -> skip"
+              continue
+            fi
+
             if [ -f "$CORE/$LATEST" ]; then
               echo "$PKG $LATEST mar bent van a core repoban -> skip"
               continue
             fi
+
             echo "$PKG uj verzio: $LATEST - letoltes..."
             DOWNLOADED=0
             for MIRROR in $MIRRORS; do
-              if curl -fL --max-time 300 --progress-bar "${MIRROR}/${LATEST}" -o "/tmp/builtpkgs/${LATEST}" 2>/dev/null; then
+              if curl -fL --retry 3 --retry-delay 5 --max-time 300 --progress-bar \
+                  "${MIRROR}/${LATEST}" -o "/tmp/builtpkgs/${LATEST}" 2>/dev/null; then
                 echo "$PKG letoltve OK ($MIRROR)"
                 DOWNLOADED=1
                 break
               fi
-              echo "$PKG letoltes sikertelen innen: $MIRROR -> kovetkezo mirror"
+              echo "$PKG letoltes sikertelen: $MIRROR -> kovetkezo"
               rm -f "/tmp/builtpkgs/${LATEST}" || true
             done
             [ "$DOWNLOADED" -eq 0 ] && echo "$PKG letoltes minden mirrorrol sikertelen -> skip" || true
@@ -206,6 +219,10 @@ jobs:
           for pkg in $BUILT; do
             PKGFILE=$(basename "$pkg")
             PKGNAME=$(echo "$PKGFILE" | sed 's/-[0-9][^-]*-[^-]*-[^-]*\.pkg\.tar\.zst$//')
+            if [[ ! "$PKGNAME" =~ ^[a-zA-Z0-9_+-]+$ ]]; then
+              echo "HIBA: Ervenytelen csomagnev: $PKGNAME -> skip"
+              continue
+            fi
             rm -f "$CORE/${PKGNAME}-"*.pkg.tar.zst* 2>/dev/null || true
             cp -v "$pkg" "$CORE/"
           done
