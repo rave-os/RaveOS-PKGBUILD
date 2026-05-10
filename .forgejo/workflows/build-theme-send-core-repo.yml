@@ -27,7 +27,7 @@ jobs:
       - name: Clone core repo
         run: |
           rm -rf /tmp/raveos-core-repo
-          git clone git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
+          git clone --depth 1 git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
           mkdir -p /tmp/builtpkgs
 
       - name: Build raveos-calamares-theme
