@@ -1,0 +1,122 @@
+name: Kernel Update Check
+
+on:
+  schedule:
+    - cron: '0 8 1,15 * *'
+  workflow_dispatch:
+
+jobs:
+  check-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check CachyOS kernel version
+        id: check
+        run: |
+          # Aktualis CachyOS kernel verzio lekerdezese
+          LATEST=$(curl -s "https://api.github.com/repos/CachyOS/linux/tags" \
+            | python3 -c "
+          import sys, json, re
+          tags = json.load(sys.stdin)
+          versions = []
+          for t in tags:
+              m = re.match(r'cachyos-(\d+\.\d+)\.(\d+)-(\d+)$', t['name'])
+              if m:
+                  versions.append((t['name'], m.group(1), m.group(2), m.group(3)))
+          if versions:
+              versions.sort(key=lambda x: (list(map(int, x[1].split('.'))), int(x[2]), int(x[3])), reverse=True)
+              latest = versions[0]
+              print(f'TAG={latest[0]}')
+              print(f'MAJOR={latest[1]}')
+              print(f'MINOR={latest[2]}')
+              print(f'TAGREL={latest[3]}')
+          ")
+          echo "$LATEST" >> $GITHUB_OUTPUT
+          echo "Latest CachyOS: $LATEST"
+
+      - name: Read current version from PKGBUILD
+        id: current
+        run: |
+          MAJOR=$(grep '^_major=' linux-raveos/PKGBUILD | cut -d= -f2)
+          MINOR=$(grep '^_minor=' linux-raveos/PKGBUILD | cut -d= -f2)
+          TAGREL=$(grep '^_tagrel=' linux-raveos/PKGBUILD | cut -d= -f2)
+          echo "MAJOR=$MAJOR" >> $GITHUB_OUTPUT
+          echo "MINOR=$MINOR" >> $GITHUB_OUTPUT
+          echo "TAGREL=$TAGREL" >> $GITHUB_OUTPUT
+          echo "Current: $MAJOR.$MINOR-$TAGREL"
+
+      - name: Check if update needed
+        id: needsupdate
+        run: |
+          NEW="${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+          CUR="${{ steps.current.outputs.MAJOR }}.${{ steps.current.outputs.MINOR }}-${{ steps.current.outputs.TAGREL }}"
+          if [ "$NEW" != "$CUR" ]; then
+            echo "UPDATE=yes" >> $GITHUB_OUTPUT
+            echo "Frissites szukseges: $CUR -> $NEW"
+          else
+            echo "UPDATE=no" >> $GITHUB_OUTPUT
+            echo "Nincs frissites, aktualis: $CUR"
+          fi
+
+      - name: Check if PR already exists
+        id: prcheck
+        if: steps.needsupdate.outputs.UPDATE == 'yes'
+        run: |
+          BRANCH="update/kernel-${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+          EXISTS=$(curl -s \
+            -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
+            "https://git.rp1.hu/api/v1/repos/${{ github.repository }}/pulls?state=open&head=$BRANCH" \
+            | python3 -c "import sys,json; pulls=json.load(sys.stdin); print('yes' if pulls else 'no')")
+          echo "EXISTS=$EXISTS" >> $GITHUB_OUTPUT
+          echo "PR letezik: $EXISTS"
+
+      - name: Create update branch
+        if: steps.needsupdate.outputs.UPDATE == 'yes' && steps.prcheck.outputs.EXISTS == 'no'
+        run: |
+          git config user.name "RaveOS Bot"
+          git config user.email "bot@raveos.hu"
+
+          BRANCH="update/kernel-${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+          git checkout -b "$BRANCH"
+
+          # PKGBUILD frissitese
+          sed -i "s/^_major=.*/_major=${{ steps.check.outputs.MAJOR }}/" linux-raveos/PKGBUILD
+          sed -i "s/^_minor=.*/_minor=${{ steps.check.outputs.MINOR }}/" linux-raveos/PKGBUILD
+          sed -i "s/^_tagrel=.*/_tagrel=${{ steps.check.outputs.TAGREL }}/" linux-raveos/PKGBUILD
+
+          # CachyOS config letoltese
+          SRCNAME="cachyos-${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+          curl -sL "https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/config" \
+            -o linux-raveos/config.new
+
+          # ZRAM es NTSYNC builtin megtartasa
+          sed -i 's/^CONFIG_ZRAM=m$/CONFIG_ZRAM=y/' linux-raveos/config.new
+          sed -i 's/^CONFIG_NTSYNC=m$/CONFIG_NTSYNC=y/' linux-raveos/config.new
+          mv linux-raveos/config.new linux-raveos/config
+
+          git add linux-raveos/PKGBUILD linux-raveos/config
+          git commit -m "update: linux-raveos kernel ${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+
+          git remote set-url origin "https://bot:${{ secrets.FORGEJO_TOKEN }}@git.rp1.hu/RaveOS/RaveOS-PKGBUILD.git"
+          git push origin "$BRANCH"
+
+      - name: Open Pull Request
+        if: steps.needsupdate.outputs.UPDATE == 'yes' && steps.prcheck.outputs.EXISTS == 'no'
+        run: |
+          BRANCH="update/kernel-${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+          NEW_VER="${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+          CUR_VER="${{ steps.current.outputs.MAJOR }}.${{ steps.current.outputs.MINOR }}-${{ steps.current.outputs.TAGREL }}"
+
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            "https://git.rp1.hu/api/v1/repos/${{ github.repository }}/pulls" \
+            -d "{
+              \"title\": \"kernel update: $CUR_VER -> $NEW_VER\",
+              \"head\": \"$BRANCH\",
+              \"base\": \"main\",
+              \"body\": \"Automatikus kernel frissites.\n\n- Regi verzio: \`$CUR_VER\`\n- Uj verzio: \`$NEW_VER\`\n\nEllenorizd a config diff-et merge elott.\"
+            }"
+          echo "PR megnyitva: $BRANCH -> main"

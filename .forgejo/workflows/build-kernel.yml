@@ -1,0 +1,31 @@
+name: Build linux-raveos
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'linux-raveos/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build linux-raveos
+        run: |
+          cd linux-raveos
+          makepkg -s --noconfirm
+
+      - name: Upload to core repo
+        run: |
+          for pkg in linux-raveos/*.pkg.tar.zst; do
+            curl -s -X POST \
+              -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
+              -F "file=@$pkg" \
+              "https://git.rp1.hu/api/packages/RaveOS/arch/push"
+          done
+          echo "Csomagok feltoltve"
