@@ -2,7 +2,7 @@ name: Kernel Update Check
 
 on:
   schedule:
-    - cron: '0 8 1,15 * *'
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
@@ -14,6 +14,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.FORGEJO_TOKEN }}
 
       - name: Check CachyOS kernel version
         id: check
@@ -40,10 +41,12 @@ jobs:
           MAJOR=$(grep '^_major=' linux-raveos/PKGBUILD | cut -d= -f2)
           MINOR=$(grep '^_minor=' linux-raveos/PKGBUILD | cut -d= -f2)
           TAGREL=$(grep '^_tagrel=' linux-raveos/PKGBUILD | cut -d= -f2)
+          PKGVER=$(grep '^pkgver=' linux-raveos/PKGBUILD | cut -d= -f2)
           echo "MAJOR=$MAJOR" >> $GITHUB_OUTPUT
           echo "MINOR=$MINOR" >> $GITHUB_OUTPUT
           echo "TAGREL=$TAGREL" >> $GITHUB_OUTPUT
-          echo "Jelenlegi: ${MAJOR}.${MINOR}-${TAGREL}"
+          echo "PKGVER=$PKGVER" >> $GITHUB_OUTPUT
+          echo "Jelenlegi: ${MAJOR}.${MINOR}-${TAGREL} (pkgver=${PKGVER})"
 
       - name: Frissites szukseges?
         id: needsupdate
@@ -59,37 +62,15 @@ jobs:
             echo "Aktualis, nincs frissites: $CUR"
           fi
 
-      - name: PR mar letezik? Regi PR-ok lezarasa
+      - name: PR mar letezik?
         id: prcheck
         if: steps.needsupdate.outputs.UPDATE == 'yes'
         run: |
           set -euo pipefail
           BRANCH="update/kernel-${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
-
-          # Lekerjuk az osszes nyitott kernel update PR-t
           OPEN_PRS=$(curl -fsSL \
             -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
             "https://git.rp1.hu/api/v1/repos/${{ github.repository }}/pulls?state=open&limit=50")
-
-          # Regi kernel update PR-ok lezarasa (ha nem ez az uj branch)
-          echo "$OPEN_PRS" | python3 -c "
-          import sys, json
-          pulls = json.load(sys.stdin)
-          new_branch = '$BRANCH'
-          for p in pulls:
-              head = p.get('head', {}).get('ref', '')
-              if head.startswith('update/kernel-') and head != new_branch:
-                  print(p['number'])
-          " | while read -r pr_num; do
-            curl -fsSL -X PATCH \
-              -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
-              -H "Content-Type: application/json" \
-              "https://git.rp1.hu/api/v1/repos/${{ github.repository }}/pulls/${pr_num}" \
-              -d '{"state":"closed"}' > /dev/null
-            echo "Regi PR #${pr_num} lezarva"
-          done
-
-          # Ellenorizzuk hogy az uj branch PR-ja letezik-e mar
           EXISTS=$(echo "$OPEN_PRS" | python3 -c "
           import sys, json
           pulls = json.load(sys.stdin)
@@ -100,52 +81,48 @@ jobs:
           echo "EXISTS=$EXISTS" >> $GITHUB_OUTPUT
           echo "PR letezik: $EXISTS"
 
-      - name: Update branch letrehozasa
+      - name: PKGBUILD frissitese es PR nyitasa
         if: steps.needsupdate.outputs.UPDATE == 'yes' && steps.prcheck.outputs.EXISTS == 'no'
         run: |
           set -euo pipefail
-          BRANCH="update/kernel-${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+
+          NEW_MAJOR="${{ steps.check.outputs.MAJOR }}"
+          NEW_MINOR="${{ steps.check.outputs.MINOR }}"
+          NEW_TAGREL="${{ steps.check.outputs.TAGREL }}"
+          OLD_PKGVER="${{ steps.current.outputs.PKGVER }}"
+          CUR="${{ steps.current.outputs.MAJOR }}.${{ steps.current.outputs.MINOR }}-${{ steps.current.outputs.TAGREL }}"
+
+          # Csak a sajat pkgver utolso szamot noveli: X.Y.Z -> X.Y.Z+1
+          BASE="${OLD_PKGVER%.*}"
+          LAST="${OLD_PKGVER##*.}"
+          NEW_PKGVER="${BASE}.$((LAST + 1))"
+
+          BRANCH="update/kernel-${NEW_MAJOR}.${NEW_MINOR}-${NEW_TAGREL}"
 
           git config user.name "RaveOS Bot"
           git config user.email "bot@raveos.hu"
           git checkout -b "$BRANCH"
 
-          # PKGBUILD frissitese
-          sed -i "s/^_major=.*/_major=${{ steps.check.outputs.MAJOR }}/" linux-raveos/PKGBUILD
-          sed -i "s/^_minor=.*/_minor=${{ steps.check.outputs.MINOR }}/" linux-raveos/PKGBUILD
-          sed -i "s/^_tagrel=.*/_tagrel=${{ steps.check.outputs.TAGREL }}/" linux-raveos/PKGBUILD
+          sed -i "s/^_major=.*/_major=${NEW_MAJOR}/" linux-raveos/PKGBUILD
+          sed -i "s/^_minor=.*/_minor=${NEW_MINOR}/" linux-raveos/PKGBUILD
+          sed -i "s/^_tagrel=.*/_tagrel=${NEW_TAGREL}/" linux-raveos/PKGBUILD
+          sed -i "s/^pkgver=.*/pkgver=${NEW_PKGVER}/" linux-raveos/PKGBUILD
+          sed -i "s/^pkgrel=.*/pkgrel=1/" linux-raveos/PKGBUILD
 
-          # Uj CachyOS config letoltese
-          curl -fsSL --retry 3 \
-            "https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/config" \
-            -o linux-raveos/config
-
-          # RaveOS modositasok visszarakasa a configba
-          sed -i 's/^CONFIG_ZRAM=m$/CONFIG_ZRAM=y/' linux-raveos/config
-          sed -i 's/^CONFIG_NTSYNC=m$/CONFIG_NTSYNC=y/' linux-raveos/config
-
-          git add linux-raveos/PKGBUILD linux-raveos/config
-          git commit -m "update: linux-raveos kernel ${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
+          git add linux-raveos/PKGBUILD
+          git commit -m "update: linux-raveos kernel ${NEW_MAJOR}.${NEW_MINOR}-${NEW_TAGREL} (pkgver=${NEW_PKGVER})"
 
           git remote set-url origin "https://bot:${{ secrets.FORGEJO_TOKEN }}@git.rp1.hu/RaveOS/RaveOS-PKGBUILD.git"
           git push origin "$BRANCH"
-
-      - name: PR nyitasa
-        if: steps.needsupdate.outputs.UPDATE == 'yes' && steps.prcheck.outputs.EXISTS == 'no'
-        run: |
-          set -euo pipefail
-          BRANCH="update/kernel-${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
-          NEW="${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
-          CUR="${{ steps.current.outputs.MAJOR }}.${{ steps.current.outputs.MINOR }}-${{ steps.current.outputs.TAGREL }}"
 
           curl -fsSL -X POST \
             -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
             -H "Content-Type: application/json" \
             "https://git.rp1.hu/api/v1/repos/${{ github.repository }}/pulls" \
             -d "{
-              \"title\": \"kernel update: ${CUR} -> ${NEW}\",
+              \"title\": \"kernel update: ${CUR} -> ${NEW_MAJOR}.${NEW_MINOR}-${NEW_TAGREL}\",
               \"head\": \"${BRANCH}\",
               \"base\": \"main\",
-              \"body\": \"Automatikus kernel frissites.\n\n- Regi verzio: \`${CUR}\`\n- Uj verzio: \`${NEW}\`\n\nEllenorizd a config diff-et merge elott. Merge utan automatikusan elindul a build.\"
+              \"body\": \"Automatikus kernel verzio frissites.\n\n- Regi: \`${CUR}\` (pkgver=${OLD_PKGVER})\n- Uj: \`${NEW_MAJOR}.${NEW_MINOR}-${NEW_TAGREL}\` (pkgver=${NEW_PKGVER})\n\nMerge utan automatikusan elindul a build.\"
             }"
           echo "PR megnyitva: $BRANCH -> main"
