@@ -85,13 +85,14 @@ fi
 pkgbase="linux-$_pkgsuffix"
 _major=7.0
 _minor=10
-pkgver=${_major}.${_minor}
 _tagrel=2
-pkgrel=1
 _srcname=cachyos-${_major}.${_minor}-${_tagrel}
+epoch=1
+pkgver=10.0.0
+pkgrel=1
 pkgdesc='Linux BORE + NTSYNC + Memory Optimized RaveOS Kernel based on CachyOS'
 _kernver="$pkgver-$pkgrel"
-_kernuname="${pkgver}-${_pkgsuffix}"
+_kernuname="${_major}.${_minor}-${_pkgsuffix}"
 arch=('x86_64')
 url="https://github.com/CachyOS/linux-cachyos"
 license=('GPL-2.0-only')
