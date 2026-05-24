@@ -59,20 +59,42 @@ jobs:
             echo "Aktualis, nincs frissites: $CUR"
           fi
 
-      - name: PR mar letezik?
+      - name: PR mar letezik? Regi PR-ok lezarasa
         id: prcheck
         if: steps.needsupdate.outputs.UPDATE == 'yes'
         run: |
           set -euo pipefail
           BRANCH="update/kernel-${{ steps.check.outputs.MAJOR }}.${{ steps.check.outputs.MINOR }}-${{ steps.check.outputs.TAGREL }}"
-          EXISTS=$(curl -fsSL \
+
+          # Lekerjuk az osszes nyitott kernel update PR-t
+          OPEN_PRS=$(curl -fsSL \
             -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
-            "https://git.rp1.hu/api/v1/repos/${{ github.repository }}/pulls?state=open" \
-            | python3 -c "
+            "https://git.rp1.hu/api/v1/repos/${{ github.repository }}/pulls?state=open&limit=50")
+
+          # Regi kernel update PR-ok lezarasa (ha nem ez az uj branch)
+          echo "$OPEN_PRS" | python3 -c "
           import sys, json
           pulls = json.load(sys.stdin)
-          branch = '${BRANCH}'
-          found = any(p.get('head', {}).get('label', '').endswith(branch) for p in pulls)
+          new_branch = '$BRANCH'
+          for p in pulls:
+              head = p.get('head', {}).get('ref', '')
+              if head.startswith('update/kernel-') and head != new_branch:
+                  print(p['number'])
+          " | while read -r pr_num; do
+            curl -fsSL -X PATCH \
+              -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
+              -H "Content-Type: application/json" \
+              "https://git.rp1.hu/api/v1/repos/${{ github.repository }}/pulls/${pr_num}" \
+              -d '{"state":"closed"}' > /dev/null
+            echo "Regi PR #${pr_num} lezarva"
+          done
+
+          # Ellenorizzuk hogy az uj branch PR-ja letezik-e mar
+          EXISTS=$(echo "$OPEN_PRS" | python3 -c "
+          import sys, json
+          pulls = json.load(sys.stdin)
+          branch = '$BRANCH'
+          found = any(p.get('head', {}).get('ref', '') == branch for p in pulls)
           print('yes' if found else 'no')
           ")
           echo "EXISTS=$EXISTS" >> $GITHUB_OUTPUT
