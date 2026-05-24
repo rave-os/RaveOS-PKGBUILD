@@ -1,4 +1,4 @@
-name: Build linux-raveos
+name: Build linux-raveos kernel
 
 on:
   push:
@@ -8,24 +8,106 @@ on:
       - 'linux-raveos/**'
   workflow_dispatch:
 
+concurrency:
+  group: raveos-kernel-build
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: iso-builder
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install build dependencies
+        run: |
+          set -euo pipefail
+          sudo pacman -S --needed --noconfirm \
+            base-devel clang llvm lld bc binutils cpio gettext \
+            libelf openssl pahole perl python rust rust-bindgen \
+            rust-src xxhash xz zlib zstd
+
+      - name: Clone core repo
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/raveos-core-repo
+          git clone --depth 1 git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
+          mkdir -p /tmp/builtpkgs
+
+      - name: Check if already built
+        id: check
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          PKGVER=$(grep '^pkgver=' linux-raveos/PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' linux-raveos/PKGBUILD | cut -d= -f2)
+          EPOCH=$(grep '^epoch=' linux-raveos/PKGBUILD | cut -d= -f2 || echo "")
+          if [ -n "$EPOCH" ]; then
+            FULLVER="${EPOCH}:${PKGVER}-${PKGREL}"
+          else
+            FULLVER="${PKGVER}-${PKGREL}"
+          fi
+          echo "PKGVER=$PKGVER" >> $GITHUB_OUTPUT
+          echo "PKGREL=$PKGREL" >> $GITHUB_OUTPUT
+          if ls "$CORE"/linux-raveos-gcc-${PKGVER}-${PKGREL}-*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "SKIP=yes" >> $GITHUB_OUTPUT
+            echo "linux-raveos ${FULLVER} mar bent van -> skip"
+          else
+            echo "SKIP=no" >> $GITHUB_OUTPUT
+            echo "linux-raveos ${FULLVER} build indul..."
+          fi
 
       - name: Build linux-raveos
+        if: steps.check.outputs.SKIP == 'no'
         run: |
+          set -euo pipefail
           cd linux-raveos
+          rm -f *.pkg.tar.zst || true
           makepkg -s --noconfirm
+          cp -v linux-raveos-gcc-*.pkg.tar.zst /tmp/builtpkgs/
+          cp -v linux-raveos-gcc-headers-*.pkg.tar.zst /tmp/builtpkgs/
 
-      - name: Upload to core repo
+      - name: Publish to core repo
+        if: steps.check.outputs.SKIP == 'no'
         run: |
-          for pkg in linux-raveos/*.pkg.tar.zst; do
-            curl -s -X POST \
-              -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
-              -F "file=@$pkg" \
-              "https://git.rp1.hu/api/packages/RaveOS/arch/push"
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          mkdir -p "$CORE"
+
+          BUILT=$(ls /tmp/builtpkgs/*.pkg.tar.zst 2>/dev/null || true)
+          if [ -z "$BUILT" ]; then
+            echo "Nincs csomag -> kihagyva"
+            exit 0
+          fi
+
+          cd /tmp/raveos-core-repo
+          git config user.name "Forgejo Actions"
+          git config user.email "actions@forgejo.local"
+
+          for pkg in $BUILT; do
+            PKGFILE=$(basename "$pkg")
+            PKGNAME=$(echo "$PKGFILE" | sed 's/-[0-9][^-]*-[^-]*-[^-]*\.pkg\.tar\.zst$//')
+            rm -f "$CORE/${PKGNAME}-"*.pkg.tar.zst* 2>/dev/null || true
+            cp -v "$pkg" "$CORE/"
           done
-          echo "Csomagok feltoltve"
+
+          git add -A
+          git commit -m "kernel: linux-raveos ${{ steps.check.outputs.PKGVER }}-${{ steps.check.outputs.PKGREL }}"
+          git push origin main
+
+          TAG="vrepo-$(date +%Y%m%d-%H%M%S)"
+          git tag -a "$TAG" -m "linux-raveos ${GITHUB_SHA:0:7}"
+          git push origin "$TAG"
+
+          echo "::notice title=Kernel published::linux-raveos ${{ steps.check.outputs.PKGVER }}-${{ steps.check.outputs.PKGREL }}"
+
+      - name: Cleanup
+        if: always()
+        run: |
+          sudo rm -rf /tmp/builtpkgs || true
+          sudo rm -rf /tmp/raveos-core-repo || true
+          sudo rm -rf linux-raveos/src linux-raveos/pkg || true
+          df -h
