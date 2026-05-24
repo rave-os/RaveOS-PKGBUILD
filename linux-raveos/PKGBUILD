@@ -74,22 +74,15 @@ _is_ci_build() {
     return $?
 }
 
-if _is_lto_kernel && [ "$_use_lto_suffix" = "yes" ]; then
-    _pkgsuffix=raveos-lto
-elif ! _is_lto_kernel && [ "$_use_gcc_suffix" = "yes" ]; then
-    _pkgsuffix=raveos-gcc
-else
-    _pkgsuffix=raveos
-fi
+_pkgsuffix=cachyos
 
 pkgbase="linux-$_pkgsuffix"
 _major=7.0
 _minor=10
 _tagrel=2
 _srcname=cachyos-${_major}.${_minor}-${_tagrel}
-epoch=1
-pkgver=10.0.1
-pkgrel=1
+pkgver=${_major}.${_minor}
+pkgrel=2
 pkgdesc='Linux BORE + NTSYNC + Memory Optimized RaveOS Kernel based on CachyOS'
 _kernver="$pkgver-$pkgrel"
 _kernuname="${_major}.${_minor}-${_pkgsuffix}"

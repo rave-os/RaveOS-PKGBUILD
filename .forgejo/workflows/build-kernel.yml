@@ -44,23 +44,18 @@ jobs:
           CORE="/tmp/raveos-core-repo/x86_64"
           PKGVER=$(grep '^pkgver=' linux-raveos/PKGBUILD | cut -d= -f2)
           PKGREL=$(grep '^pkgrel=' linux-raveos/PKGBUILD | cut -d= -f2)
-          EPOCH=$(grep '^epoch=' linux-raveos/PKGBUILD | cut -d= -f2 || echo "")
-          if [ -n "$EPOCH" ]; then
-            FULLVER="${EPOCH}:${PKGVER}-${PKGREL}"
-          else
-            FULLVER="${PKGVER}-${PKGREL}"
-          fi
+          FULLVER="${PKGVER}-${PKGREL}"
           echo "PKGVER=$PKGVER" >> $GITHUB_OUTPUT
           echo "PKGREL=$PKGREL" >> $GITHUB_OUTPUT
-          if ls "$CORE"/linux-raveos-${PKGVER}-${PKGREL}-*.pkg.tar.zst 2>/dev/null | grep -q .; then
+          if ls "$CORE"/linux-cachyos-${PKGVER}-${PKGREL}-*.pkg.tar.zst 2>/dev/null | grep -q .; then
             echo "SKIP=yes" >> $GITHUB_OUTPUT
-            echo "linux-raveos ${FULLVER} mar bent van -> skip"
+            echo "linux-cachyos ${FULLVER} mar bent van -> skip"
           else
             echo "SKIP=no" >> $GITHUB_OUTPUT
-            echo "linux-raveos ${FULLVER} build indul..."
+            echo "linux-cachyos ${FULLVER} build indul..."
           fi
 
-      - name: Build linux-raveos
+      - name: Build linux-cachyos
         if: steps.check.outputs.SKIP == 'no'
         run: |
           set -euo pipefail
