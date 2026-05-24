@@ -52,7 +52,7 @@ jobs:
           fi
           echo "PKGVER=$PKGVER" >> $GITHUB_OUTPUT
           echo "PKGREL=$PKGREL" >> $GITHUB_OUTPUT
-          if ls "$CORE"/linux-raveos-gcc-${PKGVER}-${PKGREL}-*.pkg.tar.zst 2>/dev/null | grep -q .; then
+          if ls "$CORE"/linux-raveos-${PKGVER}-${PKGREL}-*.pkg.tar.zst 2>/dev/null | grep -q .; then
             echo "SKIP=yes" >> $GITHUB_OUTPUT
             echo "linux-raveos ${FULLVER} mar bent van -> skip"
           else
@@ -67,8 +67,7 @@ jobs:
           cd linux-raveos
           rm -f *.pkg.tar.zst || true
           makepkg -s --noconfirm
-          cp -v linux-raveos-gcc-*.pkg.tar.zst /tmp/builtpkgs/
-          cp -v linux-raveos-gcc-headers-*.pkg.tar.zst /tmp/builtpkgs/
+          cp -v linux-raveos-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Publish to core repo
         if: steps.check.outputs.SKIP == 'no'
