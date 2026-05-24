@@ -19,25 +19,19 @@ jobs:
         id: check
         run: |
           set -euo pipefail
-          LATEST=$(curl -fsSL --retry 3 "https://api.github.com/repos/CachyOS/linux/tags" \
-            | python3 -c "
-          import sys, json, re
-          tags = json.load(sys.stdin)
-          versions = []
-          for t in tags:
-              m = re.match(r'cachyos-(\d+\.\d+)\.(\d+)-(\d+)$', t['name'])
-              if m:
-                  versions.append((t['name'], m.group(1), m.group(2), m.group(3)))
-          if versions:
-              versions.sort(key=lambda x: (list(map(int, x[1].split('.'))), int(x[2]), int(x[3])), reverse=True)
-              latest = versions[0]
-              print(f'TAG={latest[0]}')
-              print(f'MAJOR={latest[1]}')
-              print(f'MINOR={latest[2]}')
-              print(f'TAGREL={latest[3]}')
-          ")
-          echo "$LATEST" >> $GITHUB_OUTPUT
-          echo "Legfrissebb CachyOS: $LATEST"
+          PKGBUILD=$(curl -fsSL --retry 3 \
+            "https://raw.githubusercontent.com/CachyOS/linux-cachyos/master/linux-cachyos/PKGBUILD")
+          MAJOR=$(echo "$PKGBUILD" | grep '^_major=' | cut -d= -f2)
+          MINOR=$(echo "$PKGBUILD" | grep '^_minor=' | cut -d= -f2)
+          TAGREL=$(echo "$PKGBUILD" | grep '^_tagrel=' | cut -d= -f2)
+          if [ -z "$MAJOR" ] || [ -z "$MINOR" ] || [ -z "$TAGREL" ]; then
+            echo "HIBA: Nem sikerult a CachyOS verziot lekerdezni"
+            exit 1
+          fi
+          echo "MAJOR=$MAJOR" >> $GITHUB_OUTPUT
+          echo "MINOR=$MINOR" >> $GITHUB_OUTPUT
+          echo "TAGREL=$TAGREL" >> $GITHUB_OUTPUT
+          echo "Legfrissebb CachyOS: ${MAJOR}.${MINOR}-${TAGREL}"
 
       - name: Read current version
         id: current
