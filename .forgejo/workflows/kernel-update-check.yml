@@ -2,7 +2,7 @@ name: Kernel Update Check
 
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 6 1,15 * *'
   workflow_dispatch:
 
 jobs:
