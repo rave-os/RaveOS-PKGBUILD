@@ -62,7 +62,7 @@ jobs:
           cd linux-raveos
           rm -f *.pkg.tar.zst || true
           makepkg -s --noconfirm
-          cp -v linux-raveos-*.pkg.tar.zst /tmp/builtpkgs/
+          cp -v linux-cachyos-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Publish to core repo
         if: steps.check.outputs.SKIP == 'no'
