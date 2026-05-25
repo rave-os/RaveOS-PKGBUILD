@@ -88,8 +88,11 @@ jobs:
             cp -v "$pkg" "$CORE/"
           done
 
+          repo-add "$CORE/raveos-core.db.tar.gz" "$CORE"/linux-cachyos-[^h]*.pkg.tar.zst
+          repo-add "$CORE/raveos-core.db.tar.gz" "$CORE"/linux-cachyos-headers-*.pkg.tar.zst
+
           git add -A
-          git commit -m "kernel: linux-raveos ${{ steps.check.outputs.PKGVER }}-${{ steps.check.outputs.PKGREL }}"
+          git commit -m "kernel: linux-cachyos ${{ steps.check.outputs.PKGVER }}-${{ steps.check.outputs.PKGREL }}"
           git push origin main
 
           TAG="vrepo-$(date +%Y%m%d-%H%M%S)"
