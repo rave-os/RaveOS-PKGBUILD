@@ -92,7 +92,7 @@ jobs:
           OLD_PKGVER="${{ steps.current.outputs.PKGVER }}"
           CUR="${{ steps.current.outputs.MAJOR }}.${{ steps.current.outputs.MINOR }}-${{ steps.current.outputs.TAGREL }}"
 
-          # pkgver = kernel verzio (pl. 7.0.11), pkgrel mindig 2
+          # pkgver = kernel verzio (pl. 7.0.11), pkgrel mindig 20
           NEW_PKGVER="${NEW_MAJOR}.${NEW_MINOR}"
 
           BRANCH="update/kernel-${NEW_MAJOR}.${NEW_MINOR}-${NEW_TAGREL}"
@@ -105,7 +105,7 @@ jobs:
           sed -i "s/^_minor=.*/_minor=${NEW_MINOR}/" linux-raveos/PKGBUILD
           sed -i "s/^_tagrel=.*/_tagrel=${NEW_TAGREL}/" linux-raveos/PKGBUILD
           sed -i "s/^pkgver=.*/pkgver=${NEW_PKGVER}/" linux-raveos/PKGBUILD
-          sed -i "s/^pkgrel=.*/pkgrel=2/" linux-raveos/PKGBUILD
+          sed -i "s/^pkgrel=.*/pkgrel=20/" linux-raveos/PKGBUILD
 
           # Uj CachyOS config letoltese + RaveOS javitasok visszarakasa
           curl -fsSL --retry 3 \
@@ -117,7 +117,7 @@ jobs:
           sed -i 's/^# CONFIG_NTSYNC is not set$/CONFIG_NTSYNC=y/' linux-raveos/config
 
           git add linux-raveos/PKGBUILD linux-raveos/config
-          git commit -m "update: linux-cachyos ${NEW_MAJOR}.${NEW_MINOR}-${NEW_TAGREL} (pkgver=${NEW_PKGVER}-2)"
+          git commit -m "update: linux-cachyos ${NEW_MAJOR}.${NEW_MINOR}-${NEW_TAGREL} (pkgver=${NEW_PKGVER}-20)"
 
           git remote set-url origin "https://bot:${{ secrets.FORGEJO_TOKEN }}@git.rp1.hu/RaveOS/RaveOS-PKGBUILD.git"
           git push origin "$BRANCH"
