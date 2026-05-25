@@ -92,11 +92,19 @@ jobs:
           OLD_PKGVER="${{ steps.current.outputs.PKGVER }}"
           CUR="${{ steps.current.outputs.MAJOR }}.${{ steps.current.outputs.MINOR }}-${{ steps.current.outputs.TAGREL }}"
 
-          # pkgver = kernel verzio (pl. 7.0.11), pkgrel auto-increment (min 10)
+          # pkgver = kernel verzio (pl. 7.0.11)
+          # pkgrel logika:
+          #   - uj major.minor (pl. 7.0.10 -> 7.0.11 vagy 8.0.x) -> reset 10-re
+          #   - csak _tagrel valtozik (ugyanaz a kernel, uj stable tag) -> +1
           NEW_PKGVER="${NEW_MAJOR}.${NEW_MINOR}"
 
+          OLD_MAJOR="${{ steps.current.outputs.MAJOR }}"
+          OLD_MINOR="${{ steps.current.outputs.MINOR }}"
           OLD_PKGREL=$(grep '^pkgrel=' linux-raveos/PKGBUILD | cut -d= -f2)
-          if [ "$OLD_PKGREL" -lt 10 ]; then
+
+          if [ "${OLD_MAJOR}.${OLD_MINOR}" != "${NEW_MAJOR}.${NEW_MINOR}" ]; then
+            NEW_PKGREL=10
+          elif [ "$OLD_PKGREL" -lt 10 ]; then
             NEW_PKGREL=10
           else
             NEW_PKGREL=$((OLD_PKGREL + 1))
