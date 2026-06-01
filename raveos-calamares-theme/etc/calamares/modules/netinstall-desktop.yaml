@@ -29,6 +29,10 @@
     - hblock
     - reflector
     - raveos-tools
+    - gamemode
+    - lib32-gamemode
+    - ananicy-cpp
+    - cachyos-ananicy-rules-git
 - name: "KDE Plasma Desktop - Alap desktop, nincs általunk témázva"
   selected: false
   expanded: false

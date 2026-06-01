@@ -85,8 +85,8 @@ navigation: widget
 strings:
     productName:         RaveOS Linux
     shortProductName:    RaveOS Linux
-    version:             2026.4
-    shortVersion:        2026.4
+    version:             2026
+    shortVersion:        2026
     versionedName:       RaveOS Linux
     shortVersionedName:  ROS
     bootloaderEntryName: RaveOS Linux
