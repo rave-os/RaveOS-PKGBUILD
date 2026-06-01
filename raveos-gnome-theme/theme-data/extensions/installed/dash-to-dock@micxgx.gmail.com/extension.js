@@ -8,6 +8,7 @@ export let dockManager;
 
 export default class DashToDockExtension extends Extension.Extension {
     enable() {
+        DockManager._singleton = null;
         dockManager = new DockManager(this);
     }
 

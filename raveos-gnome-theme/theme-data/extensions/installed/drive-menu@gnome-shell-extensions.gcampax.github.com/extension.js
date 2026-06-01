@@ -200,12 +200,16 @@ class DriveMenu extends PanelMenu.Button {
 
 export default class PlaceMenuExtension extends Extension {
     enable() {
+        if (Main.panel.statusArea['drive-menu']) {
+            Main.panel.statusArea['drive-menu'].destroy();
+            delete Main.panel.statusArea['drive-menu'];
+        }
         this._indicator = new DriveMenu();
         Main.panel.addToStatusArea('drive-menu', this._indicator);
     }
 
     disable() {
         this._indicator.destroy();
-        delete this._indicator;
+        this._indicator = null;
     }
 }

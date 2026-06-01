@@ -39,6 +39,8 @@ import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js';
 let newTimeout = 1000;
 let alwaysNormal = true;
 let ignoreIdle = true;
+let origUrgency = null;
+let _urgencyGetting = false;
 
 export default class NotificationTimeoutExtension extends Extension {
 
@@ -46,7 +48,6 @@ export default class NotificationTimeoutExtension extends Extension {
         ignoreIdle = this._settings.get_boolean("ignore-idle");
         alwaysNormal = this._settings.get_boolean("always-normal");
         newTimeout = this._settings.get_int("timeout");
-
     }
 
     _modifiedUpdateNotificationTimeout(timeout) {
@@ -56,25 +57,18 @@ export default class NotificationTimeoutExtension extends Extension {
 
         /* call the original _updateNotificationTimeout with new timeout */
         this._updateNotificationTimeoutOrig(timeout);
-    }
 
-    _modifiedUpdateStatus() {
+        // CHANGE: Fix idle detection without crashing the loop.
+        // Instead of patching _updateState (which runs every second and causes crashes),
+        // we simply tell the tray that a user action happened *right now* when the notification appears.
         if (ignoreIdle) {
             this._userActiveWhileNotificationShown = true;
-        }
-
-        /* call the original _updateState anyway */
-        this._updateStateOrig();
-    }
-
-    _modifiedSetUrgency(urgency) {
-        /* call the original setUrgency */
-        if (newTimeout === 0) {
-            this._setUrgencyOrig(MessageTray.Urgency.CRITICAL);
-        } else if (alwaysNormal) {
-            this._setUrgencyOrig(MessageTray.Urgency.NORMAL);
-        } else {
-            this._setUrgencyOrig(urgency);
+            
+            // Updating the timestamp ensures that the next native _updateState check 
+            // calculates "idle time" as 0, preventing it from resetting the active flag.
+            if (global.get_current_time) {
+                this._lastUserActionTime = global.get_current_time();
+            }
         }
     }
 
@@ -96,38 +90,50 @@ export default class NotificationTimeoutExtension extends Extension {
         MessageTray.MessageTray.prototype._updateNotificationTimeout = this._modifiedUpdateNotificationTimeout;
 
         /**
-         * Change _updateState()
+         * Change urgency
          */
-        MessageTray.MessageTray.prototype._updateStateOrig = MessageTray.MessageTray.prototype._updateState;
-        MessageTray.MessageTray.prototype._updateState = this._modifiedUpdateStatus;
+        origUrgency = Object.getOwnPropertyDescriptor(MessageTray.Notification.prototype, 'urgency');
 
-        /**
-         * Change setUrgency()
-         */
-        MessageTray.Notification.prototype._setUrgencyOrig = MessageTray.Notification.prototype.setUrgency;
-        MessageTray.Notification.prototype.setUrgency = this._modifiedSetUrgency;
+        Object.defineProperty(MessageTray.Notification.prototype, 'urgency', {
+            get: function() {
+                if (_urgencyGetting) return MessageTray.Urgency.NORMAL;
+                _urgencyGetting = true;
+                const val = origUrgency.get.call(this);
+                _urgencyGetting = false;
+                return val;
+            },
+            set: function(urgency) {
+                if (newTimeout === 0) {
+                    origUrgency.set.call(this, MessageTray.Urgency.CRITICAL);
+                } else if (alwaysNormal) {
+                    origUrgency.set.call(this, MessageTray.Urgency.NORMAL);
+                } else {
+                    origUrgency.set.call(this, urgency);
+                }
+            }
+        });
     }
 
     disable() {
-        this._settings.disconnect(this._settingsConnectId);
-        this._settings = null;
+        if (this._settings) {
+            this._settings.disconnect(this._settingsConnectId);
+            this._settings = null;
+        }
 
         /**
-         * Reveret change _updateNotificationTimeout()
+         * Revert change _updateNotificationTimeout()
          */
-        MessageTray.MessageTray.prototype._updateNotificationTimeout = MessageTray.MessageTray.prototype._updateNotificationTimeoutOrig;
-        delete MessageTray.MessageTray.prototype._updateNotificationTimeoutOrig;
+        if (MessageTray.MessageTray.prototype._updateNotificationTimeoutOrig) {
+            MessageTray.MessageTray.prototype._updateNotificationTimeout = MessageTray.MessageTray.prototype._updateNotificationTimeoutOrig;
+            delete MessageTray.MessageTray.prototype._updateNotificationTimeoutOrig;
+        }
 
         /**
-         * Reveret change _updateState()
+         * Revert change urgency()
          */
-        MessageTray.MessageTray.prototype._updateState = MessageTray.MessageTray.prototype._updateStateOrig;
-        delete MessageTray.MessageTray.prototype._updateStateOrig;
-
-        /**
-         * Reveret change setUrgency()
-         */
-        MessageTray.Notification.prototype.setUrgency = MessageTray.Notification.prototype._setUrgencyOrig;
-        delete MessageTray.Notification.prototype._setUrgencyOrig;
+        if (origUrgency) {
+            Object.defineProperty(MessageTray.Notification.prototype, 'urgency', origUrgency);
+            origUrgency = null;
+        }
     }
 }
