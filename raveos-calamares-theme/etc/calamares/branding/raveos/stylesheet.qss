@@ -3,6 +3,40 @@
 /* Main: #404040 | Accent: #3d7839 | Border: #7f8c8d    */
 /* ===================================================== */
 
+/* ---------------- Language Selector ---------------- */
+
+#languageWidget {
+    background-color: #2B2B2B;
+    padding: 4px;
+}
+
+#selector {
+    background-color: #2B2B2B;
+    color: #FFFFFF;
+    border: 2px solid #3d7839;
+    border-radius: 4px;
+    padding: 4px 10px;
+    min-width: 200px;
+}
+
+#selector:hover {
+    border-color: #4d9849;
+}
+
+#selector::drop-down {
+    border: none;
+    width: 20px;
+}
+
+#selector QAbstractItemView {
+    background-color: #2B2B2B;
+    color: #FFFFFF;
+    selection-background-color: #3d7839;
+    selection-color: #FFFFFF;
+    border: 2px solid #3d7839;
+    outline: 0;
+}
+
 /* ---------------- Global ---------------- */
 
 * {
@@ -122,14 +156,16 @@ QComboBox:focus {
 
 QComboBox::drop-down {
     border: none;
-    width: 18px;
+    width: 20px;
     background: transparent;
 }
 
 QComboBox::down-arrow {
-    background: transparent;
-    border: none;
+    image: url(/usr/share/calamares/branding/raveos/arrow-down.svg);
+    width: 12px;
+    height: 12px;
 }
+
 
 QComboBox QAbstractItemView {
     background-color: #2B2B2B;

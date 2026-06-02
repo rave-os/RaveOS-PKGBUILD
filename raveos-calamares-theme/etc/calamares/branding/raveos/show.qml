@@ -28,7 +28,7 @@ Presentation
 
     Timer {
         id: advanceTimer
-        interval: 15000
+        interval: 20000
         running: presentation.activatedInCalamares
         repeat: true
         onTriggered: nextSlide()
