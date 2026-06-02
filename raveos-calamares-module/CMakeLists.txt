@@ -5,3 +5,4 @@ find_package(KF6CoreAddons REQUIRED)
 find_package(Calamares REQUIRED)
 
 add_subdirectory(wifi)
+add_subdirectory(welcome)

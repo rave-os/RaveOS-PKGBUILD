@@ -1,0 +1,9 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/nippy/Projects/RaveOS/RaveOS-PKGBUILD/raveos-calamares-module/build2/cmake_install.cmake",
+		"/home/nippy/Projects/RaveOS/RaveOS-PKGBUILD/raveos-calamares-module/build2/wifi/cmake_install.cmake",
+		"/home/nippy/Projects/RaveOS/RaveOS-PKGBUILD/raveos-calamares-module/build2/welcome/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

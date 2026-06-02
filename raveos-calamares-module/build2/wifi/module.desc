@@ -1,0 +1,5 @@
+---
+type: viewmodule
+name: wifi
+interface: qtplugin
+load: libcalamares_viewmodule_wifi.so
