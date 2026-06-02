@@ -3,16 +3,6 @@
 /* Main: #404040 | Accent: #3d7839 | Border: #7f8c8d    */
 /* ===================================================== */
 
-/* ---------------- Welcome Logo (screen-adaptive) ---------------- */
-
-#welcomeLogo {
-    min-height: 1100px;
-    min-width: 1100px;
-    max-height: 9999px;
-    max-width: 9999px;
-    qproperty-alignment: AlignCenter;
-}
-
 /* ---------------- Global ---------------- */
 
 * {
