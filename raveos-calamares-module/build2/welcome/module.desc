@@ -1,5 +1,0 @@
----
-type: "viewmodule"
-name: "ravewelcome"
-interface: "qtplugin"
-load: "libcalamares_viewmodule_ravewelcome.so"

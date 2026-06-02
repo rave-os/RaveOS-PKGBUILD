@@ -1,4 +1,0 @@
-set(__QT_DEPLOY_TARGET_calamares_viewmodule_wifi_FILE /home/nippy/Projects/RaveOS/RaveOS-PKGBUILD/raveos-calamares-module/build2/wifi/libcalamares_viewmodule_wifi.so)
-set(__QT_DEPLOY_TARGET_calamares_viewmodule_wifi_TYPE MODULE_LIBRARY)
-set(__QT_DEPLOY_TARGET_calamares_viewmodule_ravewelcome_FILE /home/nippy/Projects/RaveOS/RaveOS-PKGBUILD/raveos-calamares-module/build2/welcome/libcalamares_viewmodule_ravewelcome.so)
-set(__QT_DEPLOY_TARGET_calamares_viewmodule_ravewelcome_TYPE MODULE_LIBRARY)
