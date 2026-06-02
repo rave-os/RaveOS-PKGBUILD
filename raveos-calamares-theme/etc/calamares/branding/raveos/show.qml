@@ -43,7 +43,7 @@ Presentation
         id: background1
         source: "images/2.png"
         anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
+        fillMode: Image.PreserveAspectCrop
         smooth: true
     	}
     }
@@ -56,9 +56,8 @@ Presentation
     Image {
         id: background2
         source: "images/3.png"
-        width: 815; height: 815
         anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
+        fillMode: Image.PreserveAspectCrop
         smooth: true
     	}
     }
@@ -72,7 +71,7 @@ Presentation
         id: background3
         source: "images/4.png"
         anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
+        fillMode: Image.PreserveAspectCrop
         smooth: true
     	}
     }
@@ -86,7 +85,7 @@ Presentation
         id: background4
         source: "images/5.png"
         anchors.fill: parent
-        fillMode: Image.PreserveAspectFit
+        fillMode: Image.PreserveAspectCrop
         smooth: true
     	}
     }
