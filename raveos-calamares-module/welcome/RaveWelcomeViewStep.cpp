@@ -72,34 +72,13 @@ void RaveWelcomeViewStep::buildWidget()
 
     // Bottom language bar
     auto* bar = new QFrame();
+    bar->setObjectName("ravewelcomeBar");
     bar->setFixedHeight(58);
-    bar->setStyleSheet("background-color: rgba(43,43,43,200); border: none;");
 
     m_langCombo = new QComboBox(bar);
+    m_langCombo->setObjectName("ravewelcomeCombo");
     m_langCombo->setFixedHeight(40);
     m_langCombo->setMinimumWidth(300);
-    m_langCombo->setStyleSheet(
-        "QComboBox {"
-        "  background-color: rgba(43,43,43,180);"
-        "  color: #ffffff;"
-        "  border: none;"
-        "  border-radius: 4px;"
-        "  padding: 4px 12px;"
-        "  font-size: 15px;"
-        "}"
-        "QComboBox::drop-down { border: none; width: 24px; }"
-        "QComboBox QAbstractItemView {"
-        "  background-color: rgba(43,43,43,160);"
-        "  color: #ffffff;"
-        "  selection-background-color: rgba(61,120,57,180);"
-        "  border: none;"
-        "  font-size: 15px;"
-        "}"
-        "QComboBox QAbstractItemView::item {"
-        "  padding: 4px 12px;"
-        "  min-height: 26px;"
-        "}"
-    );
 
     // Populate language model
     auto* model = new Calamares::Locale::TranslationsModel(m_localeIds, m_langCombo);
