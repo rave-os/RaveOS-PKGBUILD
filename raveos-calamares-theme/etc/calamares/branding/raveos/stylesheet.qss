@@ -5,12 +5,11 @@
 
 /* ---------------- Welcome Logo (screen-adaptive) ---------------- */
 
-#logoLabel {
-    min-height: 800px;
-    min-width: 800px;
+#welcomeLogo {
+    min-height: 1100px;
+    min-width: 1100px;
     max-height: 9999px;
     max-width: 9999px;
-    qproperty-scaledContents: true;
     qproperty-alignment: AlignCenter;
 }
 
