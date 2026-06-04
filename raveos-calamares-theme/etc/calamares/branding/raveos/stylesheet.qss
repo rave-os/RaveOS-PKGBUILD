@@ -254,6 +254,16 @@ QAbstractItemView::item:selected {
     color: #FFFFFF;
 }
 
+QAbstractItemView::item:selected:!active {
+    background-color: #3d7839;
+    color: #FFFFFF;
+}
+
+QAbstractItemView::item:focus {
+    background-color: #3d7839;
+    color: #FFFFFF;
+}
+
 /* ---------------- Buttons ---------------- */
 
 QPushButton {
@@ -263,6 +273,7 @@ QPushButton {
     border-radius: 4px;
     padding: 8px 18px;
     font-weight: bold;
+    margin-top: 4px;
 }
 
 QPushButton:hover {
@@ -274,20 +285,27 @@ QPushButton:pressed {
 }
 
 QPushButton:disabled {
-    background-color: #7f8c8d;
-    color: #bdc3c7;
+    background-color: #303030;
+    color: #7f8c8d;
 }
 
 /* Secondary buttons (Back / Cancel) */
-#debugButton,
-#aboutButton {
+#debugButton {
     background-color: #7f8c8d;
     color: #ffffff;
 }
 
-#debugButton:hover,
-#aboutButton:hover {
+#debugButton:hover {
     background-color: #95a5a6;
+}
+
+#aboutButton {
+    background-color: #1e5c1a;
+    color: #ffffff;
+}
+
+#aboutButton:hover {
+    background-color: #285226;
 }
 
 /* ---------------- Checkbox ---------------- */

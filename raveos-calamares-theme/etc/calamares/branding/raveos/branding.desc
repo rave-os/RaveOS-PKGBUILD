@@ -92,8 +92,8 @@ strings:
     bootloaderEntryName: RaveOS Linux
 
 images:
-    productIcon:         "icons/raveos-icon.jpg"
-    productLogo:         "icons/raveos-icon.jpg"
+    productIcon:         "icons/raveos-icon2.png"
+    productLogo:         "icons/raveos-icon2.png"
     productWelcome:      "images/raveos-welcome.png"
 
 # Szöveg és háttér komponensek színei. (Baloldali menu színei welcome,local.keyboard stb)

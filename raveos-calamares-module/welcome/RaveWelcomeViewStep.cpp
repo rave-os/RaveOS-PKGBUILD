@@ -140,12 +140,20 @@ void RaveWelcomeViewStep::onLanguageChanged(int index)
     Calamares::Locale::Translation::Id tid { localeId };
     Calamares::installTranslator(tid, brandingTranslationsPrefix());
 
-    // Store locale in GlobalStorage for the installed system
+    // Store locale in GlobalStorage for the installed system.
+    // The locale module reads gs["localeConf"]["LANG"] via Calamares::Locale::readGS.
     if (Calamares::JobQueue::instance())
     {
         Calamares::GlobalStorage* gs = Calamares::JobQueue::instance()->globalStorage();
         if (gs)
-            gs->insert("localeLanguage", localeId);
+        {
+            QString fullLocale = QLocale(localeId).name(); // e.g. "hu" -> "hu_HU"
+            if (!fullLocale.contains('.'))
+                fullLocale += ".UTF-8";
+            QVariantMap localeConf = gs->value("localeConf").toMap();
+            localeConf.insert("LANG", fullLocale);
+            gs->insert("localeConf", localeConf);
+        }
     }
 }
 
