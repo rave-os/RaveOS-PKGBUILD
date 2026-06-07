@@ -3,6 +3,12 @@
 --#############################
 
 hl.window_rule({
+    name  = "windowrule-float-all",
+    match = { class = ".*" },
+    float = true,
+})
+
+hl.window_rule({
     name  = "windowrule-2",
     match = { class = "org.gnome.gedit" },
     size  = { 888, 888 },
