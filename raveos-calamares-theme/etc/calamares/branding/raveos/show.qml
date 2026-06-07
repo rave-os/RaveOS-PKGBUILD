@@ -45,6 +45,7 @@ Presentation
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         smooth: true
+        mipmap: true
     	}
     }
 
@@ -59,6 +60,7 @@ Presentation
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         smooth: true
+        mipmap: true
     	}
     }
     
@@ -73,6 +75,7 @@ Presentation
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         smooth: true
+        mipmap: true
     	}
     }
     
@@ -87,6 +90,7 @@ Presentation
         anchors.fill: parent
         fillMode: Image.PreserveAspectCrop
         smooth: true
+        mipmap: true
     	}
     }
     
