@@ -27,6 +27,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hyprswitch init --show-title --size-factor 6 --workspaces-per-row 5 &")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
     hl.exec_cmd("bash -c 'wl-paste --watch cliphist store &'")
+    hl.exec_cmd("hyprpaper")
 end)
 
 --##################
@@ -46,7 +47,7 @@ local _xdg_runtime = os.getenv("XDG_RUNTIME_DIR") or "/run/user/1000"
 
 hl.env("XCURSOR_SIZE",   24)
 hl.env("HYPRCURSOR_SIZE", 24)
-hl.env("XCURSOR_THEME",  "BreezeDark")
+hl.env("XCURSOR_THEME",  "Adwaita")
 
 hl.env("HOME",                        _home)
 hl.env("XDG_CONFIG_HOME",             _home .. "/.config")
