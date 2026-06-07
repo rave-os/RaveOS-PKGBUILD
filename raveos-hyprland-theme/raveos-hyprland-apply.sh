@@ -82,6 +82,10 @@ if [[ -f "${payload_dir}/sddm/sddm.conf" ]]; then
   install -Dm644 "${payload_dir}/sddm/sddm.conf" /etc/sddm.conf.d/raveos-theme.conf
 fi
 
+if [[ -f "${payload_dir}/sddm/hyprland.lua" ]]; then
+  install -Dm644 "${payload_dir}/sddm/hyprland.lua" /usr/share/hypr/sddm/hyprland.lua
+fi
+
 for candidate in \
   "/usr/share/sddm/themes/sddm-astronaut-theme" \
   "/usr/share/sddm/themes/astronaut" \

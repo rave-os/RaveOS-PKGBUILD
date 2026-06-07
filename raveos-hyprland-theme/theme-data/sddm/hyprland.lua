@@ -1,0 +1,2 @@
+-- Minimal Hyprland config for SDDM Wayland compositor (greeter session)
+-- The SDDM greeter renders on top of this compositor.
