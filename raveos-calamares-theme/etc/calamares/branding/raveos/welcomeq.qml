@@ -12,6 +12,7 @@ Item {
         source: "images/raveos-welcome.png"
         fillMode: Image.Stretch
         smooth: true
+        mipmap: true
     }
 
     // Bottom overlay for language selector
