@@ -13,6 +13,9 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
+-- HyprShell
+hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd("hyprshell switch"))
+
 -- Shell Binds
 hl.bind("SUPER",                    hl.dsp.exec_cmd("dms ipc call spotlight toggle"))
 hl.bind(mainMod .. " + P",         hl.dsp.exec_cmd("dms ipc call clipboard toggle"))
