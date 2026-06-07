@@ -1,6 +1,6 @@
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=34
+pkgrel=35
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
