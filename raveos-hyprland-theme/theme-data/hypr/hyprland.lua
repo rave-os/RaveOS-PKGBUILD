@@ -186,9 +186,9 @@ hl.gesture({
 --## HYPRSHELL LAYERS ###
 --#######################
 
-hl.layerrule("blur",       "hyprshell_overview")
-hl.layerrule("ignorezero", "hyprshell_overview")
-hl.layerrule("blur",       "hyprshell_switch")
-hl.layerrule("ignorezero", "hyprshell_switch")
-hl.layerrule("blur",       "hyprshell_launcher")
-hl.layerrule("ignorezero", "hyprshell_launcher")
+hl.layer_rule({ match = { namespace = "hyprshell_overview" }, blur = true })
+hl.layer_rule({ match = { namespace = "hyprshell_overview" }, ignore_alpha = true })
+hl.layer_rule({ match = { namespace = "hyprshell_switch" },   blur = true })
+hl.layer_rule({ match = { namespace = "hyprshell_switch" },   ignore_alpha = true })
+hl.layer_rule({ match = { namespace = "hyprshell_launcher" }, blur = true })
+hl.layer_rule({ match = { namespace = "hyprshell_launcher" }, ignore_alpha = true })
