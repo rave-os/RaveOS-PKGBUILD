@@ -13,9 +13,6 @@ for i = 1, 10 do
     hl.bind(mainMod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
--- HyprShell
-hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd("hyprshell switch"))
-
 -- Shell Binds
 hl.bind("SUPER",                    hl.dsp.exec_cmd("dms ipc call spotlight toggle"))
 hl.bind(mainMod .. " + P",         hl.dsp.exec_cmd("dms ipc call clipboard toggle"))
@@ -37,8 +34,10 @@ hl.bind("CTRL + SUPER + Home", hl.dsp.exec_cmd("reboot"))
 hl.bind("CTRL + SUPER + End",  hl.dsp.exec_cmd("poweroff"))
 
 -- Window management
-hl.bind(mainMod .. " + Q", hl.dsp.window.kill())
-hl.bind(mainMod .. " + V", hl.dsp.window.float())
+hl.bind(mainMod .. " + Q",   hl.dsp.window.kill())
+hl.bind(mainMod .. " + V",   hl.dsp.window.float())
+hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd([[hyprshell socat '{"OpenSwitch":{"reverse":false}}']]))
+hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.exec_cmd([[hyprshell socat '{"OpenSwitch":{"reverse":true}}']]])
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
