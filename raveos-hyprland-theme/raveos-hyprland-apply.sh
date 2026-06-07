@@ -18,6 +18,8 @@ fi
 mkdir -p /etc/skel/.config/hypr
 if [[ -d "${payload_dir}/hypr" ]]; then
   cp -rf "${payload_dir}/hypr/." /etc/skel/.config/hypr/
+  # Remove legacy conf-based config if Lua version exists
+  [[ -f /etc/skel/.config/hypr/hyprland.lua ]] && rm -f /etc/skel/.config/hypr/hyprland.conf
 fi
 
 mkdir -p /etc/skel/.config/dms
@@ -121,6 +123,7 @@ while IFS=: read -r user _ uid gid _ home shell; do
   pkill -u "$user" hyprpaper 2>/dev/null || true
   if [[ -d "${payload_dir}/hypr" ]]; then
     cp -rf "${payload_dir}/hypr/." "${home}/.config/hypr/"
+    [[ -f "${home}/.config/hypr/hyprland.lua" ]] && rm -f "${home}/.config/hypr/hyprland.conf"
   fi
   printf 'preload = %s/.config/background.jpg\nwallpaper = ,%s/.config/background.jpg\nsplash = false\n' \
     "$home" "$home" > "${home}/.config/hypr/hyprpaper.conf"
