@@ -37,7 +37,7 @@ hl.bind("CTRL + SUPER + End",  hl.dsp.exec_cmd("poweroff"))
 hl.bind(mainMod .. " + Q",   hl.dsp.window.kill())
 hl.bind(mainMod .. " + V",   hl.dsp.window.float())
 hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd([[hyprshell socat '{"OpenSwitch":{"reverse":false}}']]))
-hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.exec_cmd([[hyprshell socat '{"OpenSwitch":{"reverse":true}}']]])
+hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.exec_cmd([[hyprshell socat '{"OpenSwitch":{"reverse":true}}']]))
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
