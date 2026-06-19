@@ -68,7 +68,6 @@ fi
 
 if [[ -f "${payload_dir}/background.jpg" ]]; then
   mkdir -p /usr/share/backgrounds/raveos
-  install -m644 "${payload_dir}/background.jpg" /usr/share/backgrounds/raveos/raveos-main-bg.jpeg
   install -Dm644 "${payload_dir}/background.jpg" /etc/skel/.config/background
   install -Dm644 "${payload_dir}/background.jpg" /etc/skel/.config/background.jpg
 fi

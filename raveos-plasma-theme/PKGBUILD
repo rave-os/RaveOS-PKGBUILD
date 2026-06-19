@@ -1,6 +1,6 @@
 pkgname=raveos-plasma-theme
 pkgver=0.0.0
-pkgrel=31
+pkgrel=32
 pkgdesc="RaveOS Plasma theme payload and installer"
 arch=('any')
 url="https://raveos.local"
