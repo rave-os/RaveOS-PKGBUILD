@@ -93,10 +93,7 @@ for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd hyprshell; do
     fi
 done
 
-# SDDM konfig: sddm-rave-theme beállítása alapértelmezettként
-# A téma maga a PKGBUILD által kerül /usr/share/sddm/themes/sddm-rave-theme/-be
-[[ -f "${PAYLOAD}/sddm/sddm.conf" ]] && \
-    install -Dm644 "${PAYLOAD}/sddm/sddm.conf" /etc/sddm.conf.d/raveos-theme.conf
+# SDDM: a téma és konfig a PKGBUILD által van telepítve, itt nincs teendő
 
 # ---------------------------------------------------------------------------
 # MEGLÉVŐ USEREK FRISSÍTÉSE

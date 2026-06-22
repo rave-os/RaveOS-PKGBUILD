@@ -10,7 +10,7 @@
 
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=40
+pkgrel=41
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
@@ -51,6 +51,11 @@ package() {
     install -dm755 "${pkgdir}/usr/share/sddm/themes"
     cp -r "${startdir}/theme-data/sddm/sddm-rave-theme" \
         "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
+
+    # SDDM konfig: aktív téma beállítása - PKGBUILD-ben van, nem az apply scriptben,
+    # hogy upgrade esetén is frissüljön (az apply service csak egyszer fut)
+    install -Dm644 "${startdir}/theme-data/sddm/sddm.conf" \
+        "${pkgdir}/etc/sddm.conf.d/raveos-theme.conf"
 
     # apply script: boot-kor futó installer (systemd service hívja)
     install -Dm755 "${startdir}/raveos-hyprland-apply.sh" \
