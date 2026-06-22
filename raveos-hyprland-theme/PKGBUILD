@@ -1,15 +1,40 @@
+# Maintainer: RaveOS Team
+#
+# raveos-hyprland-theme
+# ---------------------
+# Hyprland DE téma csomag: Lua konfig, DankMaterialShell (DMS) shell, hyprshell
+# ablakváltó, SDDM téma, kitty, fastfetch, GTK/ikontémák.
+#
+# Az install script (raveos-hyprland-apply.service) egyszer fut boot-kor és
+# bemásolja a theme-data tartalmát /etc/skel-be és minden meglévő user home-jába.
+
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=39
+pkgrel=40
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
-depends=('fastfetch' 'dms-shell-hyprland' 'matugen' 'socat' 'hyprshell')
+
+# Futáshoz szükséges csomagok
+depends=(
+    'fastfetch'           # terminál üdvözlő (profile.d script indítja)
+    'dms-shell-hyprland'  # DankMaterialShell - a fő panel/shell
+    'matugen'             # wallpaper-alapú színséma generátor (matugen image ...)
+    'socat'               # hyprshell socket kommunikációhoz (keybinds)
+    'hyprshell'           # Alt+Tab ablakváltó overlay
+    'hyprpaper'           # háttérkép daemon
+    'wl-clipboard'        # wl-paste (clipboard pipeline)
+    'cliphist'            # clipboard history store
+    'polkit-gnome'        # polkit auth agent (GUI sudo kérések)
+    'kitty'               # alapértelmezett terminál
+)
+
 install="${pkgname}.install"
 source=()
 sha256sums=()
 
+# Build könyvtárak az src mellé, ne a makepkg alapértelmezettbe
 BUILDDIR="${startdir}/build"
 PKGDEST="${startdir}/build"
 SRCDEST="${startdir}/build"
@@ -17,11 +42,21 @@ SRCPKGDEST="${startdir}/build"
 LOGDEST="${startdir}/build"
 
 package() {
-  install -dm755 "${pkgdir}/usr/share/raveos/hyprland-theme"
-  cp -r --no-preserve=ownership "${startdir}/theme-data" "${pkgdir}/usr/share/raveos/hyprland-theme/"
+    # theme-data payload: hypr konfig, DMS config, kitty, fastfetch, SDDM conf, GTK, stb.
+    install -dm755 "${pkgdir}/usr/share/raveos/hyprland-theme"
+    cp -r --no-preserve=ownership "${startdir}/theme-data" \
+        "${pkgdir}/usr/share/raveos/hyprland-theme/"
 
-  install -Dm755 "${startdir}/raveos-hyprland-apply.sh" \
-    "${pkgdir}/usr/lib/raveos-hyprland-theme/auto-apply.sh"
-  install -Dm644 "${startdir}/raveos-hyprland-theme-apply.service" \
-    "${pkgdir}/usr/lib/systemd/system/raveos-hyprland-theme-apply.service"
+    # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
+    install -dm755 "${pkgdir}/usr/share/sddm/themes"
+    cp -r "${startdir}/theme-data/sddm/sddm-rave-theme" \
+        "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
+
+    # apply script: boot-kor futó installer (systemd service hívja)
+    install -Dm755 "${startdir}/raveos-hyprland-apply.sh" \
+        "${pkgdir}/usr/lib/raveos-hyprland-theme/auto-apply.sh"
+
+    # systemd service: egyszer fut (ConditionPathExists=!.applied guard)
+    install -Dm644 "${startdir}/raveos-hyprland-theme-apply.service" \
+        "${pkgdir}/usr/lib/systemd/system/raveos-hyprland-theme-apply.service"
 }
