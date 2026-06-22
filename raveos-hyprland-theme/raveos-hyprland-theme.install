@@ -1,7 +1,17 @@
+pre_install() {
+    # Ha a fájl már létezik (apply.sh telepítette, pacman nem ownolja),
+    # töröljük mielőtt a pacman megpróbálja telepíteni - különben "conflicting files" hiba
+    rm -f /etc/sddm.conf.d/raveos-theme.conf
+}
+
+pre_upgrade() {
+    rm -f /etc/sddm.conf.d/raveos-theme.conf
+}
+
 post_install() {
-  :
+    :
 }
 
 post_upgrade() {
-  :
+    :
 }
