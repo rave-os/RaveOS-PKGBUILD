@@ -1,117 +1,109 @@
 #!/usr/bin/env bash
+# raveos-cosmic-apply.sh
+# ----------------------
+# Telepíti a COSMIC téma payloadját:
+#   - /etc/skel alá (új usereknek)
+#   - minden meglévő, bejelentkező user home-jába
+#
+# Root jogosultság szükséges. A raveos-cosmic-theme-apply.service hívja
+# egyszer, első boot után.
+
 set -euo pipefail
 
-payload_dir="/usr/share/raveos/cosmic-theme/theme-data"
-fastfetch_hook='[[ -f /etc/profile.d/raveos-fastfetch.sh ]] && source /etc/profile.d/raveos-fastfetch.sh'
+PAYLOAD="/usr/share/raveos/cosmic-theme/theme-data"
 
-if [[ ! -d "$payload_dir" ]]; then
-  echo "Missing payload: $payload_dir" >&2
-  exit 1
+if [[ ! -d "$PAYLOAD" ]]; then
+    echo "Hiba: hiányzó payload: $PAYLOAD" >&2
+    exit 1
 fi
 
 if [[ ${EUID} -ne 0 ]]; then
-  echo "Run as root." >&2
-  exit 1
+    echo "Root jogosultság szükséges." >&2
+    exit 1
 fi
+
+# ---------------------------------------------------------------------------
+# SEGÉDFÜGGVÉNY
+# ---------------------------------------------------------------------------
 
 ensure_bashrc_hook() {
-  local bashrc_path="$1"
-  touch "$bashrc_path"
-  if ! grep -Fqx "$fastfetch_hook" "$bashrc_path" 2>/dev/null; then
-    printf '\n%s\n' "$fastfetch_hook" >> "$bashrc_path"
-  fi
+    local bashrc_path="$1"
+    local hook_line='[[ -f /etc/profile.d/raveos-fastfetch.sh ]] && source /etc/profile.d/raveos-fastfetch.sh'
+    touch "$bashrc_path"
+    if ! grep -Fqx "$hook_line" "$bashrc_path" 2>/dev/null; then
+        printf '\n%s\n' "$hook_line" >> "$bashrc_path"
+    fi
 }
 
-mkdir -p /etc/skel/.config/kitty
-mkdir -p /etc/skel/.config/fastfetch
-mkdir -p /etc/skel/.config/cosmic/com.system76.CosmicTerm/v1
+# ---------------------------------------------------------------------------
+# RENDSZERSZINTŰ TELEPÍTÉS
+# ---------------------------------------------------------------------------
 
-if [[ -f "${payload_dir}/kitty/kitty.conf" ]]; then
-  install -Dm644 "${payload_dir}/kitty/kitty.conf" /etc/skel/.config/kitty/kitty.conf
+# Háttérkép rendszerkönyvtárba
+[[ -f "${PAYLOAD}/background" ]] && \
+    install -Dm644 "${PAYLOAD}/background" /usr/share/backgrounds/raveos/raveos-main-bg.jpeg
+
+# Fastfetch profile.d script (terminál nyitáskor fut)
+[[ -f "${PAYLOAD}/profile.d/raveos-fastfetch.sh" ]] && \
+    install -Dm755 "${PAYLOAD}/profile.d/raveos-fastfetch.sh" /etc/profile.d/raveos-fastfetch.sh
+
+# COSMIC rendszerfájlok színátírása (RaveOS paletta)
+if [[ -d /usr/share/cosmic ]]; then
+    find /usr/share/cosmic -type f -exec sed -i \
+        -e 's/0.3882353/0.29411766/g' \
+        -e 's/0.8156863/0.52156866/g' \
+        -e 's/0.8745098/0.003921569/g' \
+        {} + || true
 fi
 
-if [[ -d "${payload_dir}/cosmic-term/v1" ]]; then
-  cp -r "${payload_dir}/cosmic-term/v1/"* /etc/skel/.config/cosmic/com.system76.CosmicTerm/v1/
-fi
+# SDDM: a téma és konfig a PKGBUILD + .install hook által van telepítve, itt nincs teendő
 
-if [[ -f "${payload_dir}/fastfetch/config.jsonc" ]]; then
-  install -Dm644 "${payload_dir}/fastfetch/config.jsonc" /etc/skel/.config/fastfetch/config.jsonc
-fi
+# ---------------------------------------------------------------------------
+# SKEL TELEPÍTÉS
+# Új usereknek (useradd által másolt /etc/skel tartalom)
+# ---------------------------------------------------------------------------
 
-if [[ -f "${payload_dir}/fastfetch/config-kitty.jsonc" ]]; then
-  install -Dm644 "${payload_dir}/fastfetch/config-kitty.jsonc" /etc/skel/.config/fastfetch/config-kitty.jsonc
-fi
+mkdir -p \
+    /etc/skel/.config/kitty \
+    /etc/skel/.config/fastfetch \
+    /etc/skel/.config/cosmic/com.system76.CosmicTerm/v1
 
-if [[ -f "${payload_dir}/fastfetch/raveos-logo.png" ]]; then
-  install -Dm644 "${payload_dir}/fastfetch/raveos-logo.png" /etc/skel/.config/fastfetch/raveos-logo.png
-fi
-
-if [[ -f "${payload_dir}/fastfetch/raveos-logo.txt" ]]; then
-  install -Dm644 "${payload_dir}/fastfetch/raveos-logo.txt" /etc/skel/.config/fastfetch/raveos-logo.txt
-fi
-
-if [[ -f "${payload_dir}/profile.d/raveos-fastfetch.sh" ]]; then
-  install -Dm755 "${payload_dir}/profile.d/raveos-fastfetch.sh" /etc/profile.d/raveos-fastfetch.sh
-fi
-
+[[ -f "${PAYLOAD}/kitty/kitty.conf" ]] && \
+    install -Dm644 "${PAYLOAD}/kitty/kitty.conf" /etc/skel/.config/kitty/kitty.conf
+[[ -d "${PAYLOAD}/cosmic-term/v1" ]] && \
+    cp -r "${PAYLOAD}/cosmic-term/v1/." /etc/skel/.config/cosmic/com.system76.CosmicTerm/v1/
+for f in config.jsonc config-kitty.jsonc raveos-logo.png raveos-logo.txt; do
+    [[ -f "${PAYLOAD}/fastfetch/${f}" ]] && \
+        install -Dm644 "${PAYLOAD}/fastfetch/${f}" "/etc/skel/.config/fastfetch/${f}"
+done
 ensure_bashrc_hook /etc/skel/.bashrc
 
-if [[ -f "${payload_dir}/background" ]]; then
-  install -Dm644 "${payload_dir}/background" /usr/share/backgrounds/raveos/raveos-main-bg.jpeg
-fi
-
-if [[ -d /usr/share/cosmic ]]; then
-  find /usr/share/cosmic -type f -exec sed -i 's/0.3882353/0.29411766/g' {} + || true
-  find /usr/share/cosmic -type f -exec sed -i 's/0.8156863/0.52156866/g' {} + || true
-  find /usr/share/cosmic -type f -exec sed -i 's/0.8745098/0.003921569/g' {} + || true
-fi
-
-if [[ -f "${payload_dir}/sddm/sddm.conf" ]]; then
-  install -Dm644 "${payload_dir}/sddm/sddm.conf" /etc/sddm.conf.d/raveos-theme.conf
-fi
-
-for candidate in \
-  "/usr/share/sddm/themes/sddm-astronaut-theme" \
-  "/usr/share/sddm/themes/astronaut" \
-  "/usr/share/sddm/themes/sddm-astronaut"; do
-  if [[ -d "$candidate" ]]; then
-    if [[ -f "${payload_dir}/sddm/new-raveos-main-bg.jpeg" ]]; then
-      install -Dm644 "${payload_dir}/sddm/new-raveos-main-bg.jpeg" \
-        "${candidate}/Backgrounds/new-raveos-main-bg.jpeg"
-    fi
-    if [[ -f "${payload_dir}/sddm/astronaut.conf" ]]; then
-      install -Dm644 "${payload_dir}/sddm/astronaut.conf" \
-        "${candidate}/Themes/astronaut.conf"
-    fi
-    break
-  fi
-done
+# ---------------------------------------------------------------------------
+# MEGLÉVŐ USEREK FRISSÍTÉSE
+# /etc/passwd alapján minden UID >= 1000 bejelentkező user home-ja
+# ---------------------------------------------------------------------------
 
 while IFS=: read -r user _ uid gid _ home shell; do
-  [[ "$uid" -ge 1000 ]] || continue
-  [[ -d "$home" ]] || continue
-  [[ "$shell" != "/usr/bin/nologin" && "$shell" != "/bin/false" ]] || continue
-  mkdir -p "${home}/.config/kitty" "${home}/.config/fastfetch" "${home}/.config/cosmic/com.system76.CosmicTerm/v1"
-  if [[ -f "${payload_dir}/kitty/kitty.conf" ]]; then
-    install -Dm644 "${payload_dir}/kitty/kitty.conf" "${home}/.config/kitty/kitty.conf"
-  fi
-  if [[ -d "${payload_dir}/cosmic-term/v1" ]]; then
-    cp -r "${payload_dir}/cosmic-term/v1/"* "${home}/.config/cosmic/com.system76.CosmicTerm/v1/"
-  fi
-  if [[ -f "${payload_dir}/fastfetch/config.jsonc" ]]; then
-    install -Dm644 "${payload_dir}/fastfetch/config.jsonc" "${home}/.config/fastfetch/config.jsonc"
-  fi
-  if [[ -f "${payload_dir}/fastfetch/config-kitty.jsonc" ]]; then
-    install -Dm644 "${payload_dir}/fastfetch/config-kitty.jsonc" "${home}/.config/fastfetch/config-kitty.jsonc"
-  fi
-  if [[ -f "${payload_dir}/fastfetch/raveos-logo.png" ]]; then
-    install -Dm644 "${payload_dir}/fastfetch/raveos-logo.png" "${home}/.config/fastfetch/raveos-logo.png"
-  fi
-  if [[ -f "${payload_dir}/fastfetch/raveos-logo.txt" ]]; then
-    install -Dm644 "${payload_dir}/fastfetch/raveos-logo.txt" "${home}/.config/fastfetch/raveos-logo.txt"
-  fi
-  ensure_bashrc_hook "${home}/.bashrc"
-  chown -R "${uid}:${gid}" "$home"
+    [[ "$uid" -ge 1000 ]] || continue
+    [[ -d "$home" ]] || continue
+    [[ "$shell" != "/usr/bin/nologin" && "$shell" != "/bin/false" ]] || continue
+
+    mkdir -p \
+        "${home}/.config/kitty" \
+        "${home}/.config/fastfetch" \
+        "${home}/.config/cosmic/com.system76.CosmicTerm/v1"
+
+    [[ -f "${PAYLOAD}/kitty/kitty.conf" ]] && \
+        install -Dm644 "${PAYLOAD}/kitty/kitty.conf" "${home}/.config/kitty/kitty.conf"
+    [[ -d "${PAYLOAD}/cosmic-term/v1" ]] && \
+        cp -r "${PAYLOAD}/cosmic-term/v1/." "${home}/.config/cosmic/com.system76.CosmicTerm/v1/"
+    for f in config.jsonc config-kitty.jsonc raveos-logo.png raveos-logo.txt; do
+        [[ -f "${PAYLOAD}/fastfetch/${f}" ]] && \
+            install -Dm644 "${PAYLOAD}/fastfetch/${f}" "${home}/.config/fastfetch/${f}"
+    done
+    ensure_bashrc_hook "${home}/.bashrc"
+
+    chown -R "${uid}:${gid}" "$home"
 done < /etc/passwd
 
-echo "Automatic apply finished."
+echo "Telepítés kész."

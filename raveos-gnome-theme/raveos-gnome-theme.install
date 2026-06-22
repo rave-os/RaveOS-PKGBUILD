@@ -1,13 +1,33 @@
-post_install() {
-  if command -v systemctl >/dev/null 2>&1; then
-    systemctl enable raveos-gnome-theme-apply.service >/dev/null 2>&1 || true
-  fi
+_sddm_src="/usr/share/raveos/gnome-theme/theme-data/sddm/sddm.conf"
+_sddm_dst="/etc/sddm.conf.d/raveos-theme.conf"
 
-  if [[ -x /usr/lib/raveos-gnome-theme/auto-apply.sh ]]; then
-    /usr/lib/raveos-gnome-theme/auto-apply.sh || true
-  fi
+pre_install() {
+    rm -f "$_sddm_dst"
+}
+
+pre_upgrade() {
+    rm -f "$_sddm_dst"
+}
+
+post_install() {
+    mkdir -p /etc/sddm.conf.d
+    install -Dm644 "$_sddm_src" "$_sddm_dst"
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl enable raveos-gnome-theme-apply.service >/dev/null 2>&1 || true
+    fi
+    if [[ -x /usr/lib/raveos-gnome-theme/auto-apply.sh ]]; then
+        /usr/lib/raveos-gnome-theme/auto-apply.sh || true
+    fi
 }
 
 post_upgrade() {
-  post_install
+    mkdir -p /etc/sddm.conf.d
+    install -Dm644 "$_sddm_src" "$_sddm_dst"
+    if [[ -x /usr/lib/raveos-gnome-theme/auto-apply.sh ]]; then
+        /usr/lib/raveos-gnome-theme/auto-apply.sh || true
+    fi
+}
+
+post_remove() {
+    rm -f "$_sddm_dst"
 }

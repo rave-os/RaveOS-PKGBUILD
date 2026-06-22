@@ -1,16 +1,29 @@
+# Maintainer: RaveOS Team
+#
+# raveos-plasma-theme
+# -------------------
+# KDE Plasma DE téma csomag: kitty, fastfetch, Plasma splash, Konsole profil,
+# kickoff ikon, háttérkép, SDDM téma.
+#
+# Az apply script (raveos-plasma-theme-apply.service) post_install hook-ból
+# fut és bemásolja a theme-data tartalmát /etc/skel-be és minden meglévő
+# user home-jába.
+
 pkgname=raveos-plasma-theme
 pkgver=0.0.0
-pkgrel=32
+pkgrel=33
 pkgdesc="RaveOS Plasma theme payload and installer"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
+
 depends=('fastfetch')
+
 install="${pkgname}.install"
 source=()
 sha256sums=()
 
-# Build redirection
+# Build könyvtárak az src mellé, ne a makepkg alapértelmezettbe
 BUILDDIR="${startdir}/build"
 PKGDEST="${startdir}/build"
 SRCDEST="${startdir}/build"
@@ -18,22 +31,40 @@ SRCPKGDEST="${startdir}/build"
 LOGDEST="${startdir}/build"
 
 package() {
-  install -dm755 "${pkgdir}/usr/share/raveos/plasma-theme"
-  cp -r --no-preserve=ownership "${startdir}/theme-data" "${pkgdir}/usr/share/raveos/plasma-theme/"
+    # theme-data payload: kitty, fastfetch, Plasma konfig, Konsole, splash stb.
+    install -dm755 "${pkgdir}/usr/share/raveos/plasma-theme"
+    cp -r --no-preserve=ownership "${startdir}/theme-data" \
+        "${pkgdir}/usr/share/raveos/plasma-theme/"
 
-  install -Dm755 "${startdir}/raveos-plasma-apply.sh" \
-    "${pkgdir}/usr/lib/raveos-plasma-theme/auto-apply.sh"
-  install -Dm755 "${startdir}/raveos-plasma-first-login.sh" \
-    "${pkgdir}/usr/lib/raveos-plasma-theme/first-login.sh"
-  install -Dm644 "${startdir}/raveos-plasma-theme-apply.service" \
-    "${pkgdir}/usr/lib/systemd/system/raveos-plasma-theme-apply.service"
-  install -Dm644 "${startdir}/raveos-plasma-first-login.desktop" \
-    "${pkgdir}/etc/xdg/autostart/raveos-plasma-first-login.desktop"
+    # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
+    install -dm755 "${pkgdir}/usr/share/sddm/themes"
+    cp -r "${startdir}/theme-data/sddm/sddm-rave-theme" \
+        "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
 
-  install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
-    "${pkgdir}/usr/share/pixmaps/raveos-logo.svg"
-  install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
-    "${pkgdir}/usr/share/icons/hicolor/scalable/apps/raveos-logo.svg"
-  install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
-    "${pkgdir}/usr/share/icons/hicolor/scalable/apps/distributor-logo-raveos.svg"
+    # SDDM konfig: post_install/post_upgrade hook telepíti (nem itt, hogy
+    # elkerüljük a pacman "conflicting files" hibát az unowned fájloknál)
+
+    # apply script: post_install hook hívja
+    install -Dm755 "${startdir}/raveos-plasma-apply.sh" \
+        "${pkgdir}/usr/lib/raveos-plasma-theme/auto-apply.sh"
+
+    # first-login script: első bejelentkezéskor fut (XDG autostart)
+    install -Dm755 "${startdir}/raveos-plasma-first-login.sh" \
+        "${pkgdir}/usr/lib/raveos-plasma-theme/first-login.sh"
+
+    # systemd service (a post_install hook enable-oli)
+    install -Dm644 "${startdir}/raveos-plasma-theme-apply.service" \
+        "${pkgdir}/usr/lib/systemd/system/raveos-plasma-theme-apply.service"
+
+    # XDG autostart: first-login script indítása
+    install -Dm644 "${startdir}/raveos-plasma-first-login.desktop" \
+        "${pkgdir}/etc/xdg/autostart/raveos-plasma-first-login.desktop"
+
+    # Kickoff/rendszer ikon - globálisan is telepítve, nem csak user-szinten
+    install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
+        "${pkgdir}/usr/share/pixmaps/raveos-logo.svg"
+    install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
+        "${pkgdir}/usr/share/icons/hicolor/scalable/apps/raveos-logo.svg"
+    install -Dm644 "${startdir}/theme-data/plasma/org.kde.plasma.kickoff.svg" \
+        "${pkgdir}/usr/share/icons/hicolor/scalable/apps/distributor-logo-raveos.svg"
 }

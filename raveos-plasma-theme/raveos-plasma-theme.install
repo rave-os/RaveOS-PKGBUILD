@@ -1,11 +1,30 @@
+_sddm_src="/usr/share/raveos/plasma-theme/theme-data/sddm/sddm.conf"
+_sddm_dst="/etc/sddm.conf.d/raveos-theme.conf"
+
+pre_install() {
+    rm -f "$_sddm_dst"
+}
+
+pre_upgrade() {
+    rm -f "$_sddm_dst"
+}
+
 post_install() {
-  if [[ -x /usr/lib/raveos-plasma-theme/auto-apply.sh ]]; then
-    /usr/lib/raveos-plasma-theme/auto-apply.sh || true
-  fi
+    mkdir -p /etc/sddm.conf.d
+    install -Dm644 "$_sddm_src" "$_sddm_dst"
+    if [[ -x /usr/lib/raveos-plasma-theme/auto-apply.sh ]]; then
+        /usr/lib/raveos-plasma-theme/auto-apply.sh || true
+    fi
 }
 
 post_upgrade() {
-  if [[ -x /usr/lib/raveos-plasma-theme/auto-apply.sh ]]; then
-    /usr/lib/raveos-plasma-theme/auto-apply.sh || true
-  fi
+    mkdir -p /etc/sddm.conf.d
+    install -Dm644 "$_sddm_src" "$_sddm_dst"
+    if [[ -x /usr/lib/raveos-plasma-theme/auto-apply.sh ]]; then
+        /usr/lib/raveos-plasma-theme/auto-apply.sh || true
+    fi
+}
+
+post_remove() {
+    rm -f "$_sddm_dst"
 }

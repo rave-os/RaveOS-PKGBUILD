@@ -1,16 +1,29 @@
+# Maintainer: RaveOS Team
+#
+# raveos-gnome-theme
+# ------------------
+# GNOME DE téma csomag: kitty, fastfetch, GNOME shell extensions,
+# GTK/ikon témák, dconf alapértelmezések, SDDM téma.
+#
+# Az install script (raveos-gnome-theme-apply.service) post_install hook-ból
+# fut és bemásolja a theme-data tartalmát /etc/skel-be és minden meglévő
+# user home-jába.
+
 pkgname=raveos-gnome-theme
 pkgver=0.0.0
-pkgrel=21
+pkgrel=22
 pkgdesc="RaveOS GNOME theme payload and installer"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
+
 depends=('fastfetch')
+
 install="${pkgname}.install"
 source=()
 sha256sums=()
 
-# Build redirection
+# Build könyvtárak az src mellé, ne a makepkg alapértelmezettbe
 BUILDDIR="${startdir}/build"
 PKGDEST="${startdir}/build"
 SRCDEST="${startdir}/build"
@@ -18,11 +31,24 @@ SRCPKGDEST="${startdir}/build"
 LOGDEST="${startdir}/build"
 
 package() {
-  install -dm755 "${pkgdir}/usr/share/raveos/gnome-theme"
-  cp -r --no-preserve=ownership "${startdir}/theme-data" "${pkgdir}/usr/share/raveos/gnome-theme/"
+    # theme-data payload: kitty, fastfetch, GTK, extensions, GNOME konfig stb.
+    install -dm755 "${pkgdir}/usr/share/raveos/gnome-theme"
+    cp -r --no-preserve=ownership "${startdir}/theme-data" \
+        "${pkgdir}/usr/share/raveos/gnome-theme/"
 
-  install -Dm755 "${startdir}/raveos-gnome-apply.sh" \
-    "${pkgdir}/usr/lib/raveos-gnome-theme/auto-apply.sh"
-  install -Dm644 "${startdir}/raveos-gnome-theme-apply.service" \
-    "${pkgdir}/usr/lib/systemd/system/raveos-gnome-theme-apply.service"
+    # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
+    install -dm755 "${pkgdir}/usr/share/sddm/themes"
+    cp -r "${startdir}/theme-data/sddm/sddm-rave-theme" \
+        "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
+
+    # SDDM konfig: post_install/post_upgrade hook telepíti (nem itt, hogy
+    # elkerüljük a pacman "conflicting files" hibát az unowned fájloknál)
+
+    # apply script: post_install hook hívja
+    install -Dm755 "${startdir}/raveos-gnome-apply.sh" \
+        "${pkgdir}/usr/lib/raveos-gnome-theme/auto-apply.sh"
+
+    # systemd service (a post_install hook enable-oli)
+    install -Dm644 "${startdir}/raveos-gnome-theme-apply.service" \
+        "${pkgdir}/usr/lib/systemd/system/raveos-gnome-theme-apply.service"
 }
