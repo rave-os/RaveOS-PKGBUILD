@@ -11,11 +11,12 @@
 
 pkgname=raveos-gnome-theme
 pkgver=0.0.0
-pkgrel=22
+pkgrel=23
 pkgdesc="RaveOS GNOME theme payload and installer"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
+conflicts=('raveos-hyprland-theme' 'raveos-cosmic-theme')
 
 depends=('fastfetch')
 

@@ -11,11 +11,12 @@
 
 pkgname=raveos-cosmic-theme
 pkgver=0.0.0
-pkgrel=9
+pkgrel=10
 pkgdesc="RaveOS Cosmic theme payload and installer"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
+conflicts=('raveos-hyprland-theme' 'raveos-gnome-theme')
 
 depends=('fastfetch')
 

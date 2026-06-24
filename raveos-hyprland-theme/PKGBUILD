@@ -15,6 +15,7 @@ pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell
 arch=('any')
 url="https://raveos.local"
 license=('custom')
+conflicts=('raveos-cosmic-theme' 'raveos-gnome-theme')
 
 # Futáshoz szükséges csomagok
 depends=(
