@@ -170,6 +170,11 @@ while IFS=: read -r user _ uid gid _ home shell; do
         fi
     done
 
+    # Icon és GTK téma beállítása (dconf/gsettings)
+    # A settings.ini nem elég — a GTK daemonok a dconf-ot olvassák
+    runuser -u "$user" -- dbus-launch gsettings set org.gnome.desktop.interface gtk-theme 'Yaru-olive-dark' 2>/dev/null || true
+    runuser -u "$user" -- dbus-launch gsettings set org.gnome.desktop.interface icon-theme 'Adwaitaru-olive' 2>/dev/null || true
+
     # XDG user könyvtárak (Letöltések, Dokumentumok stb.)
     runuser -u "$user" -- xdg-user-dirs-update 2>/dev/null || true
 
@@ -182,12 +187,25 @@ while IFS=: read -r user _ uid gid _ home shell; do
     fi
 
     # hyprpaper újraindítás, ha Hyprland fut
-    hypr_sig=$(runuser -u "$user" -- bash -c \
-        'ls /run/user/'"$uid"'/hypr/ 2>/dev/null | tail -1')
+    xdg_run="/run/user/${uid}"
+    hypr_sig=$(ls "${xdg_run}/hypr/" 2>/dev/null | tail -1)
     if [[ -n "$hypr_sig" ]]; then
-        runuser -u "$user" -- bash -c \
-            "HYPRLAND_INSTANCE_SIGNATURE='${hypr_sig}' hyprctl dispatch exec \
-            'env LIBGL_ALWAYS_SOFTWARE=1 hyprpaper'" 2>/dev/null || true
+        # Először a régit leállítjuk
+        runuser -u "$user" -- env \
+            XDG_RUNTIME_DIR="${xdg_run}" \
+            HYPRLAND_INSTANCE_SIGNATURE="${hypr_sig}" \
+            hyprctl dispatch killall hyprpaper 2>/dev/null || true
+        sleep 1
+        # Újat indítunk (Lua módban a hyprctl dispatch exec nem működik)
+        runuser -u "$user" -- env \
+            XDG_RUNTIME_DIR="${xdg_run}" \
+            XDG_SESSION_TYPE=wayland \
+            XDG_CURRENT_DESKTOP=Hyprland \
+            HYPRLAND_INSTANCE_SIGNATURE="${hypr_sig}" \
+            WAYLAND_DISPLAY=wayland-1 \
+            LIBGL_ALWAYS_SOFTWARE=1 \
+            hyprpaper 2>/dev/null &
+        disown
     fi
 
 done < /etc/passwd
