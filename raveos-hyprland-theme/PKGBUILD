@@ -10,7 +10,7 @@
 
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=45
+pkgrel=46
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
@@ -19,16 +19,20 @@ conflicts=('raveos-cosmic-theme' 'raveos-gnome-theme')
 
 # Futáshoz szükséges csomagok
 depends=(
-    'fastfetch'           # terminál üdvözlő (profile.d script indítja)
     'dms-shell-hyprland'  # DankMaterialShell - a fő panel/shell
     'matugen'             # wallpaper-alapú színséma generátor (matugen image ...)
     'socat'               # hyprshell socket kommunikációhoz (keybinds)
     'hyprshell'           # Alt+Tab ablakváltó overlay
     'hyprpaper'           # háttérkép daemon
-    'wl-clipboard'        # wl-paste (clipboard pipeline)
-    'cliphist'            # clipboard history store
     'polkit-gnome'        # polkit auth agent (GUI sudo kérések)
-    'kitty'               # alapértelmezett terminál
+)
+
+# Opcionális csomagok
+optdepends=(
+    'fastfetch: terminál üdvözlő (profile.d script indítja)'
+    'wl-clipboard: wl-paste (clipboard pipeline)'
+    'cliphist: clipboard history store'
+    'kitty: alapértelmezett terminál'
 )
 
 install="${pkgname}.install"
@@ -49,9 +53,13 @@ package() {
         "${pkgdir}/usr/share/raveos/hyprland-theme/"
 
     # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
-    install -dm755 "${pkgdir}/usr/share/sddm/themes"
-    cp -r "${startdir}/theme-data/sddm/sddm-rave-theme" \
-        "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
+    install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
+    find "${startdir}/theme-data/sddm/sddm-rave-theme" -type f | while read -r f; do
+        rel="${f#${startdir}/theme-data/sddm/sddm-rave-theme/}"
+        dir=$(dirname "$rel")
+        install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${dir}"
+        install -Dm644 "$f" "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${rel}"
+    done
 
     # SDDM konfig: NEM itt telepítjük, hanem post_install/post_upgrade hook-ból,
     # mert ha az unowned fájl már létezik, a pacman ütközés-ellenőrzése ELŐBB fut

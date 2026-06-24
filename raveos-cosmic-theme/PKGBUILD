@@ -11,14 +11,18 @@
 
 pkgname=raveos-cosmic-theme
 pkgver=0.0.0
-pkgrel=10
+pkgrel=11
 pkgdesc="RaveOS Cosmic theme payload and installer"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
 conflicts=('raveos-hyprland-theme' 'raveos-gnome-theme')
 
-depends=('fastfetch')
+depends=()
+
+optdepends=(
+    'fastfetch: terminál üdvözlő (profile.d script indítja)'
+)
 
 install="${pkgname}.install"
 source=()
@@ -38,9 +42,13 @@ package() {
         "${pkgdir}/usr/share/raveos/cosmic-theme/"
 
     # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
-    install -dm755 "${pkgdir}/usr/share/sddm/themes"
-    cp -r "${startdir}/theme-data/sddm/sddm-rave-theme" \
-        "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
+    install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
+    find "${startdir}/theme-data/sddm/sddm-rave-theme" -type f | while read -r f; do
+        rel="${f#${startdir}/theme-data/sddm/sddm-rave-theme/}"
+        dir=$(dirname "$rel")
+        install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${dir}"
+        install -Dm644 "$f" "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${rel}"
+    done
 
     # SDDM konfig: post_install/post_upgrade hook telepíti (nem itt, hogy
     # elkerüljük a pacman "conflicting files" hibát az unowned fájloknál)
