@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=RaveOS App Installer
+GenericName=Application Installer
+Comment=RaveOS alkalmazás- és eszköztelepítő
+Exec=/usr/bin/raveos-app-installer
+Icon=raveos-app-installer
+Terminal=false
+Categories=System;PackageManager;
+StartupNotify=true
+StartupWMClass=raveos-app-installer

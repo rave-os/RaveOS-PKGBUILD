@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# LSP Plugins
+  sudo apt install lsp-plugins -y
+  git clone https://github.com/lsp-plugins/lsp-plugins-mixer.git
+  sudo add-apt-repository ppa:pipewire-debian/pipewire-upstream -y
+  sudo apt update
+  sudo apt install php libjack-dev libsndfile1-dev libsndfile1 gstreamer1.0-pipewire libpipewire-0.3-{0,dev,modules} libspa-0.2-{bluetooth,dev,jack,modules} pipewire{,-{audio-client-libraries,pulse,bin,jack,alsa,v4l2,libcamera,locales,tests}} -y
+  cd lsp-plugins-mixer
+  make config
+  make fetch
+  make
+  sudo make install
