@@ -6,3 +6,4 @@ find_package(Calamares REQUIRED)
 
 add_subdirectory(wifi)
 add_subdirectory(welcome)
+add_subdirectory(desktopselect)

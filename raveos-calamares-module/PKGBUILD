@@ -1,7 +1,7 @@
 pkgname=raveos-calamares-module
 pkgver=2.0.0
-pkgrel=4
-pkgdesc="RaveOS Calamares Wi-Fi viewmodule"
+pkgrel=5
+pkgdesc="RaveOS Calamares modules: Wi-Fi, Welcome, Desktop Selector"
 arch=('x86_64')
 options=('!debug')
 url="https://git.rp1.hu/RaveOS"

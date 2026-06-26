@@ -1,0 +1,5 @@
+---
+type: "viewmodule"
+name: "desktopselect"
+interface: "qtplugin"
+load: "libcalamares_viewmodule_desktopselect.so"
