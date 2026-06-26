@@ -182,7 +182,12 @@ while IFS=: read -r user _ uid gid _ home shell; do
     runuser -u "$user" -- xdg-user-dirs-update 2>/dev/null || true
 
     # Session init service engedélyezése (user service)
-    runuser -u "$user" -- systemctl --user enable raveos-hyprland-session-init.service 2>/dev/null || true
+    # A systemctl --user enable nem működik boot-kor (nincs D-Bus session),
+    # ezért kézzel hozzuk létre a symlink-et a graphical-session.target-ben.
+    local svc_dir="${home}/.config/systemd/user/graphical-session.target.wants"
+    mkdir -p "${svc_dir}"
+    ln -sf /usr/lib/systemd/user/raveos-hyprland-session-init.service \
+        "${svc_dir}/raveos-hyprland-session-init.service" 2>/dev/null || true
 
     # Tulajdonos visszaállítása
     chown -R "${uid}:${gid}" "$home"

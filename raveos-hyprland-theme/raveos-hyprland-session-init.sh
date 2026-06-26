@@ -40,11 +40,12 @@ wallpaper = ,${wallpaper}
 splash = false
 EOF
 
-    if ! pgrep -x hyprpaper >/dev/null 2>&1; then
-        hyprpaper &
-        disown
-        sleep 2
-    fi
+    # hyprpaper újraindítása (már lehet hogy fut régi konfiggal)
+    pkill -x hyprpaper 2>/dev/null || true
+    sleep 1
+    hyprpaper &
+    disown
+    sleep 2
 }
 
 # ---------------------------------------------------------------------------
