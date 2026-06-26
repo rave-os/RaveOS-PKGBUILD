@@ -10,7 +10,7 @@
 
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=46
+pkgrel=48
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
@@ -69,7 +69,15 @@ package() {
     install -Dm755 "${startdir}/raveos-hyprland-apply.sh" \
         "${pkgdir}/usr/lib/raveos-hyprland-theme/auto-apply.sh"
 
-    # systemd service: egyszer fut (ConditionPathExists=!.applied guard)
+    # systemd system service: egyszer fut (ConditionPathExists=!.applied guard)
     install -Dm644 "${startdir}/raveos-hyprland-theme-apply.service" \
         "${pkgdir}/usr/lib/systemd/system/raveos-hyprland-theme-apply.service"
+
+    # session init script: user login után fut (háttérkép + GTK téma)
+    install -Dm755 "${startdir}/raveos-hyprland-session-init.sh" \
+        "${pkgdir}/usr/lib/raveos-hyprland-theme/session-init.sh"
+
+    # systemd user service: graphical-session.target-ben indul
+    install -Dm644 "${startdir}/raveos-hyprland-session-init.service" \
+        "${pkgdir}/usr/lib/systemd/user/raveos-hyprland-session-init.service"
 }

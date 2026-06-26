@@ -181,6 +181,9 @@ while IFS=: read -r user _ uid gid _ home shell; do
     # XDG user könyvtárak (Letöltések, Dokumentumok stb.)
     runuser -u "$user" -- xdg-user-dirs-update 2>/dev/null || true
 
+    # Session init service engedélyezése (user service)
+    runuser -u "$user" -- systemctl --user enable raveos-hyprland-session-init.service 2>/dev/null || true
+
     # Tulajdonos visszaállítása
     chown -R "${uid}:${gid}" "$home"
 
