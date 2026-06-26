@@ -10,7 +10,7 @@
 
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=48
+pkgrel=49
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
@@ -19,11 +19,10 @@ conflicts=('raveos-cosmic-theme' 'raveos-gnome-theme')
 
 # Futáshoz szükséges csomagok
 depends=(
-    'dms-shell-hyprland'  # DankMaterialShell - a fő panel/shell
+    'dms-shell-hyprland'  # DankMaterialShell - a fő panel/shell + wallpaper
     'matugen'             # wallpaper-alapú színséma generátor (matugen image ...)
     'socat'               # hyprshell socket kommunikációhoz (keybinds)
     'hyprshell'           # Alt+Tab ablakváltó overlay
-    'hyprpaper'           # háttérkép daemon
     'polkit-gnome'        # polkit auth agent (GUI sudo kérések)
 )
 
@@ -73,11 +72,7 @@ package() {
     install -Dm644 "${startdir}/raveos-hyprland-theme-apply.service" \
         "${pkgdir}/usr/lib/systemd/system/raveos-hyprland-theme-apply.service"
 
-    # session init script: user login után fut (háttérkép + GTK téma)
-    install -Dm755 "${startdir}/raveos-hyprland-session-init.sh" \
-        "${pkgdir}/usr/lib/raveos-hyprland-theme/session-init.sh"
-
-    # systemd user service: graphical-session.target-ben indul
-    install -Dm644 "${startdir}/raveos-hyprland-session-init.service" \
-        "${pkgdir}/usr/lib/systemd/user/raveos-hyprland-session-init.service"
+    # session init script: első login-kor beállítja a háttérképet a DMS-ben
+    install -Dm755 "${startdir}/raveos-session-init.sh" \
+        "${pkgdir}/etc/profile.d/raveos-session-init.sh"
 }
