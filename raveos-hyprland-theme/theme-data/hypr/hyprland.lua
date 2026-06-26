@@ -26,7 +26,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
     hl.exec_cmd("bash -c 'wl-paste --watch cliphist store &'")
-    hl.exec_cmd("bash -c 'sleep 2 && gsettings set org.gnome.desktop.interface gtk-theme Yaru-olive-dark && gsettings set org.gnome.desktop.interface icon-theme Adwaitaru-olive &'")
 end)
 
 --##################
