@@ -1,7 +1,0 @@
-[Context]
-filesystems=~/.icons;~/.themes
-unset-environment=ICON_THEME;GTK_THEME
-
-[Environment]
-GTK_THEME=
-ICON_THEME=
