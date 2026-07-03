@@ -1,0 +1,49 @@
+# Maintainer: RaveOS Team
+#
+# raveos-sddm-theme
+# ------------------
+# Kozos RaveOS SDDM login-kepernyo tema (sddm-rave-theme).
+#
+# Korabban minden DE-tema csomag (cosmic/gnome/hyprland/plasma) sajat
+# maga csomagolta ugyanezt a byte-azonos SDDM temat - ez a kulon csomag
+# valtja ki mind a negyet, hogy csak egyszer kelljen karbantartani es
+# ne legyen fajl-duplikacio/utkozes-veszely a csomagok kozott. A DE-tema
+# csomagok erre a csomagra hivatkoznak depends-kent.
+
+pkgname=raveos-sddm-theme
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="RaveOS kozos SDDM login tema (sddm-rave-theme)"
+arch=('any')
+url="https://raveos.local"
+license=('custom')
+depends=('sddm')
+
+install="${pkgname}.install"
+source=()
+sha256sums=()
+
+# Build könyvtárak az src mellé, ne a makepkg alapértelmezettbe
+BUILDDIR="${startdir}/build"
+PKGDEST="${startdir}/build"
+SRCDEST="${startdir}/build"
+SRCPKGDEST="${startdir}/build"
+LOGDEST="${startdir}/build"
+
+package() {
+    # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
+    install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
+    find "${startdir}/sddm-rave-theme" -type f | while read -r f; do
+        rel="${f#${startdir}/sddm-rave-theme/}"
+        dir=$(dirname "$rel")
+        install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${dir}"
+        install -Dm644 "$f" "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${rel}"
+    done
+
+    # SDDM konfig forrás: NEM /etc-be telepítjük itt, hanem post_install/
+    # post_upgrade hook-ból, mert ha az unowned fájl már létezik, a pacman
+    # ütközés-ellenőrzése ELŐBB fut mint a pre_upgrade() hook, és blokkolja
+    # a tranzakciót.
+    install -Dm644 "${startdir}/sddm.conf" \
+        "${pkgdir}/usr/share/raveos-sddm-theme/sddm.conf"
+}

@@ -1,0 +1,28 @@
+_sddm_src="/usr/share/raveos-sddm-theme/sddm.conf"
+_sddm_dst="/etc/sddm.conf.d/raveos-theme.conf"
+
+pre_install() {
+    # Ha a fájl már létezik de pacman nem ownolta, töröljük - de ez csak
+    # pre_install esetén segít, pre_upgrade már késő (a pacman ütközés-
+    # ellenőrzése ELŐBB fut mint ez a hook). Ezért a konfig fájlt a post_*
+    # hook-ok telepítik, nem a package().
+    rm -f "$_sddm_dst"
+}
+
+pre_upgrade() {
+    rm -f "$_sddm_dst"
+}
+
+post_install() {
+    mkdir -p /etc/sddm.conf.d
+    install -Dm644 "$_sddm_src" "$_sddm_dst"
+}
+
+post_upgrade() {
+    mkdir -p /etc/sddm.conf.d
+    install -Dm644 "$_sddm_src" "$_sddm_dst"
+}
+
+post_remove() {
+    rm -f "$_sddm_dst"
+}

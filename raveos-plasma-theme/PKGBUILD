@@ -3,21 +3,25 @@
 # raveos-plasma-theme
 # -------------------
 # KDE Plasma DE téma csomag: kitty, fastfetch, Plasma splash, Konsole profil,
-# kickoff ikon, háttérkép, SDDM téma.
+# kickoff ikon, háttérkép.
 #
 # Az apply script (raveos-plasma-theme-apply.service) post_install hook-ból
 # fut és bemásolja a theme-data tartalmát /etc/skel-be és minden meglévő
 # user home-jába.
+#
+# Az SDDM login téma külön csomagban van (raveos-sddm-theme), mert korábban
+# mind a négy DE-téma csomag (cosmic/gnome/hyprland/plasma) ugyanazt a
+# byte-azonos SDDM temat csomagolta duplán.
 
 pkgname=raveos-plasma-theme
 pkgver=0.0.0
-pkgrel=33
+pkgrel=34
 pkgdesc="RaveOS Plasma theme payload and installer"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
 
-depends=('fastfetch')
+depends=('fastfetch' 'raveos-sddm-theme')
 
 install="${pkgname}.install"
 source=()
@@ -36,13 +40,7 @@ package() {
     cp -r --no-preserve=ownership "${startdir}/theme-data" \
         "${pkgdir}/usr/share/raveos/plasma-theme/"
 
-    # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
-    install -dm755 "${pkgdir}/usr/share/sddm/themes"
-    cp -r "${startdir}/theme-data/sddm/sddm-rave-theme" \
-        "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
-
-    # SDDM konfig: post_install/post_upgrade hook telepíti (nem itt, hogy
-    # elkerüljük a pacman "conflicting files" hibát az unowned fájloknál)
+    # SDDM téma: külön csomagban (raveos-sddm-theme), lásd depends
 
     # apply script: post_install hook hívja
     install -Dm755 "${startdir}/raveos-plasma-apply.sh" \

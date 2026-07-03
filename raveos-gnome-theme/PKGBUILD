@@ -3,22 +3,26 @@
 # raveos-gnome-theme
 # ------------------
 # GNOME DE téma csomag: kitty, fastfetch, GNOME shell extensions,
-# GTK/ikon témák, dconf alapértelmezések, SDDM téma.
+# GTK/ikon témák, dconf alapértelmezések.
 #
 # Az install script (raveos-gnome-theme-apply.service) post_install hook-ból
 # fut és bemásolja a theme-data tartalmát /etc/skel-be és minden meglévő
 # user home-jába.
+#
+# Az SDDM login téma külön csomagban van (raveos-sddm-theme), mert korábban
+# mind a négy DE-téma csomag (cosmic/gnome/hyprland/plasma) ugyanazt a
+# byte-azonos SDDM temat csomagolta duplán.
 
 pkgname=raveos-gnome-theme
 pkgver=0.0.0
-pkgrel=24
+pkgrel=25
 pkgdesc="RaveOS GNOME theme payload and installer"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
 conflicts=('raveos-hyprland-theme' 'raveos-cosmic-theme')
 
-depends=()
+depends=('raveos-sddm-theme')
 
 optdepends=(
     'fastfetch: terminál üdvözlő (profile.d script indítja)'
@@ -41,13 +45,7 @@ package() {
     cp -r --no-preserve=ownership "${startdir}/theme-data" \
         "${pkgdir}/usr/share/raveos/gnome-theme/"
 
-    # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
-    install -dm755 "${pkgdir}/usr/share/sddm/themes"
-    cp -r "${startdir}/theme-data/sddm/sddm-rave-theme" \
-        "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
-
-    # SDDM konfig: post_install/post_upgrade hook telepíti (nem itt, hogy
-    # elkerüljük a pacman "conflicting files" hibát az unowned fájloknál)
+    # SDDM téma: külön csomagban (raveos-sddm-theme), lásd depends
 
     # apply script: post_install hook hívja
     install -Dm755 "${startdir}/raveos-gnome-apply.sh" \

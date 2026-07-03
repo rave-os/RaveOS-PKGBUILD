@@ -78,6 +78,21 @@ jobs:
           PKG=$(ls -t *.pkg.tar.zst | grep -v -- '-debug-' | head -n 1)
           cp -v "$PKG" /tmp/builtpkgs/
 
+      - name: Build raveos-sddm-theme
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-sddm-theme
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-sddm-theme-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-sddm-theme ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -rf build || true
+          makepkg -s --noconfirm -f
+          cp -v build/raveos-sddm-theme-*.pkg.tar.zst /tmp/builtpkgs/
+
       - name: Build raveos-plasma-theme
         run: |
           set -euo pipefail

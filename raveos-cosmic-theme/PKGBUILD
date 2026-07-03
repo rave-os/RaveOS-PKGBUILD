@@ -3,28 +3,31 @@
 # raveos-cosmic-theme
 # -------------------
 # COSMIC DE téma csomag: kitty, fastfetch, COSMIC terminal konfig,
-# háttérkép, SDDM téma.
+# háttérkép.
 #
 # Az apply script (raveos-cosmic-theme-apply.service) boot-kor fut és
 # bemásolja a theme-data tartalmát /etc/skel-be és minden meglévő
 # user home-jába.
+#
+# Az SDDM login téma külön csomagban van (raveos-sddm-theme), mert korábban
+# mind a négy DE-téma csomag (cosmic/gnome/hyprland/plasma) ugyanazt a
+# byte-azonos SDDM temat csomagolta duplán.
 
 pkgname=raveos-cosmic-theme
 pkgver=0.0.0
-pkgrel=11
+pkgrel=12
 pkgdesc="RaveOS Cosmic theme payload and installer"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
 conflicts=('raveos-hyprland-theme' 'raveos-gnome-theme')
 
-depends=()
+depends=('raveos-sddm-theme')
 
 optdepends=(
     'fastfetch: terminál üdvözlő (profile.d script indítja)'
 )
 
-install="${pkgname}.install"
 source=()
 sha256sums=()
 
@@ -41,17 +44,7 @@ package() {
     cp -r --no-preserve=ownership "${startdir}/theme-data" \
         "${pkgdir}/usr/share/raveos/cosmic-theme/"
 
-    # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
-    install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
-    find "${startdir}/theme-data/sddm/sddm-rave-theme" -type f | while read -r f; do
-        rel="${f#${startdir}/theme-data/sddm/sddm-rave-theme/}"
-        dir=$(dirname "$rel")
-        install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${dir}"
-        install -Dm644 "$f" "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${rel}"
-    done
-
-    # SDDM konfig: post_install/post_upgrade hook telepíti (nem itt, hogy
-    # elkerüljük a pacman "conflicting files" hibát az unowned fájloknál)
+    # SDDM téma: külön csomagban (raveos-sddm-theme), lásd depends
 
     # apply script: boot-kor futó installer (systemd service hívja)
     install -Dm755 "${startdir}/raveos-cosmic-apply.sh" \

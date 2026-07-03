@@ -43,7 +43,11 @@ apply_qt_colors() {
                 } >>"$config_file"
             fi
         else
-            printf '[Appearance]\\ncustom_palette=true\\ncolor_scheme_path=%s\\n' "$color_scheme_path" >"$config_file"
+            {
+                echo "[Appearance]"
+                echo "custom_palette=true"
+                echo "color_scheme_path=$color_scheme_path"
+            } >"$config_file"
         fi
     }
 

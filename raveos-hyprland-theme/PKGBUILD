@@ -3,14 +3,18 @@
 # raveos-hyprland-theme
 # ---------------------
 # Hyprland DE téma csomag: Lua konfig, DankMaterialShell (DMS) shell, hyprshell
-# ablakváltó, SDDM téma, kitty, fastfetch, GTK/ikontémák.
+# ablakváltó, kitty, fastfetch, GTK/ikontémák.
 #
 # Az install script (raveos-hyprland-apply.service) egyszer fut boot-kor és
 # bemásolja a theme-data tartalmát /etc/skel-be és minden meglévő user home-jába.
+#
+# Az SDDM login téma külön csomagban van (raveos-sddm-theme), mert korábban
+# mind a négy DE-téma csomag (cosmic/gnome/hyprland/plasma) ugyanazt a
+# byte-azonos SDDM temat csomagolta duplán.
 
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=49
+pkgrel=53
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
@@ -23,7 +27,10 @@ depends=(
     'matugen'             # wallpaper-alapú színséma generátor (matugen image ...)
     'socat'               # hyprshell socket kommunikációhoz (keybinds)
     'hyprshell'           # Alt+Tab ablakváltó overlay
-    'polkit-gnome'        # polkit auth agent (GUI sudo kérések)
+    'hyprpolkitagent'     # polkit auth agent (GUI sudo kérések), natívan Hyprland/Wayland-hoz
+    'qt6ct'               # Qt6 téma konfiguráció (matugen ezt írja a szín-séma alkalmazásakor)
+    'kvantum'             # Qt6 SVG téma-motor (QT_STYLE_OVERRIDE=kvantum ezt igényli)
+    'raveos-sddm-theme'   # közös RaveOS SDDM login téma
 )
 
 # Opcionális csomagok
@@ -34,7 +41,6 @@ optdepends=(
     'kitty: alapértelmezett terminál'
 )
 
-install="${pkgname}.install"
 source=()
 sha256sums=()
 
@@ -46,23 +52,12 @@ SRCPKGDEST="${startdir}/build"
 LOGDEST="${startdir}/build"
 
 package() {
-    # theme-data payload: hypr konfig, DMS config, kitty, fastfetch, SDDM conf, GTK, stb.
+    # theme-data payload: hypr konfig, DMS config, kitty, fastfetch, GTK, stb.
     install -dm755 "${pkgdir}/usr/share/raveos/hyprland-theme"
     cp -r --no-preserve=ownership "${startdir}/theme-data" \
         "${pkgdir}/usr/share/raveos/hyprland-theme/"
 
-    # SDDM téma: rendszerszintű telepítés, SDDM innen olvassa
-    install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme"
-    find "${startdir}/theme-data/sddm/sddm-rave-theme" -type f | while read -r f; do
-        rel="${f#${startdir}/theme-data/sddm/sddm-rave-theme/}"
-        dir=$(dirname "$rel")
-        install -dm755 "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${dir}"
-        install -Dm644 "$f" "${pkgdir}/usr/share/sddm/themes/sddm-rave-theme/${rel}"
-    done
-
-    # SDDM konfig: NEM itt telepítjük, hanem post_install/post_upgrade hook-ból,
-    # mert ha az unowned fájl már létezik, a pacman ütközés-ellenőrzése ELŐBB fut
-    # mint a pre_upgrade() hook, és blokkolja a tranzakciót.
+    # SDDM téma: külön csomagban (raveos-sddm-theme), lásd depends
 
     # apply script: boot-kor futó installer (systemd service hívja)
     install -Dm755 "${startdir}/raveos-hyprland-apply.sh" \
