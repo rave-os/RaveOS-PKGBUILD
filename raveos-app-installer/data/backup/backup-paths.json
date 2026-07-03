@@ -3,13 +3,22 @@
   "groups": [
     {
       "id": "apps",
-      "label": "Alkalmazásprofilok",
-      "description": "Böngészők, kommunikációs appok és fontos desktop alkalmazások profiljai.",
+      "label": {
+        "hu": "Alkalmazásprofilok",
+        "en": "Application profiles"
+      },
+      "description": {
+        "hu": "Böngészők, kommunikációs appok és fontos desktop alkalmazások profiljai.",
+        "en": "Profiles of browsers, communication apps, and important desktop applications."
+      },
       "default_expanded": true,
       "items": [
         {
           "id": "librewolf_profile",
-          "label": "LibreWolf profil",
+          "label": {
+            "hu": "LibreWolf profil",
+            "en": "LibreWolf profile"
+          },
           "path": ".var/app/io.gitlab.librewolf-community/.librewolf",
           "scope": "home",
           "default_selected": true,
@@ -17,7 +26,10 @@
         },
         {
           "id": "vivaldi_profile",
-          "label": "Vivaldi profil",
+          "label": {
+            "hu": "Vivaldi profil",
+            "en": "Vivaldi profile"
+          },
           "path": ".config/vivaldi",
           "scope": "home",
           "default_selected": true,
@@ -25,7 +37,10 @@
         },
         {
           "id": "brave_profile",
-          "label": "Brave Origin profil",
+          "label": {
+            "hu": "Brave Origin profil",
+            "en": "Brave Origin profile"
+          },
           "path": ".config/BraveSoftware/Brave-Origin",
           "scope": "home",
           "default_selected": true,
@@ -33,7 +48,10 @@
         },
         {
           "id": "bitwarden_config",
-          "label": "Bitwarden beállítások",
+          "label": {
+            "hu": "Bitwarden beállítások",
+            "en": "Bitwarden settings"
+          },
           "path": ".config/Bitwarden",
           "scope": "home",
           "default_selected": true,
@@ -41,7 +59,10 @@
         },
         {
           "id": "heroic_config",
-          "label": "Heroic Games Launcher beállítások",
+          "label": {
+            "hu": "Heroic Games Launcher beállítások",
+            "en": "Heroic Games Launcher settings"
+          },
           "path": ".var/app/com.heroicgameslauncher.hgl/config/heroic",
           "scope": "home",
           "default_selected": true,
@@ -49,7 +70,10 @@
         },
         {
           "id": "qbittorrent_config",
-          "label": "qBittorrent beállítások",
+          "label": {
+            "hu": "qBittorrent beállítások",
+            "en": "qBittorrent settings"
+          },
           "path": ".config/qBittorrent",
           "scope": "home",
           "default_selected": true,
@@ -57,7 +81,10 @@
         },
         {
           "id": "signal_config",
-          "label": "Signal profil",
+          "label": {
+            "hu": "Signal profil",
+            "en": "Signal profile"
+          },
           "path": ".config/Signal",
           "scope": "home",
           "default_selected": true,
@@ -65,7 +92,10 @@
         },
         {
           "id": "telegram_data",
-          "label": "Telegram Desktop adatok",
+          "label": {
+            "hu": "Telegram Desktop adatok",
+            "en": "Telegram Desktop data"
+          },
           "path": ".local/share/TelegramDesktop",
           "scope": "home",
           "default_selected": true,
@@ -73,7 +103,10 @@
         },
         {
           "id": "discord_config",
-          "label": "Discord beállítások",
+          "label": {
+            "hu": "Discord beállítások",
+            "en": "Discord settings"
+          },
           "path": ".config/discord",
           "scope": "home",
           "default_selected": false,
@@ -81,7 +114,10 @@
         },
         {
           "id": "vencord_config",
-          "label": "Vencord beállítások",
+          "label": {
+            "hu": "Vencord beállítások",
+            "en": "Vencord settings"
+          },
           "path": ".config/Vencord",
           "scope": "home",
           "default_selected": false,
@@ -89,16 +125,25 @@
         },
         {
           "id": "steam_userdata",
-          "label": "Steam felhasználói adatok",
+          "label": {
+            "hu": "Steam felhasználói adatok",
+            "en": "Steam user data"
+          },
           "path": ".local/share/Steam",
           "scope": "home",
           "default_selected": false,
           "size_hint": "large",
-          "note": "Nagy lehet, játékadatokat és cache-t is tartalmazhat."
+          "note": {
+            "hu": "Nagy lehet, játékadatokat és cache-t is tartalmazhat.",
+            "en": "Can be large, may include game data and cache."
+          }
         },
         {
           "id": "lutris_data",
-          "label": "Lutris adatok",
+          "label": {
+            "hu": "Lutris adatok",
+            "en": "Lutris data"
+          },
           "path": ".local/share/lutris",
           "scope": "home",
           "default_selected": false,
@@ -108,13 +153,22 @@
     },
     {
       "id": "desktop",
-      "label": "Desktop és felület",
-      "description": "Témák, GNOME shell kiegészítők és HUD/overlay beállítások.",
+      "label": {
+        "hu": "Desktop és felület",
+        "en": "Desktop and interface"
+      },
+      "description": {
+        "hu": "Témák, GNOME shell kiegészítők és HUD/overlay beállítások.",
+        "en": "Themes, GNOME Shell extensions, and HUD/overlay settings."
+      },
       "default_expanded": true,
       "items": [
         {
           "id": "icons_dir",
-          "label": "Ikonok",
+          "label": {
+            "hu": "Ikonok",
+            "en": "Icons"
+          },
           "path": ".icons",
           "scope": "home",
           "default_selected": true,
@@ -122,7 +176,10 @@
         },
         {
           "id": "themes_dir",
-          "label": "Témák",
+          "label": {
+            "hu": "Témák",
+            "en": "Themes"
+          },
           "path": ".themes",
           "scope": "home",
           "default_selected": true,
@@ -130,7 +187,10 @@
         },
         {
           "id": "gnome_shell_data",
-          "label": "GNOME Shell kiegészítők",
+          "label": {
+            "hu": "GNOME Shell kiegészítők",
+            "en": "GNOME Shell extensions"
+          },
           "path": ".local/share/gnome-shell",
           "scope": "home",
           "default_selected": true,
@@ -138,7 +198,10 @@
         },
         {
           "id": "flatpak_overrides",
-          "label": "Flatpak override-ok",
+          "label": {
+            "hu": "Flatpak override-ok",
+            "en": "Flatpak overrides"
+          },
           "path": ".local/share/flatpak/overrides",
           "scope": "home",
           "default_selected": true,
@@ -146,7 +209,10 @@
         },
         {
           "id": "mangohud_config",
-          "label": "MangoHud beállítások",
+          "label": {
+            "hu": "MangoHud beállítások",
+            "en": "MangoHud settings"
+          },
           "path": ".config/MangoHud",
           "scope": "home",
           "default_selected": true,
@@ -154,7 +220,10 @@
         },
         {
           "id": "goverlay_config",
-          "label": "GOverlay beállítások",
+          "label": {
+            "hu": "GOverlay beállítások",
+            "en": "GOverlay settings"
+          },
           "path": ".config/goverlay",
           "scope": "home",
           "default_selected": true,
@@ -164,13 +233,22 @@
     },
     {
       "id": "work",
-      "label": "Munka és produktivitás",
-      "description": "Irodai, média- és alkotó appok fontos user-adatkönyvtárai.",
+      "label": {
+        "hu": "Munka és produktivitás",
+        "en": "Work and productivity"
+      },
+      "description": {
+        "hu": "Irodai, média- és alkotó appok fontos user-adatkönyvtárai.",
+        "en": "Important user data directories of office, media, and creative apps."
+      },
       "default_expanded": false,
       "items": [
         {
           "id": "libreoffice_config",
-          "label": "LibreOffice beállítások",
+          "label": {
+            "hu": "LibreOffice beállítások",
+            "en": "LibreOffice settings"
+          },
           "path": ".config/libreoffice",
           "scope": "home",
           "default_selected": true,
@@ -178,7 +256,10 @@
         },
         {
           "id": "onlyoffice_data",
-          "label": "OnlyOffice adatok",
+          "label": {
+            "hu": "OnlyOffice adatok",
+            "en": "OnlyOffice data"
+          },
           "path": ".local/share/onlyoffice",
           "scope": "home",
           "default_selected": false,
@@ -186,7 +267,10 @@
         },
         {
           "id": "calibre_config",
-          "label": "Calibre beállítások",
+          "label": {
+            "hu": "Calibre beállítások",
+            "en": "Calibre settings"
+          },
           "path": ".config/calibre",
           "scope": "home",
           "default_selected": false,
@@ -194,7 +278,10 @@
         },
         {
           "id": "kdenlive_data",
-          "label": "Kdenlive adatok",
+          "label": {
+            "hu": "Kdenlive adatok",
+            "en": "Kdenlive data"
+          },
           "path": ".local/share/kdenlive",
           "scope": "home",
           "default_selected": false,
@@ -202,7 +289,10 @@
         },
         {
           "id": "freetube_config",
-          "label": "FreeTube profil",
+          "label": {
+            "hu": "FreeTube profil",
+            "en": "FreeTube profile"
+          },
           "path": ".config/FreeTube",
           "scope": "home",
           "default_selected": false,
@@ -212,22 +302,37 @@
     },
     {
       "id": "content",
-      "label": "Nagy felhasználói tartalmak",
-      "description": "Nem alapból kijelölt könyvtárak, mert nagyok lehetnek.",
+      "label": {
+        "hu": "Nagy felhasználói tartalmak",
+        "en": "Large user content"
+      },
+      "description": {
+        "hu": "Nem alapból kijelölt könyvtárak, mert nagyok lehetnek.",
+        "en": "Directories not selected by default because they can be large."
+      },
       "default_expanded": false,
       "items": [
         {
           "id": "games_dir",
-          "label": "Games könyvtár",
+          "label": {
+            "hu": "Games könyvtár",
+            "en": "Games directory"
+          },
           "path": "Games",
           "scope": "home",
           "default_selected": false,
           "size_hint": "xlarge",
-          "note": "Játékadatok miatt nagyon nagy lehet."
+          "note": {
+            "hu": "Játékadatok miatt nagyon nagy lehet.",
+            "en": "Can be very large due to game data."
+          }
         },
         {
           "id": "calibre_library",
-          "label": "Calibre Library",
+          "label": {
+            "hu": "Calibre Library",
+            "en": "Calibre Library"
+          },
           "path": "Calibre Library",
           "scope": "home",
           "default_selected": false,
@@ -235,7 +340,10 @@
         },
         {
           "id": "desktop_dir",
-          "label": "Asztal / Desktop",
+          "label": {
+            "hu": "Asztal / Desktop",
+            "en": "Desktop"
+          },
           "path": "Desktop",
           "scope": "home",
           "default_selected": false,
@@ -243,7 +351,10 @@
         },
         {
           "id": "documents_dir",
-          "label": "Dokumentumok / Documents",
+          "label": {
+            "hu": "Dokumentumok / Documents",
+            "en": "Documents"
+          },
           "path": "Documents",
           "scope": "home",
           "default_selected": false,
@@ -251,7 +362,10 @@
         },
         {
           "id": "downloads_dir",
-          "label": "Letöltések / Downloads",
+          "label": {
+            "hu": "Letöltések / Downloads",
+            "en": "Downloads"
+          },
           "path": "Downloads",
           "scope": "home",
           "default_selected": false,
@@ -259,7 +373,10 @@
         },
         {
           "id": "pictures_dir",
-          "label": "Képek / Pictures",
+          "label": {
+            "hu": "Képek / Pictures",
+            "en": "Pictures"
+          },
           "path": "Pictures",
           "scope": "home",
           "default_selected": false,
@@ -267,7 +384,10 @@
         },
         {
           "id": "videos_dir",
-          "label": "Videók / Videos",
+          "label": {
+            "hu": "Videók / Videos",
+            "en": "Videos"
+          },
           "path": "Videos",
           "scope": "home",
           "default_selected": false,
@@ -275,7 +395,10 @@
         },
         {
           "id": "music_dir",
-          "label": "Zenék / Music",
+          "label": {
+            "hu": "Zenék / Music",
+            "en": "Music"
+          },
           "path": "Music",
           "scope": "home",
           "default_selected": false,
@@ -285,13 +408,22 @@
     },
     {
       "id": "system",
-      "label": "Rendszerközeli mentés",
-      "description": "Csak haladó felhasználóknak, külön megerősítéssel.",
+      "label": {
+        "hu": "Rendszerközeli mentés",
+        "en": "System-level backup"
+      },
+      "description": {
+        "hu": "Csak haladó felhasználóknak, külön megerősítéssel.",
+        "en": "For advanced users only, requires extra confirmation."
+      },
       "default_expanded": false,
       "items": [
         {
           "id": "libvirt_system",
-          "label": "libvirt rendszerbeállítások",
+          "label": {
+            "hu": "libvirt rendszerbeállítások",
+            "en": "libvirt system configuration"
+          },
           "path": "/etc/libvirt",
           "scope": "system",
           "default_selected": false,
@@ -300,7 +432,10 @@
         },
         {
           "id": "jellyfin_web_config",
-          "label": "Jellyfin web config",
+          "label": {
+            "hu": "Jellyfin web config",
+            "en": "Jellyfin web config"
+          },
           "path": "/usr/share/jellyfin/web/config.json",
           "scope": "system",
           "default_selected": false,

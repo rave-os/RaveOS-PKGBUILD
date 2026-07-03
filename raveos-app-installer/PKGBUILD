@@ -8,7 +8,7 @@
 
 pkgname=raveos-app-installer
 pkgver=3.1
-pkgrel=1
+pkgrel=3
 pkgdesc="RaveOS graphical application installer"
 arch=('any')
 url="https://git.rp1.hu/RaveOS/raveos-app-installer"

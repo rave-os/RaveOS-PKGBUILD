@@ -203,51 +203,6 @@ jobs:
           makepkg -s --noconfirm -f
           cp -v build/raveos-welcome-*.pkg.tar.zst /tmp/builtpkgs/
 
-      - name: Mirror linux-cachyos + sddm-astronaut-theme from Chaotic-AUR
-        run: |
-          set -euo pipefail
-          CORE="/tmp/raveos-core-repo/x86_64"
-          MIRRORS="https://de-mirror.chaotic.cx/chaotic-aur/x86_64 https://cdn-mirror.chaotic.cx/chaotic-aur/x86_64 https://geo-mirror.chaotic.cx/chaotic-aur/x86_64"
-
-          for PKG in sddm-astronaut-theme; do
-            LATEST=""
-            for MIRROR in $MIRRORS; do
-              LATEST=$(curl -fsSL --retry 3 --retry-delay 5 --max-time 15 "${MIRROR}/" \
-                | grep -o "href=\"${PKG}-[0-9][^\"]*\.pkg\.tar\.zst\"" \
-                | sed 's/href="//;s/"//' | head -1)
-              [ -n "$LATEST" ] && break
-            done
-
-            if [ -z "$LATEST" ]; then
-              echo "$PKG nem talalhato egyik mirrorban sem -> skip"
-              continue
-            fi
-
-            if [[ ! "$LATEST" =~ ^[a-zA-Z0-9_.+-]+\.pkg\.tar\.zst$ ]]; then
-              echo "HIBA: Ervenytelen csomagfajlnev: $LATEST -> skip"
-              continue
-            fi
-
-            if [ -f "$CORE/$LATEST" ]; then
-              echo "$PKG $LATEST mar bent van a core repoban -> skip"
-              continue
-            fi
-
-            echo "$PKG uj verzio: $LATEST - letoltes..."
-            DOWNLOADED=0
-            for MIRROR in $MIRRORS; do
-              if curl -fL --retry 3 --retry-delay 5 --max-time 300 --progress-bar \
-                  "${MIRROR}/${LATEST}" -o "/tmp/builtpkgs/${LATEST}" 2>/dev/null; then
-                echo "$PKG letoltve OK ($MIRROR)"
-                DOWNLOADED=1
-                break
-              fi
-              echo "$PKG letoltes sikertelen: $MIRROR -> kovetkezo"
-              rm -f "/tmp/builtpkgs/${LATEST}" || true
-            done
-            [ "$DOWNLOADED" -eq 0 ] && echo "$PKG letoltes minden mirrorrol sikertelen -> skip" || true
-          done
-
       - name: Publish packages to raveos-core-repo (only if changed)
         run: |
           set -euo pipefail

@@ -47,9 +47,6 @@ APP_LIST_CANDIDATES = [
     Path.home() / ".config" / "raveos" / "app-list.json",
 ]
 
-CATEGORY_ALL = "All"
-
-
 # ─────────────────────────────────────────────────────────────────────────────
 #  Téma (a welcome app stílusa)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -80,6 +77,76 @@ TYPE_LABEL = {
     "script":       "script",
     "message":      "info",
 }
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Nyelv (hu/en) — session-szintű, alapértelmezett hu, a welcome app mintájára
+# ─────────────────────────────────────────────────────────────────────────────
+
+_current_lang = "hu"
+
+T = {
+    "header_installer":   {"hu": "  ·  ALKALMAZÁSTELEPÍTŐ", "en": "  ·  APP INSTALLER"},
+    "header_backup":       {"hu": "  ·  MENTÉS / VISSZAÁLLÍTÁS", "en": "  ·  BACKUP / RESTORE"},
+    "nav_backup":          {"hu": "Mentés / Visszaállítás", "en": "Backup / Restore"},
+    "nav_back":            {"hu": "← Vissza", "en": "← Back"},
+    "tab_all":             {"hu": "Összes", "en": "All"},
+    "tab_installed":       {"hu": "Telepített", "en": "Installed"},
+    "search_placeholder":  {"hu": "Keresés…", "en": "Search…"},
+    "btn_install":         {"hu": "Telepítés", "en": "Install"},
+    "btn_remove":          {"hu": "Eltávolítás", "en": "Remove"},
+    "row_installed":       {"hu": "telepítve", "en": "installed"},
+    "row_not_installed":   {"hu": "nincs telepítve", "en": "not installed"},
+    "row_info":            {"hu": "info", "en": "info"},
+    "dest_placeholder":    {"hu": "Backup fájl útvonala (.tar.gz)…", "en": "Backup file path (.tar.gz)…"},
+    "btn_browse":          {"hu": "Tallóz", "en": "Browse"},
+    "btn_save":            {"hu": "Mentés", "en": "Save"},
+    "btn_restore":         {"hu": "Visszaállítás", "en": "Restore"},
+    "dlg_auth_title":      {"hu": "Hitelesítés szükséges", "en": "Authentication required"},
+    "dlg_pw_label":        {"hu": "Sudo jelszó:", "en": "Sudo password:"},
+    "dlg_pw_placeholder":  {"hu": "Jelszó…", "en": "Password…"},
+    "dlg_pw_empty_err":    {"hu": "A jelszó nem lehet üres.", "en": "Password cannot be empty."},
+    "dlg_pw_wrong_err":    {"hu": "Hibás jelszó, próbáld újra.", "en": "Wrong password, try again."},
+    "dlg_ok":              {"hu": "OK", "en": "OK"},
+    "dlg_cancel":          {"hu": "Mégse", "en": "Cancel"},
+    "log_nothing_selected": {"hu": "Nincs kijelölve semmi.", "en": "Nothing selected."},
+    "log_nothing_to_do":   {"hu": "Nincs végrehajtható művelet.", "en": "No action to perform."},
+    "log_action_start":    {"hu": "{action} indul ({n} app)…", "en": "{action} starting ({n} app)…"},
+    "log_done":            {"hu": "\nKész: {ok}/{total} lépés sikeres.", "en": "\nDone: {ok}/{total} steps succeeded."},
+    "bk_start_backup":     {"hu": "Mentés indul -> {dest}", "en": "Backup starting -> {dest}"},
+    "bk_start_restore":    {"hu": "Visszaállítás indul <- {dest}", "en": "Restore starting <- {dest}"},
+    "bk_need_dest":        {"hu": "Add meg a célfájlt.", "en": "Specify the destination file."},
+    "bk_invalid_file":     {"hu": "Nem létező vagy érvénytelen backup fájl.", "en": "Backup file doesn't exist or is invalid."},
+    "bk_need_selection":   {"hu": "Jelölj ki legalább egy elemet.", "en": "Select at least one item."},
+    "bk_done_backup_ok":   {"hu": "Mentés kész.", "en": "Backup complete."},
+    "bk_done_restore_ok":  {"hu": "Visszaállítás kész.", "en": "Restore complete."},
+    "bk_result_ok":        {"hu": "OK", "en": "OK"},
+    "bk_result_err":       {"hu": "HIBA", "en": "ERROR"},
+    "filedialog_caption":  {"hu": "Backup fájl", "en": "Backup file"},
+    "not_installed_hint":  {"hu": "  [kihagyva, nem létezik]", "en": "  [skipped, doesn't exist]"},
+    "lang_hu":             {"hu": "Magyar", "en": "Magyar"},
+    "lang_en":             {"hu": "English", "en": "English"},
+}
+
+
+def tr(key, **kwargs):
+    lang = _current_lang
+    text = T.get(key, {}).get(lang, T.get(key, {}).get("hu", key))
+    if kwargs:
+        try:
+            return text.format(**kwargs)
+        except (KeyError, IndexError):
+            return text
+    return text
+
+
+def _loc(val):
+    """Katalógus-adat (app-list.json / backup-paths.json) i18n feloldása.
+    Ha a mező {"hu":..,"en":..} alakú, az aktuális nyelvre bontja, kulcs
+    hiányában hu-ra esik vissza; sima stringnél visszaadja változatlanul."""
+    if isinstance(val, dict):
+        return val.get(_current_lang, val.get("hu", ""))
+    return val or ""
 
 
 def build_qss() -> str:
@@ -248,7 +315,6 @@ def load_catalog() -> list:
                     continue
                 a.setdefault("type", "pacman")
                 a.setdefault("category", "Other")
-                a.setdefault("description", a.get("desc", ""))
                 cleaned.append(a)
             cleaned.sort(key=lambda x: x["name"].lower())
             return cleaned
@@ -520,18 +586,19 @@ def run_gui() -> int:
             mid.setSpacing(2)
             top = QLabel(app["name"])
             top.setStyleSheet(f"font-weight:600; font-size:14px; color:{C['text']};")
+            desc = _loc(app.get("desc"))
             sub = QLabel(f"{app['category']}  ·  {TYPE_LABEL.get(app['type'], app['type'])}"
-                         + (f"  ·  {app['description']}" if app["description"] else ""))
+                         + (f"  ·  {desc}" if desc else ""))
             sub.setStyleSheet(f"color:{C['text_dim']}; font-size:12px;")
             mid.addWidget(top)
             mid.addWidget(sub)
             lay.addLayout(mid, 1)
 
             if self.is_message:
-                status = QLabel("info")
+                status = QLabel(tr("row_info"))
                 status.setStyleSheet(f"color:{C['accent_hi']}; font-size:12px;")
             else:
-                status = QLabel("telepítve" if installed else "nincs telepítve")
+                status = QLabel(tr("row_installed") if installed else tr("row_not_installed"))
                 status.setStyleSheet(
                     f"color:{C['accent_hi'] if installed else C['text_mut']}; font-size:12px;")
             lay.addWidget(status)
@@ -646,11 +713,11 @@ def run_gui() -> int:
                                 elif Path(p).exists():
                                     tf.add(p, arcname=Path(p).name)
                                 else:
-                                    self.log.emit(f"  [kihagyva, nem létezik]")
+                                    self.log.emit(tr("not_installed_hint"))
                             except Exception as exc:
                                 self.log.emit(f"  [HIBA, kihagyva: {exc}]")
                             self.progress.emit(int((i + 1) / total * 100))
-                    self.done.emit(True, "Mentés kész.")
+                    self.done.emit(True, tr("bk_done_backup_ok"))
                 except Exception as exc:
                     self.done.emit(False, str(exc))
             else:
@@ -672,7 +739,7 @@ def run_gui() -> int:
                             except Exception as exc:
                                 self.log.emit(f"  [HIBA, kihagyva: {exc}]")
                             self.progress.emit(int((i + 1) / total_members * 100))
-                    self.done.emit(True, "Visszaállítás kész.")
+                    self.done.emit(True, tr("bk_done_restore_ok"))
                 except Exception as exc:
                     self.done.emit(False, str(exc))
 
@@ -714,13 +781,29 @@ def run_gui() -> int:
             os_.setStyleSheet(f"color:{C['accent']};")
             wm.addWidget(rave)
             wm.addWidget(os_)
-            self.header_sep = QLabel("  ·  APP INSTALLER")
+            self.header_sep = QLabel(tr("header_installer"))
             self.header_sep.setFont(display_font(15))
             self.header_sep.setStyleSheet(f"color:{C['text_dim']};")
             wm.addWidget(self.header_sep)
             hl.addLayout(wm)
             hl.addStretch(1)
-            self.btn_nav = QPushButton("Backup / Restore")
+
+            self.lang_hu_btn = QPushButton(tr("lang_hu"))
+            self.lang_hu_btn.setCheckable(True)
+            self.lang_hu_btn.setChecked(True)
+            self.lang_hu_btn.setFixedHeight(28)
+            self.lang_hu_btn.clicked.connect(lambda: self._set_lang("hu"))
+            hl.addWidget(self.lang_hu_btn)
+            self.lang_en_btn = QPushButton(tr("lang_en"))
+            self.lang_en_btn.setCheckable(True)
+            self.lang_en_btn.setChecked(False)
+            self.lang_en_btn.setFixedHeight(28)
+            self.lang_en_btn.clicked.connect(lambda: self._set_lang("en"))
+            hl.addWidget(self.lang_en_btn)
+            self._style_lang_btns()
+            hl.addSpacing(12)
+
+            self.btn_nav = QPushButton(tr("nav_backup"))
             self.btn_nav.clicked.connect(self._go_backup)
             hl.addWidget(self.btn_nav)
             hl.addSpacing(12)
@@ -741,8 +824,8 @@ def run_gui() -> int:
 
             frow = QHBoxLayout()
             frow.setSpacing(8)
-            self.tab_all = QPushButton("All")
-            self.tab_inst = QPushButton("Installed")
+            self.tab_all = QPushButton(tr("tab_all"))
+            self.tab_inst = QPushButton(tr("tab_installed"))
             for t in (self.tab_all, self.tab_inst):
                 t.setObjectName("Tab")
                 t.setCheckable(True)
@@ -757,13 +840,12 @@ def run_gui() -> int:
             frow.addWidget(self.tab_inst)
             frow.addSpacing(8)
             self.search = QLineEdit()
-            self.search.setPlaceholderText("Keresés…")
+            self.search.setPlaceholderText(tr("search_placeholder"))
             self.search.textChanged.connect(self.apply_filter)
             frow.addWidget(self.search, 1)
             self.cat = QComboBox()
-            cats = [CATEGORY_ALL] + sorted({a["category"] for a in catalog})
-            self.cat.addItems(cats)
-            self.cat.currentTextChanged.connect(self.apply_filter)
+            self.cat.addItems([tr("tab_all")] + sorted({a["category"] for a in catalog}))
+            self.cat.currentIndexChanged.connect(self.apply_filter)
             frow.addWidget(self.cat)
             bl.addLayout(frow)
 
@@ -788,10 +870,10 @@ def run_gui() -> int:
 
             arow = QHBoxLayout()
             arow.setSpacing(8)
-            self.btn_install = QPushButton("Telepítés")
+            self.btn_install = QPushButton(tr("btn_install"))
             self.btn_install.setObjectName("Primary")
             self.btn_install.clicked.connect(lambda: self.run_action(True))
-            self.btn_remove = QPushButton("Eltávolítás")
+            self.btn_remove = QPushButton(tr("btn_remove"))
             self.btn_remove.setObjectName("Danger")
             self.btn_remove.clicked.connect(lambda: self.run_action(False))
             self.btn_remove.hide()
@@ -814,67 +896,22 @@ def run_gui() -> int:
             bk_scroll.setWidgetResizable(True)
             bk_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
             bk_host = QWidget()
-            bk_vl = QVBoxLayout(bk_host)
-            bk_vl.setContentsMargins(0, 0, 6, 0)
-            bk_vl.setSpacing(14)
-
-            home = str(Path.home())
-            for bgrp in load_backup_catalog():
-                gl = QLabel(bgrp.get("label", bgrp["id"]))
-                gl.setStyleSheet(f"font-weight:600; font-size:13px; color:{C['accent']}; background:transparent;")
-                bk_vl.addWidget(gl)
-                desc = bgrp.get("description", "")
-                if desc:
-                    dl = QLabel(desc)
-                    dl.setStyleSheet(f"color:{C['text_dim']}; font-size:11px; background:transparent;")
-                    dl.setWordWrap(True)
-                    bk_vl.addWidget(dl)
-                for item in bgrp.get("items", []):
-                    brow = QFrame()
-                    brow.setObjectName("Row")
-                    rl = QHBoxLayout(brow)
-                    rl.setContentsMargins(12, 7, 12, 7)
-                    rl.setSpacing(10)
-                    cb = QCheckBox()
-                    cb.setChecked(item.get("default_selected", False))
-                    abs_path = str(Path(home) / item["path"]) if item.get("scope","home") == "home" else item["path"]
-                    self.backup_checkboxes[item["id"]] = (
-                        cb, abs_path, item.get("label", item["id"]),
-                        item.get("requires_root", False),
-                    )
-                    rl.addWidget(cb)
-                    mid = QVBoxLayout()
-                    mid.setSpacing(1)
-                    tl = QLabel(item.get("label", item["id"]))
-                    tl.setStyleSheet(f"font-weight:600; font-size:13px; color:{C['text']}; background:transparent;")
-                    sl = QLabel(abs_path)
-                    sl.setStyleSheet(f"color:{C['text_dim']}; font-size:11px; background:transparent;")
-                    mid.addWidget(tl)
-                    mid.addWidget(sl)
-                    if item.get("note"):
-                        nl = QLabel(item["note"])
-                        nl.setStyleSheet(f"color:{C['danger_hi']}; font-size:11px; background:transparent;")
-                        mid.addWidget(nl)
-                    rl.addLayout(mid, 1)
-                    if item.get("size_hint"):
-                        hl2 = QLabel(item["size_hint"])
-                        hl2.setStyleSheet(f"color:{C['text_mut']}; font-size:11px; background:transparent;")
-                        rl.addWidget(hl2)
-                    bk_vl.addWidget(brow)
-
-            bk_vl.addStretch(1)
+            self.bk_vl = QVBoxLayout(bk_host)
+            self.bk_vl.setContentsMargins(0, 0, 6, 0)
+            self.bk_vl.setSpacing(14)
+            self.build_backup_items()
             bk_scroll.setWidget(bk_host)
             bbl.addWidget(bk_scroll, 1)
 
             dest_row = QHBoxLayout()
             dest_row.setSpacing(8)
             self.dest_edit = QLineEdit()
-            self.dest_edit.setPlaceholderText("Backup fájl útvonala (.tar.gz)…")
+            self.dest_edit.setPlaceholderText(tr("dest_placeholder"))
             self.dest_edit.setText(str(Path.home() / "raveos-backup.tar.gz"))
-            browse_btn = QPushButton("Tallóz")
-            browse_btn.clicked.connect(self._bk_browse)
+            self.btn_bk_browse = QPushButton(tr("btn_browse"))
+            self.btn_bk_browse.clicked.connect(self._bk_browse)
             dest_row.addWidget(self.dest_edit, 1)
-            dest_row.addWidget(browse_btn)
+            dest_row.addWidget(self.btn_bk_browse)
             bbl.addLayout(dest_row)
 
             self.bk_log = QPlainTextEdit()
@@ -886,10 +923,10 @@ def run_gui() -> int:
 
             bk_arow = QHBoxLayout()
             bk_arow.setSpacing(8)
-            self.btn_bk_save = QPushButton("Mentés")
+            self.btn_bk_save = QPushButton(tr("btn_save"))
             self.btn_bk_save.setObjectName("Primary")
             self.btn_bk_save.clicked.connect(self._do_backup)
-            self.btn_bk_restore = QPushButton("Visszaállítás")
+            self.btn_bk_restore = QPushButton(tr("btn_restore"))
             self.btn_bk_restore.setObjectName("Danger")
             self.btn_bk_restore.clicked.connect(self._do_restore)
             self.bk_bar = QProgressBar()
@@ -904,6 +941,114 @@ def run_gui() -> int:
             self.build_rows()
             self.apply_filter()
 
+        # ── nyelv ─────────────────────────────────────────────────────────────
+        def _style_lang_btns(self):
+            active = (
+                f"QPushButton {{ background: {C['accent']}; color: #15240f;"
+                " border: 1px solid transparent; border-radius: 4px;"
+                " padding: 4px 12px; font-size: 11px; font-weight: 600; }}"
+            )
+            inactive = (
+                f"QPushButton {{ background: {C['surface']}; color: {C['text_dim']};"
+                f" border: 1px solid {C['border']}; border-radius: 4px;"
+                " padding: 4px 12px; font-size: 11px; font-weight: 600; }}"
+            )
+            self.lang_hu_btn.setStyleSheet(active if _current_lang == "hu" else inactive)
+            self.lang_en_btn.setStyleSheet(active if _current_lang == "en" else inactive)
+
+        def _set_lang(self, lang):
+            global _current_lang
+            if _current_lang == lang:
+                return
+            _current_lang = lang
+            self.lang_hu_btn.setChecked(lang == "hu")
+            self.lang_en_btn.setChecked(lang == "en")
+            self._style_lang_btns()
+            self._retranslate_all()
+
+        def _retranslate_all(self):
+            on_backup = self.stack.currentIndex() == 1
+            self.header_sep.setText(tr("header_backup") if on_backup else tr("header_installer"))
+            self.btn_nav.setText(tr("nav_back") if on_backup else tr("nav_backup"))
+            self.tab_all.setText(tr("tab_all"))
+            self.tab_inst.setText(tr("tab_installed"))
+            self.search.setPlaceholderText(tr("search_placeholder"))
+            cur_cat = self.cat.currentText() if self.cat.currentIndex() != 0 else None
+            self.cat.blockSignals(True)
+            self.cat.clear()
+            self.cat.addItems([tr("tab_all")] + sorted({a["category"] for a in self.catalog}))
+            if cur_cat is not None:
+                idx = self.cat.findText(cur_cat)
+                self.cat.setCurrentIndex(idx if idx >= 0 else 0)
+            self.cat.blockSignals(False)
+            self.btn_install.setText(tr("btn_install"))
+            self.btn_remove.setText(tr("btn_remove"))
+            self.dest_edit.setPlaceholderText(tr("dest_placeholder"))
+            self.btn_bk_browse.setText(tr("btn_browse"))
+            self.btn_bk_save.setText(tr("btn_save"))
+            self.btn_bk_restore.setText(tr("btn_restore"))
+            keep_scroll = self.scroll.verticalScrollBar().value()
+            self.build_rows()
+            self.apply_filter()
+            self.scroll.verticalScrollBar().setValue(keep_scroll)
+            self.build_backup_items()
+
+        # ── backup lista építés (nyelvváltáskor is újraépül) ────────────────────
+        def build_backup_items(self):
+            prev_checked = {iid: cb.isChecked() for iid, (cb, _, _, _) in self.backup_checkboxes.items()}
+            while self.bk_vl.count():
+                taken = self.bk_vl.takeAt(0)
+                w = taken.widget()
+                if w:
+                    w.setParent(None)
+            self.backup_checkboxes = {}
+            home = str(Path.home())
+            for bgrp in load_backup_catalog():
+                gl = QLabel(_loc(bgrp.get("label", bgrp["id"])))
+                gl.setStyleSheet(f"font-weight:600; font-size:13px; color:{C['accent']}; background:transparent;")
+                self.bk_vl.addWidget(gl)
+                desc = _loc(bgrp.get("description", ""))
+                if desc:
+                    dl = QLabel(desc)
+                    dl.setStyleSheet(f"color:{C['text_dim']}; font-size:11px; background:transparent;")
+                    dl.setWordWrap(True)
+                    self.bk_vl.addWidget(dl)
+                for item in bgrp.get("items", []):
+                    brow = QFrame()
+                    brow.setObjectName("Row")
+                    rl = QHBoxLayout(brow)
+                    rl.setContentsMargins(12, 7, 12, 7)
+                    rl.setSpacing(10)
+                    cb = QCheckBox()
+                    cb.setChecked(prev_checked.get(item["id"], item.get("default_selected", False)))
+                    abs_path = str(Path(home) / item["path"]) if item.get("scope","home") == "home" else item["path"]
+                    label = _loc(item.get("label", item["id"]))
+                    self.backup_checkboxes[item["id"]] = (
+                        cb, abs_path, label,
+                        item.get("requires_root", False),
+                    )
+                    rl.addWidget(cb)
+                    mid = QVBoxLayout()
+                    mid.setSpacing(1)
+                    tl = QLabel(label)
+                    tl.setStyleSheet(f"font-weight:600; font-size:13px; color:{C['text']}; background:transparent;")
+                    sl = QLabel(abs_path)
+                    sl.setStyleSheet(f"color:{C['text_dim']}; font-size:11px; background:transparent;")
+                    mid.addWidget(tl)
+                    mid.addWidget(sl)
+                    note = _loc(item.get("note"))
+                    if note:
+                        nl = QLabel(note)
+                        nl.setStyleSheet(f"color:{C['danger_hi']}; font-size:11px; background:transparent;")
+                        mid.addWidget(nl)
+                    rl.addLayout(mid, 1)
+                    if item.get("size_hint"):
+                        hl2 = QLabel(item["size_hint"])
+                        hl2.setStyleSheet(f"color:{C['text_mut']}; font-size:11px; background:transparent;")
+                        rl.addWidget(hl2)
+                    self.bk_vl.addWidget(brow)
+            self.bk_vl.addStretch(1)
+
         # ── frissítés ─────────────────────────────────────────────────────────
         def _refresh_and_filter(self):
             self.idx = installed_index()
@@ -913,15 +1058,15 @@ def run_gui() -> int:
         # ── navigáció ─────────────────────────────────────────────────────────
         def _go_backup(self):
             self.stack.setCurrentIndex(1)
-            self.header_sep.setText("  ·  BACKUP / RESTORE")
-            self.btn_nav.setText("← Vissza")
+            self.header_sep.setText(tr("header_backup"))
+            self.btn_nav.setText(tr("nav_back"))
             self.btn_nav.clicked.disconnect()
             self.btn_nav.clicked.connect(self._go_apps)
 
         def _go_apps(self):
             self.stack.setCurrentIndex(0)
-            self.header_sep.setText("  ·  APP INSTALLER")
-            self.btn_nav.setText("Backup / Restore")
+            self.header_sep.setText(tr("header_installer"))
+            self.btn_nav.setText(tr("nav_backup"))
             self.btn_nav.clicked.disconnect()
             self.btn_nav.clicked.connect(self._go_backup)
 
@@ -938,6 +1083,7 @@ def run_gui() -> int:
 
         def apply_filter(self):
             q = self.search.text().strip().lower()
+            cat_idx = self.cat.currentIndex()
             cat = self.cat.currentText()
             only_inst = self.tab_inst.isChecked()
             self.btn_remove.setVisible(only_inst)
@@ -948,10 +1094,10 @@ def run_gui() -> int:
                     show = False
                 if not only_inst and r.installed:
                     show = False
-                if cat != CATEGORY_ALL and r.app["category"] != cat:
+                if cat_idx != 0 and r.app["category"] != cat:
                     show = False
                 if q and q not in r.app["name"].lower() \
-                        and q not in r.app["description"].lower():
+                        and q not in _loc(r.app.get("desc")).lower():
                     show = False
                 r.setVisible(show)
 
@@ -965,13 +1111,13 @@ def run_gui() -> int:
             err_msg = ""
             while True:
                 dlg = QDialog(self)
-                dlg.setWindowTitle("Hitelesítés szükséges")
+                dlg.setWindowTitle(tr("dlg_auth_title"))
                 dlg.setFixedWidth(360)
                 lay = QVBoxLayout(dlg)
                 lay.setSpacing(10)
                 lay.setContentsMargins(20, 16, 20, 16)
 
-                lbl = QLabel(err_msg if err_msg else "Sudo jelszó:")
+                lbl = QLabel(err_msg if err_msg else tr("dlg_pw_label"))
                 lbl.setStyleSheet(
                     f"color: {'#e06c6c' if err_msg else C['text_dim']}; font-size: 13px;")
                 lbl.setWordWrap(True)
@@ -979,7 +1125,7 @@ def run_gui() -> int:
 
                 pw_edit = QLineEdit()
                 pw_edit.setEchoMode(QLineEdit.EchoMode.Password)
-                pw_edit.setPlaceholderText("Jelszó…")
+                pw_edit.setPlaceholderText(tr("dlg_pw_placeholder"))
                 pw_edit.setStyleSheet(
                     f"background: {C['surface']}; color: {C['text']};"
                     "border: 1px solid #444; border-radius: 4px;"
@@ -987,9 +1133,9 @@ def run_gui() -> int:
                 lay.addWidget(pw_edit)
 
                 btn_row = QHBoxLayout()
-                btn_ok = QPushButton("OK")
+                btn_ok = QPushButton(tr("dlg_ok"))
                 btn_ok.setDefault(True)
-                btn_cancel = QPushButton("Mégse")
+                btn_cancel = QPushButton(tr("dlg_cancel"))
                 btn_ok.setFixedHeight(32)
                 btn_cancel.setFixedHeight(32)
                 btn_ok.setStyleSheet(
@@ -1011,7 +1157,7 @@ def run_gui() -> int:
 
                 pw = pw_edit.text()
                 if not pw:
-                    err_msg = "A jelszó nem lehet üres."
+                    err_msg = tr("dlg_pw_empty_err")
                     continue
 
                 try:
@@ -1024,7 +1170,7 @@ def run_gui() -> int:
                     )
                     if chk.returncode == 0:
                         return pw
-                    err_msg = "Hibás jelszó, próbáld újra."
+                    err_msg = tr("dlg_pw_wrong_err")
                 except Exception:
                     # Ha az ellenőrzés nem sikerül, elfogadjuk és hagyjuk a parancsot hibázni
                     return pw
@@ -1032,13 +1178,13 @@ def run_gui() -> int:
         def run_action(self, install: bool):
             apps = self.selected()
             if not apps:
-                self.log.appendPlainText("Nincs kijelölve semmi.")
+                self.log.appendPlainText(tr("log_nothing_selected"))
                 return
             if self.worker and self.worker.isRunning():
                 return
             steps = plan_commands(apps, install, gui=True)
             if not steps:
-                self.log.appendPlainText("Nincs végrehajtható művelet.")
+                self.log.appendPlainText(tr("log_nothing_to_do"))
                 return
 
             # Jelszó — 5 percen belül megjegyzett jelszót újra felhasználjuk
@@ -1059,8 +1205,11 @@ def run_gui() -> int:
             self.bar.setValue(0)
             self.log.clear()
             self.log.show()
-            self.log.appendPlainText(("Telepítés" if install else "Eltávolítás")
-                                     + f" indul ({len(apps)} app)…")
+            self.log.appendPlainText(tr(
+                "log_action_start",
+                action=tr("btn_install") if install else tr("btn_remove"),
+                n=len(apps),
+            ))
             self.worker = Worker(steps, password)
             self.worker.log.connect(self.log.appendPlainText)
             self.worker.progress.connect(self.bar.setValue)
@@ -1069,7 +1218,7 @@ def run_gui() -> int:
 
         def on_done(self, ok, total):
             self.bar.setValue(100)
-            self.log.appendPlainText(f"\nKész: {ok}/{total} lépés sikeres.")
+            self.log.appendPlainText(tr("log_done", ok=ok, total=total))
             self.idx = installed_index()
             keep_scroll = self.scroll.verticalScrollBar().value()
             self.build_rows()
@@ -1086,7 +1235,7 @@ def run_gui() -> int:
         # ── backup akciók ─────────────────────────────────────────────────────
         def _bk_browse(self):
             path, _ = QFileDialog.getSaveFileName(
-                self, "Backup fájl", str(Path.home()), "Tar archive (*.tar.gz)")
+                self, tr("filedialog_caption"), str(Path.home()), "Tar archive (*.tar.gz)")
             if path:
                 if not path.endswith(".tar.gz"):
                     path += ".tar.gz"
@@ -1119,18 +1268,18 @@ def run_gui() -> int:
         def _do_backup(self):
             paths = self._bk_selected()
             if not paths:
-                self.bk_log.appendPlainText("Nincs kijelölve semmi.")
+                self.bk_log.appendPlainText(tr("log_nothing_selected"))
                 return
             dest = self.dest_edit.text().strip()
             if not dest:
-                self.bk_log.appendPlainText("Add meg a célfájlt.")
+                self.bk_log.appendPlainText(tr("bk_need_dest"))
                 return
             password, ok = self._bk_password_if_needed(paths)
             if not ok:
                 return
             self.bk_log.clear()
             self.bk_log.show()
-            self.bk_log.appendPlainText(f"Mentés indul -> {dest}")
+            self.bk_log.appendPlainText(tr("bk_start_backup", dest=dest))
             self.bk_bar.setValue(0)
             self._bk_set_busy(True)
             self.backup_worker = BackupWorker(paths, dest, restore=False, password=password)
@@ -1142,18 +1291,18 @@ def run_gui() -> int:
         def _do_restore(self):
             dest = self.dest_edit.text().strip()
             if not dest or not Path(dest).is_file():
-                self.bk_log.appendPlainText("Nem létező vagy érvénytelen backup fájl.")
+                self.bk_log.appendPlainText(tr("bk_invalid_file"))
                 return
             paths = self._bk_selected()
             if not paths:
-                self.bk_log.appendPlainText("Jelölj ki legalább egy elemet.")
+                self.bk_log.appendPlainText(tr("bk_need_selection"))
                 return
             password, ok = self._bk_password_if_needed(paths)
             if not ok:
                 return
             self.bk_log.clear()
             self.bk_log.show()
-            self.bk_log.appendPlainText(f"Visszaállítás indul <- {dest}")
+            self.bk_log.appendPlainText(tr("bk_start_restore", dest=dest))
             self.bk_bar.setValue(0)
             self._bk_set_busy(True)
             self.backup_worker = BackupWorker(paths, dest, restore=True, password=password)
@@ -1164,7 +1313,7 @@ def run_gui() -> int:
 
         def _bk_done(self, ok, msg):
             self.bk_bar.setValue(100 if ok else 0)
-            self.bk_log.appendPlainText(f"\n{'OK' if ok else 'HIBA'}: {msg}")
+            self.bk_log.appendPlainText(f"\n{tr('bk_result_ok') if ok else tr('bk_result_err')}: {msg}")
             self._bk_set_busy(False)
 
     # ── alkalmazás bootstrap ─────────────────────────────────────────────────

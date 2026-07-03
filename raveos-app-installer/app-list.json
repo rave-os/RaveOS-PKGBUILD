@@ -5,7 +5,10 @@
       "id": "audacious",
       "name": "Audacious",
       "category": "Media",
-      "desc": "Audacious – Local Music Player (Flatpak, 432Hz config)",
+      "desc": {
+        "hu": "Audacious – helyi zenelejátszó (Flatpak, 432Hz konfiggal)",
+        "en": "Audacious – Local Music Player (Flatpak, 432Hz config)"
+      },
       "type": "flatpak-user",
       "flatpak_id": "org.atheme.audacious",
       "config_dir": "audacious",
@@ -15,7 +18,10 @@
       "id": "audacity",
       "name": "Audacity",
       "category": "Media",
-      "desc": "Audio editor and recorder",
+      "desc": {
+        "hu": "Hangszerkesztő és -felvevő",
+        "en": "Audio editor and recorder"
+      },
       "type": "pacman",
       "packages": [
         "audacity"
@@ -27,7 +33,10 @@
       "id": "bitwarden",
       "name": "Bitwarden",
       "category": "Security",
-      "desc": "Bitwarden password manager",
+      "desc": {
+        "hu": "Bitwarden jelszókezelő",
+        "en": "Bitwarden password manager"
+      },
       "type": "pacman",
       "packages": [
         "bitwarden"
@@ -37,7 +46,10 @@
       "id": "bottles",
       "name": "Bottles",
       "category": "Games",
-      "desc": "Wine prefix manager",
+      "desc": {
+        "hu": "Wine prefix kezelő",
+        "en": "Wine prefix manager"
+      },
       "type": "flatpak-user",
       "flatpak_id": "com.usebottles.bottles"
     },
@@ -45,7 +57,10 @@
       "id": "brave-origin-bin",
       "name": "Brave Origin",
       "category": "Internet",
-      "desc": "Brave Origin - a Brave letisztitott, reklam/rewards/kripto-mentes valtozata",
+      "desc": {
+        "hu": "Brave Origin - a Brave letisztított, reklám/rewards/kripto-mentes változata",
+        "en": "Brave Origin - a decluttered version of Brave without ads, rewards, or crypto features"
+      },
       "type": "pacman",
       "config_dir": "com.brave.Browser/config/BraveSoftware/Brave-Browser",
       "config_dest": "{HOME}/.config/BraveSoftware/Brave-Origin"
@@ -54,7 +69,10 @@
       "id": "calibre",
       "name": "Calibre",
       "category": "Office",
-      "desc": "E-book manager",
+      "desc": {
+        "hu": "E-book kezelő",
+        "en": "E-book manager"
+      },
       "type": "pacman",
       "packages": [
         "calibre"
@@ -64,7 +82,10 @@
       "id": "corectrl",
       "name": "CoreCTRL",
       "category": "System",
-      "desc": "AMD GPU control application",
+      "desc": {
+        "hu": "AMD GPU vezérlő alkalmazás",
+        "en": "AMD GPU control application"
+      },
       "type": "script",
       "script": "corectrl.sh",
       "check_packages": [
@@ -76,7 +97,10 @@
       "id": "darktable",
       "name": "Darktable",
       "category": "Media",
-      "desc": "Photo workflow application (like Lightroom)",
+      "desc": {
+        "hu": "Fotó munkafolyamat alkalmazás (mint a Lightroom)",
+        "en": "Photo workflow application (like Lightroom)"
+      },
       "type": "flatpak-user",
       "flatpak_id": "org.darktable.Darktable"
     },
@@ -84,7 +108,10 @@
       "id": "discord",
       "name": "Discord + Vencord",
       "category": "Internet",
-      "desc": "Discord client with Vencord mod",
+      "desc": {
+        "hu": "Discord kliens Vencord móddal",
+        "en": "Discord client with Vencord mod"
+      },
       "type": "script",
       "script": "discord.sh",
       "check_packages": [
@@ -95,7 +122,10 @@
       "id": "docker",
       "name": "Docker",
       "category": "Dev",
-      "desc": "Docker container engine",
+      "desc": {
+        "hu": "Docker konténer motor",
+        "en": "Docker container engine"
+      },
       "type": "pacman",
       "packages": [
         "docker"
@@ -108,7 +138,10 @@
       "id": "dosbox",
       "name": "DOSBox-X",
       "category": "Games",
-      "desc": "DOS emulator for old games",
+      "desc": {
+        "hu": "DOS emulátor régi játékokhoz",
+        "en": "DOS emulator for old games"
+      },
       "type": "flatpak-user",
       "flatpak_id": "com.dosbox_x.DOSBox-X"
     },
@@ -116,7 +149,10 @@
       "id": "doublecmd",
       "name": "Double Commander",
       "category": "System",
-      "desc": "Two-panel file manager (like Total Commander)",
+      "desc": {
+        "hu": "Kétpaneles fájlkezelő (mint a Total Commander)",
+        "en": "Two-panel file manager (like Total Commander)"
+      },
       "type": "pacman",
       "packages": [
         "doublecmd-qt5"
@@ -126,7 +162,10 @@
       "id": "easyeffects",
       "name": "Easy Effects",
       "category": "Media",
-      "desc": "Audio effects for PipeWire",
+      "desc": {
+        "hu": "Hangeffektek PipeWire-hoz",
+        "en": "Audio effects for PipeWire"
+      },
       "type": "flatpak-user",
       "flatpak_id": "com.github.wwmm.easyeffects"
     },
@@ -134,7 +173,10 @@
       "id": "fastfetch",
       "name": "Fastfetch",
       "category": "System",
-      "desc": "System info display in terminal",
+      "desc": {
+        "hu": "Rendszerinformáció megjelenítése a terminálban",
+        "en": "System info display in terminal"
+      },
       "type": "pacman",
       "packages": [
         "fastfetch"
@@ -144,7 +186,10 @@
       "id": "firejail",
       "name": "Firejail",
       "category": "Security",
-      "desc": "Sandbox for applications",
+      "desc": {
+        "hu": "Homokozó (sandbox) alkalmazásokhoz",
+        "en": "Sandbox for applications"
+      },
       "type": "pacman",
       "packages": [
         "firejail"
@@ -154,7 +199,10 @@
       "id": "freetube",
       "name": "FreeTube",
       "category": "Media",
-      "desc": "Privacy-friendly YouTube client",
+      "desc": {
+        "hu": "Adatvédelem-barát YouTube kliens",
+        "en": "Privacy-friendly YouTube client"
+      },
       "type": "flatpak-user",
       "flatpak_id": "io.freetubeapp.FreeTube",
       "config_dir": "FreeTube",
@@ -164,7 +212,10 @@
       "id": "gamemode",
       "name": "GameMode",
       "category": "Games",
-      "desc": "GameMode + Gamescope for gaming optimization",
+      "desc": {
+        "hu": "GameMode + Gamescope játékoptimalizáláshoz",
+        "en": "GameMode + Gamescope for gaming optimization"
+      },
       "type": "pacman",
       "packages": [
         "gamemode",
@@ -176,7 +227,10 @@
       "id": "gnome-clocks",
       "name": "GNOME Clocks",
       "category": "System",
-      "desc": "Alarm, world clock, stopwatch, timer",
+      "desc": {
+        "hu": "Ébresztő, világóra, stopper, időzítő",
+        "en": "Alarm, world clock, stopwatch, timer"
+      },
       "type": "script",
       "script": "gnome-clocks.sh",
       "check_packages": [
@@ -187,7 +241,10 @@
       "id": "gtkstresstesting",
       "name": "GTKStressTesting",
       "category": "System",
-      "desc": "CPU monitoring and stress testing",
+      "desc": {
+        "hu": "CPU monitorozás és stressz teszt",
+        "en": "CPU monitoring and stress testing"
+      },
       "type": "flatpak-user",
       "flatpak_id": "com.leinardi.gst"
     },
@@ -195,7 +252,10 @@
       "id": "helvum",
       "name": "Helvum",
       "category": "Media",
-      "desc": "Patchbay for PipeWire",
+      "desc": {
+        "hu": "Patchbay PipeWire-hoz",
+        "en": "Patchbay for PipeWire"
+      },
       "type": "pacman",
       "packages": [
         "helvum"
@@ -205,7 +265,10 @@
       "id": "heroic",
       "name": "Heroic Games Launcher",
       "category": "Games",
-      "desc": "Epic Games launcher + MangoHud",
+      "desc": {
+        "hu": "Epic Games launcher + MangoHud",
+        "en": "Epic Games launcher + MangoHud"
+      },
       "type": "flatpak-user",
       "flatpak_id": "com.heroicgameslauncher.hgl",
       "post_install": [
@@ -217,7 +280,10 @@
       "id": "input-remapper",
       "name": "Input Remapper",
       "category": "System",
-      "desc": "Mouse/keyboard button remapper, macro tool",
+      "desc": {
+        "hu": "Egér/billentyűzet gombkiosztás átalakító, makró eszköz",
+        "en": "Mouse/keyboard button remapper, macro tool"
+      },
       "type": "pacman",
       "packages": [
         "input-remapper-git"
@@ -227,7 +293,10 @@
       "id": "jellyfin",
       "name": "Jellyfin Media Player",
       "category": "Media",
-      "desc": "Jellyfin client for media streaming",
+      "desc": {
+        "hu": "Jellyfin kliens médiastreameléshez",
+        "en": "Jellyfin client for media streaming"
+      },
       "type": "flatpak-user",
       "flatpak_id": "org.jellyfin.JellyfinDesktop"
     },
@@ -235,7 +304,10 @@
       "id": "kdeconnect",
       "name": "KDE Connect",
       "category": "System",
-      "desc": "Connect phone and PC",
+      "desc": {
+        "hu": "Telefon és PC összekapcsolása",
+        "en": "Connect phone and PC"
+      },
       "type": "pacman",
       "packages": [
         "kdeconnect"
@@ -245,7 +317,10 @@
       "id": "kdenlive",
       "name": "Kdenlive",
       "category": "Media",
-      "desc": "Video editor for Linux",
+      "desc": {
+        "hu": "Videószerkesztő Linuxra",
+        "en": "Video editor for Linux"
+      },
       "type": "pacman",
       "packages": [
         "kdenlive"
@@ -255,7 +330,10 @@
       "id": "keepassxc",
       "name": "KeePassXC",
       "category": "Security",
-      "desc": "Password manager with encrypted local database",
+      "desc": {
+        "hu": "Jelszókezelő titkosított helyi adatbázissal",
+        "en": "Password manager with encrypted local database"
+      },
       "type": "pacman",
       "packages": [
         "keepassxc"
@@ -265,7 +343,10 @@
       "id": "krusader",
       "name": "Krusader",
       "category": "System",
-      "desc": "Two-panel file manager",
+      "desc": {
+        "hu": "Kétpaneles fájlkezelő",
+        "en": "Two-panel file manager"
+      },
       "type": "pacman",
       "packages": [
         "krusader"
@@ -275,7 +356,10 @@
       "id": "kvm",
       "name": "KVM / QEMU",
       "category": "System",
-      "desc": "Virtualization with KVM + QEMU",
+      "desc": {
+        "hu": "Virtualizáció KVM + QEMU-val",
+        "en": "Virtualization with KVM + QEMU"
+      },
       "type": "script",
       "script": "kvm.sh",
       "check_packages": [
@@ -286,7 +370,10 @@
       "id": "libreoffice",
       "name": "LibreOffice",
       "category": "Office",
-      "desc": "LibreOffice Fresh with Hungarian language",
+      "desc": {
+        "hu": "LibreOffice Fresh magyar nyelvvel",
+        "en": "LibreOffice Fresh with Hungarian language"
+      },
       "type": "pacman",
       "packages": [
         "libreoffice-fresh",
@@ -297,7 +384,10 @@
       "id": "librewolf",
       "name": "LibreWolf",
       "category": "Internet",
-      "desc": "Firefox ESR based privacy browser",
+      "desc": {
+        "hu": "Firefox ESR alapú adatvédelmi böngésző",
+        "en": "Firefox ESR based privacy browser"
+      },
       "type": "flatpak-user",
       "flatpak_id": "io.gitlab.librewolf-community",
       "config_dir": "librewolf",
@@ -307,7 +397,10 @@
       "id": "lutris",
       "name": "Lutris",
       "category": "Games",
-      "desc": "Game launcher with Wine support",
+      "desc": {
+        "hu": "Játék launcher Wine támogatással",
+        "en": "Game launcher with Wine support"
+      },
       "type": "script",
       "script": "lutris.sh",
       "check_packages": [
@@ -318,7 +411,10 @@
       "id": "mangohud",
       "name": "MangoHud / Goverlay",
       "category": "Games",
-      "desc": "FPS overlay and settings (like MSI Afterburner)",
+      "desc": {
+        "hu": "FPS overlay és beállítások (mint az MSI Afterburner)",
+        "en": "FPS overlay and settings (like MSI Afterburner)"
+      },
       "type": "pacman",
       "config_dir": ".config",
       "config_dest": "{HOME}/.config/MangoHud",
@@ -332,7 +428,10 @@
       "id": "mc",
       "name": "Midnight Commander",
       "category": "System",
-      "desc": "Two-panel terminal file manager",
+      "desc": {
+        "hu": "Kétpaneles terminálos fájlkezelő",
+        "en": "Two-panel terminal file manager"
+      },
       "type": "pacman",
       "packages": [
         "mc"
@@ -342,7 +441,10 @@
       "id": "mumble",
       "name": "Mumble",
       "category": "Internet",
-      "desc": "Voice chat application",
+      "desc": {
+        "hu": "Hangchat alkalmazás",
+        "en": "Voice chat application"
+      },
       "type": "pacman",
       "packages": [
         "mumble"
@@ -352,7 +454,10 @@
       "id": "obs",
       "name": "OBS Studio",
       "category": "Media",
-      "desc": "Streaming and recording software",
+      "desc": {
+        "hu": "Streamelő és felvevő szoftver",
+        "en": "Streaming and recording software"
+      },
       "type": "flatpak-user",
       "flatpak_id": "com.obsproject.Studio"
     },
@@ -360,7 +465,10 @@
       "id": "onlyoffice",
       "name": "OnlyOffice",
       "category": "Office",
-      "desc": "MS Office compatible suite",
+      "desc": {
+        "hu": "MS Office kompatibilis irodai csomag",
+        "en": "MS Office compatible suite"
+      },
       "type": "flatpak-user",
       "flatpak_id": "org.onlyoffice.desktopeditors"
     },
@@ -368,7 +476,10 @@
       "id": "7zip",
       "name": "7-Zip",
       "category": "System",
-      "desc": "7-Zip archive manager",
+      "desc": {
+        "hu": "7-Zip tömörítő kezelő",
+        "en": "7-Zip archive manager"
+      },
       "type": "pacman",
       "packages": [
         "7zip"
@@ -378,7 +489,10 @@
       "id": "peazip",
       "name": "Peazip",
       "category": "System",
-      "desc": "Peazip GUI archive manager",
+      "desc": {
+        "hu": "Peazip grafikus tömörítő kezelő",
+        "en": "Peazip GUI archive manager"
+      },
       "type": "pacman",
       "packages": [
         "peazip"
@@ -388,7 +502,10 @@
       "id": "occt",
       "name": "OCCT",
       "category": "System",
-      "desc": "System Stability Tester",
+      "desc": {
+        "hu": "Rendszerstabilitás teszter",
+        "en": "System Stability Tester"
+      },
       "type": "pacman",
       "packages": [
         "occt"
@@ -398,7 +515,10 @@
       "id": "octopi",
       "name": "Octopi",
       "category": "System",
-      "desc": "Graphical package manager",
+      "desc": {
+        "hu": "Grafikus csomagkezelő",
+        "en": "Graphical package manager"
+      },
       "type": "pacman",
       "packages": [
         "octopi"
@@ -408,7 +528,10 @@
       "id": "pavucontrol",
       "name": "Pavucontrol",
       "category": "Media",
-      "desc": "Per-application volume control",
+      "desc": {
+        "hu": "Alkalmazásonkénti hangerőszabályzás",
+        "en": "Per-application volume control"
+      },
       "type": "pacman",
       "packages": [
         "pavucontrol"
@@ -418,7 +541,10 @@
       "id": "photogimp",
       "name": "PhotoGIMP",
       "category": "Media",
-      "desc": "GIMP with Photoshop-like interface",
+      "desc": {
+        "hu": "GIMP Photoshop-szerű felülettel",
+        "en": "GIMP with Photoshop-like interface"
+      },
       "type": "flatpak-user",
       "flatpak_id": "org.gimp.GIMP",
       "check_flatpak": "org.gimp.GIMP",
@@ -441,7 +567,10 @@
       "id": "printer",
       "name": "Printer Support",
       "category": "System",
-      "desc": "Printer drivers and CUPS",
+      "desc": {
+        "hu": "Nyomtató driverek és CUPS",
+        "en": "Printer drivers and CUPS"
+      },
       "type": "script",
       "script": "printer.sh",
       "check_packages": [
@@ -453,7 +582,10 @@
       "id": "qbittorrent",
       "name": "qBittorrent",
       "category": "Internet",
-      "desc": "Torrent client",
+      "desc": {
+        "hu": "Torrent kliens",
+        "en": "Torrent client"
+      },
       "type": "pacman",
       "config_dir": "qBittorrent",
       "config_dest": "{HOME}/.config/qBittorrent",
@@ -465,7 +597,10 @@
       "id": "signal",
       "name": "Signal",
       "category": "Internet",
-      "desc": "Encrypted messenger",
+      "desc": {
+        "hu": "Titkosított üzenetküldő",
+        "en": "Encrypted messenger"
+      },
       "type": "pacman",
       "packages": [
         "signal-desktop"
@@ -475,7 +610,10 @@
       "id": "spotify",
       "name": "Spotify",
       "category": "Media",
-      "desc": "Music streaming service",
+      "desc": {
+        "hu": "Zenestreamelő szolgáltatás",
+        "en": "Music streaming service"
+      },
       "type": "flatpak-user",
       "flatpak_id": "com.spotify.Client"
     },
@@ -483,7 +621,10 @@
       "id": "spotube",
       "name": "Spotube",
       "category": "Media",
-      "desc": "Free Spotify client without premium",
+      "desc": {
+        "hu": "Ingyenes Spotify kliens premium nélkül",
+        "en": "Free Spotify client without premium"
+      },
       "type": "flatpak-user",
       "flatpak_id": "com.github.KRTirtho.Spotube"
     },
@@ -491,7 +632,10 @@
       "id": "steam",
       "name": "Steam",
       "category": "Games",
-      "desc": "Steam + ProtonGE (complex installation)",
+      "desc": {
+        "hu": "Steam + ProtonGE (összetett telepítés)",
+        "en": "Steam + ProtonGE (complex installation)"
+      },
       "type": "script",
       "script": "steam.sh",
       "check_packages": [
@@ -502,7 +646,10 @@
       "id": "teamspeak",
       "name": "TeamSpeak 3",
       "category": "Internet",
-      "desc": "TeamSpeak VOIP client",
+      "desc": {
+        "hu": "TeamSpeak VOIP kliens",
+        "en": "TeamSpeak VOIP client"
+      },
       "type": "pacman",
       "packages": [
         "teamspeak3"
@@ -512,7 +659,10 @@
       "id": "telegram",
       "name": "Telegram",
       "category": "Internet",
-      "desc": "Encrypted messenger",
+      "desc": {
+        "hu": "Titkosított üzenetküldő",
+        "en": "Encrypted messenger"
+      },
       "type": "pacman",
       "packages": [
         "telegram-desktop"
@@ -522,7 +672,10 @@
       "id": "vibrant",
       "name": "Vibrant Linux",
       "category": "System",
-      "desc": "Color saturation adjustment tool",
+      "desc": {
+        "hu": "Szín-telítettség beállító eszköz",
+        "en": "Color saturation adjustment tool"
+      },
       "type": "flatpak-user",
       "flatpak_id": "io.github.libvibrant.vibrantLinux"
     },
@@ -530,7 +683,10 @@
       "id": "vivaldi",
       "name": "Vivaldi",
       "category": "Internet",
-      "desc": "Vivaldi web browser",
+      "desc": {
+        "hu": "Vivaldi webböngésző",
+        "en": "Vivaldi web browser"
+      },
       "type": "pacman",
       "config_dir": "vivaldi",
       "config_dest": "{HOME}/.config/vivaldi",
@@ -543,7 +699,10 @@
       "id": "vlc",
       "name": "VLC",
       "category": "Media",
-      "desc": "VLC Media Player (Flatpak)",
+      "desc": {
+        "hu": "VLC médialejátszó (Flatpak)",
+        "en": "VLC Media Player (Flatpak)"
+      },
       "type": "flatpak-user",
       "flatpak_id": "org.videolan.VLC"
     },
@@ -551,7 +710,10 @@
       "id": "vulkan-radeon",
       "name": "Vulkan Radeon",
       "category": "Games",
-      "desc": "AMD Vulkan drivers for gaming",
+      "desc": {
+        "hu": "AMD Vulkan driverek gaminghez",
+        "en": "AMD Vulkan drivers for gaming"
+      },
       "type": "pacman",
       "packages": [
         "vulkan-radeon",
@@ -563,7 +725,10 @@
       "id": "xpadneo",
       "name": "Xbox Controller",
       "category": "Games",
-      "desc": "Xbox Controller support (Bluetooth)",
+      "desc": {
+        "hu": "Xbox kontroller támogatás (Bluetooth)",
+        "en": "Xbox Controller support (Bluetooth)"
+      },
       "type": "pacman",
       "packages": [
         "xpadneo-dkms"
@@ -573,7 +738,10 @@
       "id": "windows11",
       "name": "Windows 11",
       "category": "System",
-      "desc": "Windows 11 Installer - Experts Only!",
+      "desc": {
+        "hu": "Windows 11 telepítő - csak haladóknak!",
+        "en": "Windows 11 Installer - Experts Only!"
+      },
       "type": "message",
       "message": "!! MAJOM VAGY !!\n\nWindows 11? Komolyan? Linux-on vagy, elvezd!\n\nHa tenyleg kell Windows, hasznalj KVM/QEMU-t a listabol."
     }
