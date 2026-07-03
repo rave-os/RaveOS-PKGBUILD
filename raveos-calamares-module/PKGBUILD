@@ -1,6 +1,6 @@
 pkgname=raveos-calamares-module
 pkgver=2.0.0
-pkgrel=6
+pkgrel=7
 pkgdesc="RaveOS Calamares modules: Wi-Fi, Welcome, Desktop Selector"
 arch=('x86_64')
 options=('!debug')

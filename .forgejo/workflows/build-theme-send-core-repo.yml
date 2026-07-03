@@ -92,6 +92,10 @@ jobs:
           rm -rf build || true
           makepkg -s --noconfirm -f
           cp -v build/raveos-sddm-theme-*.pkg.tar.zst /tmp/builtpkgs/
+          # Azonnal telepitjuk is, mert meg nincs publikalva egy repoban sem
+          # (a "Publish" lepes csak a legvegen fut) - a tobbi DE-tema csomag
+          # makepkg -s hivasa igy fogja tudni feloldani a fuggoseget.
+          sudo pacman -U --noconfirm build/raveos-sddm-theme-*.pkg.tar.zst
 
       - name: Build raveos-plasma-theme
         run: |
