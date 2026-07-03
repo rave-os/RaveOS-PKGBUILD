@@ -1,0 +1,45 @@
+# Maintainer: RaveOS Team
+#
+# raveos-app-installer
+# ---------------------
+# Egyetlen fájlos, letisztult PyQt6 alkalmazástelepítő (v3 architektúra):
+# USER-ként fut (nem root), saját beépített jelszó-dialógus SUDO_ASKPASS-szal,
+# NINCS pkexec/root-launcher. Váltja a régi, strukturált (src/) v2 architektúrát.
+
+pkgname=raveos-app-installer
+pkgver=3.1
+pkgrel=1
+pkgdesc="RaveOS graphical application installer"
+arch=('any')
+url="https://git.rp1.hu/RaveOS/raveos-app-installer"
+license=('MIT')
+depends=('python' 'python-pyqt6' 'pacman' 'sudo')
+optdepends=(
+    'yay: AUR csomag támogatás'
+    'flatpak: flatpak alkalmazás támogatás'
+)
+source=()
+sha256sums=()
+
+BUILDDIR="${startdir}/build"
+PKGDEST="${startdir}/build"
+SRCDEST="${startdir}/build"
+SRCPKGDEST="${startdir}/build"
+LOGDEST="${startdir}/build"
+
+package() {
+    install -Dm755 "${startdir}/raveos-app-installer" \
+        "${pkgdir}/usr/bin/raveos-app-installer"
+
+    install -Dm644 "${startdir}/raveos-app-installer.py" \
+        "${pkgdir}/usr/lib/raveos-app-installer/raveos-app-installer.py"
+
+    install -Dm644 "${startdir}/app-list.json" \
+        "${pkgdir}/usr/lib/raveos-app-installer/app-list.json"
+
+    cp -r --no-preserve=ownership "${startdir}/data" \
+        "${pkgdir}/usr/lib/raveos-app-installer/"
+    find "${pkgdir}/usr/lib/raveos-app-installer/data" -type d -exec chmod 755 {} +
+    find "${pkgdir}/usr/lib/raveos-app-installer/data" -type f -exec chmod 644 {} +
+    chmod 755 "${pkgdir}/usr/lib/raveos-app-installer/data/actions/"*.sh
+}

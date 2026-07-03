@@ -173,6 +173,36 @@ jobs:
           makepkg -s --noconfirm -f
           cp -v build/raveos-tools-*.pkg.tar.zst /tmp/builtpkgs/
 
+      - name: Build raveos-app-installer
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-app-installer
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-app-installer-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-app-installer ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -rf build || true
+          makepkg -s --noconfirm -f
+          cp -v build/raveos-app-installer-*.pkg.tar.zst /tmp/builtpkgs/
+
+      - name: Build raveos-welcome
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-welcome
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-welcome-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-welcome ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -rf build || true
+          makepkg -s --noconfirm -f
+          cp -v build/raveos-welcome-*.pkg.tar.zst /tmp/builtpkgs/
+
       - name: Mirror linux-cachyos + sddm-astronaut-theme from Chaotic-AUR
         run: |
           set -euo pipefail

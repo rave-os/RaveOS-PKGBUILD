@@ -26,6 +26,11 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("systemctl --user start hyprpolkitagent.service")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'")
     hl.exec_cmd("bash -c 'wl-paste --watch cliphist store &'")
+    -- raveos-welcome: itt nincs /etc/xdg/autostart feldolgozas (Hyprland
+    -- nem DE-session, csak ezt a hl.on("hyprland.start")-ot futtatja), ezert
+    -- kozvetlenul kell inditani - a sajat .welcome_done flag-je miatt csak
+    -- az elso bejelentkezeskor csinal barmit, utana no-op.
+    hl.exec_cmd("env QT_QPA_PLATFORM='wayland;xcb' QT_STYLE_OVERRIDE=kvantum raveos-welcome")
 end)
 
 --##################

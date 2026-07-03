@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1/policyconfig.dtd">
+<policyconfig>
+  <action id="hu.rp1.raveos-welcome">
+    <description>Run RaveOS Welcome gaming optimization</description>
+    <description xml:lang="hu">RaveOS Üdvözlő gaming optimalizáció futtatása</description>
+    <message>Authentication is required to apply gaming optimizations</message>
+    <message xml:lang="hu">Hitelesítés szükséges a gaming optimalizáció alkalmazásához</message>
+    <icon_name>preferences-system</icon_name>
+    <defaults>
+      <allow_any>auth_admin_keep</allow_any>
+      <allow_inactive>auth_admin_keep</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/share/raveos-welcome/gaming-optimize.sh</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+</policyconfig>

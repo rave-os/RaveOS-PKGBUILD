@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=RaveOS Welcome
+Comment=RaveOS üdvözlő ablak
+Exec=env QT_QPA_PLATFORM=wayland;xcb QT_STYLE_OVERRIDE=kvantum /usr/bin/raveos-welcome
+Icon=raveos-welcome
+Terminal=false
+Type=Application
+Categories=System;
+X-GNOME-Autostart-enabled=true
+X-KDE-autostart-condition=raveos-welcome
+Hidden=false
+NoDisplay=true

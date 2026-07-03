@@ -1,0 +1,581 @@
+{
+  "list_version": 48,
+  "apps": [
+    {
+      "id": "audacious",
+      "name": "Audacious",
+      "category": "Media",
+      "desc": "Audacious – Local Music Player (Flatpak, 432Hz config)",
+      "type": "flatpak-user",
+      "flatpak_id": "org.atheme.audacious",
+      "config_dir": "audacious",
+      "config_dest": "{HOME}/.var/app/org.atheme.audacious/config/audacious"
+    },
+    {
+      "id": "audacity",
+      "name": "Audacity",
+      "category": "Media",
+      "desc": "Audio editor and recorder",
+      "type": "pacman",
+      "packages": [
+        "audacity"
+      ],
+      "config_dir": "audacity",
+      "config_dest": "{HOME}/.config/audacity"
+    },
+    {
+      "id": "bitwarden",
+      "name": "Bitwarden",
+      "category": "Security",
+      "desc": "Bitwarden password manager",
+      "type": "pacman",
+      "packages": [
+        "bitwarden"
+      ]
+    },
+    {
+      "id": "bottles",
+      "name": "Bottles",
+      "category": "Games",
+      "desc": "Wine prefix manager",
+      "type": "flatpak-user",
+      "flatpak_id": "com.usebottles.bottles"
+    },
+    {
+      "id": "brave-origin-bin",
+      "name": "Brave Origin",
+      "category": "Internet",
+      "desc": "Brave Origin - a Brave letisztitott, reklam/rewards/kripto-mentes valtozata",
+      "type": "pacman",
+      "config_dir": "com.brave.Browser/config/BraveSoftware/Brave-Browser",
+      "config_dest": "{HOME}/.config/BraveSoftware/Brave-Origin"
+    },
+    {
+      "id": "calibre",
+      "name": "Calibre",
+      "category": "Office",
+      "desc": "E-book manager",
+      "type": "pacman",
+      "packages": [
+        "calibre"
+      ]
+    },
+    {
+      "id": "corectrl",
+      "name": "CoreCTRL",
+      "category": "System",
+      "desc": "AMD GPU control application",
+      "type": "script",
+      "script": "corectrl.sh",
+      "check_packages": [
+        "corectrl"
+      ],
+      "removable": false
+    },
+    {
+      "id": "darktable",
+      "name": "Darktable",
+      "category": "Media",
+      "desc": "Photo workflow application (like Lightroom)",
+      "type": "flatpak-user",
+      "flatpak_id": "org.darktable.Darktable"
+    },
+    {
+      "id": "discord",
+      "name": "Discord + Vencord",
+      "category": "Internet",
+      "desc": "Discord client with Vencord mod",
+      "type": "script",
+      "script": "discord.sh",
+      "check_packages": [
+        "discord"
+      ]
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "category": "Dev",
+      "desc": "Docker container engine",
+      "type": "pacman",
+      "packages": [
+        "docker"
+      ],
+      "post_install": [
+        "systemctl enable docker"
+      ]
+    },
+    {
+      "id": "dosbox",
+      "name": "DOSBox-X",
+      "category": "Games",
+      "desc": "DOS emulator for old games",
+      "type": "flatpak-user",
+      "flatpak_id": "com.dosbox_x.DOSBox-X"
+    },
+    {
+      "id": "doublecmd",
+      "name": "Double Commander",
+      "category": "System",
+      "desc": "Two-panel file manager (like Total Commander)",
+      "type": "pacman",
+      "packages": [
+        "doublecmd-qt5"
+      ]
+    },
+    {
+      "id": "easyeffects",
+      "name": "Easy Effects",
+      "category": "Media",
+      "desc": "Audio effects for PipeWire",
+      "type": "flatpak-user",
+      "flatpak_id": "com.github.wwmm.easyeffects"
+    },
+    {
+      "id": "fastfetch",
+      "name": "Fastfetch",
+      "category": "System",
+      "desc": "System info display in terminal",
+      "type": "pacman",
+      "packages": [
+        "fastfetch"
+      ]
+    },
+    {
+      "id": "firejail",
+      "name": "Firejail",
+      "category": "Security",
+      "desc": "Sandbox for applications",
+      "type": "pacman",
+      "packages": [
+        "firejail"
+      ]
+    },
+    {
+      "id": "freetube",
+      "name": "FreeTube",
+      "category": "Media",
+      "desc": "Privacy-friendly YouTube client",
+      "type": "flatpak-user",
+      "flatpak_id": "io.freetubeapp.FreeTube",
+      "config_dir": "FreeTube",
+      "config_dest": "{HOME}/.var/app/io.freetubeapp.FreeTube/config/FreeTube"
+    },
+    {
+      "id": "gamemode",
+      "name": "GameMode",
+      "category": "Games",
+      "desc": "GameMode + Gamescope for gaming optimization",
+      "type": "pacman",
+      "packages": [
+        "gamemode",
+        "lib32-gamemode",
+        "gamescope"
+      ]
+    },
+    {
+      "id": "gnome-clocks",
+      "name": "GNOME Clocks",
+      "category": "System",
+      "desc": "Alarm, world clock, stopwatch, timer",
+      "type": "script",
+      "script": "gnome-clocks.sh",
+      "check_packages": [
+        "gnome-clocks"
+      ]
+    },
+    {
+      "id": "gtkstresstesting",
+      "name": "GTKStressTesting",
+      "category": "System",
+      "desc": "CPU monitoring and stress testing",
+      "type": "flatpak-user",
+      "flatpak_id": "com.leinardi.gst"
+    },
+    {
+      "id": "helvum",
+      "name": "Helvum",
+      "category": "Media",
+      "desc": "Patchbay for PipeWire",
+      "type": "pacman",
+      "packages": [
+        "helvum"
+      ]
+    },
+    {
+      "id": "heroic",
+      "name": "Heroic Games Launcher",
+      "category": "Games",
+      "desc": "Epic Games launcher + MangoHud",
+      "type": "flatpak-user",
+      "flatpak_id": "com.heroicgameslauncher.hgl",
+      "post_install": [
+        "flatpak install --user -y runtime/org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/23.08",
+        "flatpak override --user --filesystem=xdg-config/MangoHud:ro com.heroicgameslauncher.hgl"
+      ]
+    },
+    {
+      "id": "input-remapper",
+      "name": "Input Remapper",
+      "category": "System",
+      "desc": "Mouse/keyboard button remapper, macro tool",
+      "type": "pacman",
+      "packages": [
+        "input-remapper-git"
+      ]
+    },
+    {
+      "id": "jellyfin",
+      "name": "Jellyfin Media Player",
+      "category": "Media",
+      "desc": "Jellyfin client for media streaming",
+      "type": "flatpak-user",
+      "flatpak_id": "org.jellyfin.JellyfinDesktop"
+    },
+    {
+      "id": "kdeconnect",
+      "name": "KDE Connect",
+      "category": "System",
+      "desc": "Connect phone and PC",
+      "type": "pacman",
+      "packages": [
+        "kdeconnect"
+      ]
+    },
+    {
+      "id": "kdenlive",
+      "name": "Kdenlive",
+      "category": "Media",
+      "desc": "Video editor for Linux",
+      "type": "pacman",
+      "packages": [
+        "kdenlive"
+      ]
+    },
+    {
+      "id": "keepassxc",
+      "name": "KeePassXC",
+      "category": "Security",
+      "desc": "Password manager with encrypted local database",
+      "type": "pacman",
+      "packages": [
+        "keepassxc"
+      ]
+    },
+    {
+      "id": "krusader",
+      "name": "Krusader",
+      "category": "System",
+      "desc": "Two-panel file manager",
+      "type": "pacman",
+      "packages": [
+        "krusader"
+      ]
+    },
+    {
+      "id": "kvm",
+      "name": "KVM / QEMU",
+      "category": "System",
+      "desc": "Virtualization with KVM + QEMU",
+      "type": "script",
+      "script": "kvm.sh",
+      "check_packages": [
+        "qemu-full"
+      ]
+    },
+    {
+      "id": "libreoffice",
+      "name": "LibreOffice",
+      "category": "Office",
+      "desc": "LibreOffice Fresh with Hungarian language",
+      "type": "pacman",
+      "packages": [
+        "libreoffice-fresh",
+        "libreoffice-fresh-hu"
+      ]
+    },
+    {
+      "id": "librewolf",
+      "name": "LibreWolf",
+      "category": "Internet",
+      "desc": "Firefox ESR based privacy browser",
+      "type": "flatpak-user",
+      "flatpak_id": "io.gitlab.librewolf-community",
+      "config_dir": "librewolf",
+      "config_dest": "{HOME}/.var/app/io.gitlab.librewolf-community/.librewolf"
+    },
+    {
+      "id": "lutris",
+      "name": "Lutris",
+      "category": "Games",
+      "desc": "Game launcher with Wine support",
+      "type": "script",
+      "script": "lutris.sh",
+      "check_packages": [
+        "lutris"
+      ]
+    },
+    {
+      "id": "mangohud",
+      "name": "MangoHud / Goverlay",
+      "category": "Games",
+      "desc": "FPS overlay and settings (like MSI Afterburner)",
+      "type": "pacman",
+      "config_dir": ".config",
+      "config_dest": "{HOME}/.config/MangoHud",
+      "packages": [
+        "mangohud",
+        "lib32-mangohud",
+        "goverlay"
+      ]
+    },
+    {
+      "id": "mc",
+      "name": "Midnight Commander",
+      "category": "System",
+      "desc": "Two-panel terminal file manager",
+      "type": "pacman",
+      "packages": [
+        "mc"
+      ]
+    },
+    {
+      "id": "mumble",
+      "name": "Mumble",
+      "category": "Internet",
+      "desc": "Voice chat application",
+      "type": "pacman",
+      "packages": [
+        "mumble"
+      ]
+    },
+    {
+      "id": "obs",
+      "name": "OBS Studio",
+      "category": "Media",
+      "desc": "Streaming and recording software",
+      "type": "flatpak-user",
+      "flatpak_id": "com.obsproject.Studio"
+    },
+    {
+      "id": "onlyoffice",
+      "name": "OnlyOffice",
+      "category": "Office",
+      "desc": "MS Office compatible suite",
+      "type": "flatpak-user",
+      "flatpak_id": "org.onlyoffice.desktopeditors"
+    },
+    {
+      "id": "7zip",
+      "name": "7-Zip",
+      "category": "System",
+      "desc": "7-Zip archive manager",
+      "type": "pacman",
+      "packages": [
+        "7zip"
+      ]
+    },
+    {
+      "id": "peazip",
+      "name": "Peazip",
+      "category": "System",
+      "desc": "Peazip GUI archive manager",
+      "type": "pacman",
+      "packages": [
+        "peazip"
+      ]
+    },
+    {
+      "id": "occt",
+      "name": "OCCT",
+      "category": "System",
+      "desc": "System Stability Tester",
+      "type": "pacman",
+      "packages": [
+        "occt"
+      ]
+    },
+    {
+      "id": "octopi",
+      "name": "Octopi",
+      "category": "System",
+      "desc": "Graphical package manager",
+      "type": "pacman",
+      "packages": [
+        "octopi"
+      ]
+    },
+    {
+      "id": "pavucontrol",
+      "name": "Pavucontrol",
+      "category": "Media",
+      "desc": "Per-application volume control",
+      "type": "pacman",
+      "packages": [
+        "pavucontrol"
+      ]
+    },
+    {
+      "id": "photogimp",
+      "name": "PhotoGIMP",
+      "category": "Media",
+      "desc": "GIMP with Photoshop-like interface",
+      "type": "flatpak-user",
+      "flatpak_id": "org.gimp.GIMP",
+      "check_flatpak": "org.gimp.GIMP",
+      "config_mappings": [
+        {
+          "source": "PhotoGIMP/.config/GIMP/3.0",
+          "dest": "{HOME}/.config/GIMP/3.2"
+        },
+        {
+          "source": "PhotoGIMP/.local/share/applications",
+          "dest": "{HOME}/.local/share/applications"
+        },
+        {
+          "source": "PhotoGIMP/.local/share/icons/hicolor",
+          "dest": "{HOME}/.local/share/icons/hicolor"
+        }
+      ]
+    },
+    {
+      "id": "printer",
+      "name": "Printer Support",
+      "category": "System",
+      "desc": "Printer drivers and CUPS",
+      "type": "script",
+      "script": "printer.sh",
+      "check_packages": [
+        "cups"
+      ],
+      "removable": false
+    },
+    {
+      "id": "qbittorrent",
+      "name": "qBittorrent",
+      "category": "Internet",
+      "desc": "Torrent client",
+      "type": "pacman",
+      "config_dir": "qBittorrent",
+      "config_dest": "{HOME}/.config/qBittorrent",
+      "packages": [
+        "qbittorrent"
+      ]
+    },
+    {
+      "id": "signal",
+      "name": "Signal",
+      "category": "Internet",
+      "desc": "Encrypted messenger",
+      "type": "pacman",
+      "packages": [
+        "signal-desktop"
+      ]
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "category": "Media",
+      "desc": "Music streaming service",
+      "type": "flatpak-user",
+      "flatpak_id": "com.spotify.Client"
+    },
+    {
+      "id": "spotube",
+      "name": "Spotube",
+      "category": "Media",
+      "desc": "Free Spotify client without premium",
+      "type": "flatpak-user",
+      "flatpak_id": "com.github.KRTirtho.Spotube"
+    },
+    {
+      "id": "steam",
+      "name": "Steam",
+      "category": "Games",
+      "desc": "Steam + ProtonGE (complex installation)",
+      "type": "script",
+      "script": "steam.sh",
+      "check_packages": [
+        "steam"
+      ]
+    },
+    {
+      "id": "teamspeak",
+      "name": "TeamSpeak 3",
+      "category": "Internet",
+      "desc": "TeamSpeak VOIP client",
+      "type": "pacman",
+      "packages": [
+        "teamspeak3"
+      ]
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram",
+      "category": "Internet",
+      "desc": "Encrypted messenger",
+      "type": "pacman",
+      "packages": [
+        "telegram-desktop"
+      ]
+    },
+    {
+      "id": "vibrant",
+      "name": "Vibrant Linux",
+      "category": "System",
+      "desc": "Color saturation adjustment tool",
+      "type": "flatpak-user",
+      "flatpak_id": "io.github.libvibrant.vibrantLinux"
+    },
+    {
+      "id": "vivaldi",
+      "name": "Vivaldi",
+      "category": "Internet",
+      "desc": "Vivaldi web browser",
+      "type": "pacman",
+      "config_dir": "vivaldi",
+      "config_dest": "{HOME}/.config/vivaldi",
+      "packages": [
+        "vivaldi",
+        "vivaldi-ffmpeg-codecs"
+      ]
+    },
+    {
+      "id": "vlc",
+      "name": "VLC",
+      "category": "Media",
+      "desc": "VLC Media Player (Flatpak)",
+      "type": "flatpak-user",
+      "flatpak_id": "org.videolan.VLC"
+    },
+    {
+      "id": "vulkan-radeon",
+      "name": "Vulkan Radeon",
+      "category": "Games",
+      "desc": "AMD Vulkan drivers for gaming",
+      "type": "pacman",
+      "packages": [
+        "vulkan-radeon",
+        "lib32-vulkan-radeon"
+      ],
+      "removable": false
+    },
+    {
+      "id": "xpadneo",
+      "name": "Xbox Controller",
+      "category": "Games",
+      "desc": "Xbox Controller support (Bluetooth)",
+      "type": "pacman",
+      "packages": [
+        "xpadneo-dkms"
+      ]
+    },
+    {
+      "id": "windows11",
+      "name": "Windows 11",
+      "category": "System",
+      "desc": "Windows 11 Installer - Experts Only!",
+      "type": "message",
+      "message": "!! MAJOM VAGY !!\n\nWindows 11? Komolyan? Linux-on vagy, elvezd!\n\nHa tenyleg kell Windows, hasznalj KVM/QEMU-t a listabol."
+    }
+  ]
+}

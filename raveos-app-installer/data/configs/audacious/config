@@ -1,0 +1,14 @@
+
+[audacious]
+use_qt=FALSE
+
+[gtkui]
+column_widths=10,275,175,10,175,175,10,100,38,10,275,275,275,10,275,175,75,10
+player_x=26
+player_y=23
+
+[gtkui-layout]
+item_count=0
+
+[speed-pitch]
+pitch=0.981119

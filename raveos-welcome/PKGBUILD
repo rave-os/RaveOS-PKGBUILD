@@ -1,0 +1,39 @@
+pkgname=raveos-welcome
+pkgver=2.0.0
+pkgrel=6
+pkgdesc="RaveOS üdvözlő ablak - első bejelentkezéskor jelenik meg"
+arch=('any')
+url="https://git.rp1.hu/RaveOS/raveos-welcome"
+license=('GPL')
+depends=('python' 'python-pyqt6' 'polkit' 'networkmanager')
+source=()
+sha256sums=()
+
+BUILDDIR="${startdir}/build"
+PKGDEST="${startdir}/build"
+SRCDEST="${startdir}/build"
+SRCPKGDEST="${startdir}/build"
+LOGDEST="${startdir}/build"
+
+package() {
+  install -Dm755 "${startdir}/raveos_welcome.py" \
+    "${pkgdir}/usr/bin/raveos-welcome"
+
+  install -Dm644 "${startdir}/raveos-welcome.desktop" \
+    "${pkgdir}/etc/xdg/autostart/raveos-welcome.desktop"
+
+  install -Dm644 "${startdir}/raveos-welcome.svg" \
+    "${pkgdir}/usr/share/raveos-welcome/raveos-welcome.svg"
+
+  install -Dm755 "${startdir}/gaming-optimize.sh" \
+    "${pkgdir}/usr/share/raveos-welcome/gaming-optimize.sh"
+
+  install -Dm644 "${startdir}/hu.rp1.raveos-welcome.policy" \
+    "${pkgdir}/usr/share/polkit-1/actions/hu.rp1.raveos-welcome.policy"
+
+  if [ -d "${startdir}/brave-profile" ]; then
+    cp -r "${startdir}/brave-profile" "${pkgdir}/usr/share/raveos-welcome/brave-profile"
+    find "${pkgdir}/usr/share/raveos-welcome/brave-profile" -type d -exec chmod 755 {} +
+    find "${pkgdir}/usr/share/raveos-welcome/brave-profile" -type f -exec chmod 644 {} +
+  fi
+}
