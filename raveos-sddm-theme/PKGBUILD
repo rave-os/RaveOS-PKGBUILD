@@ -12,12 +12,12 @@
 
 pkgname=raveos-sddm-theme
 pkgver=1.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc="RaveOS kozos SDDM login tema (sddm-rave-theme)"
 arch=('any')
 url="https://raveos.local"
 license=('custom')
-depends=('sddm')
+depends=('sddm' 'qt6-multimedia')
 
 install="${pkgname}.install"
 source=()
