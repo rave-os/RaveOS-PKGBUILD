@@ -2181,7 +2181,7 @@ def main():
     app = QApplication(sys.argv)
     app.setStyle(_FastTooltipStyle())
     app.setApplicationName("raveos-welcome-session")
-    app.setDesktopFileName("raveos-welcome-session")
+    app.setDesktopFileName("raveos-welcome")
     QFontDatabase.addApplicationFont("/usr/share/fonts/ubuntu/Ubuntu-R.ttf")
     QFontDatabase.addApplicationFont("/usr/share/fonts/ubuntu/Ubuntu-B.ttf")
 

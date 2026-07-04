@@ -1,6 +1,6 @@
 pkgname=raveos-welcome
 pkgver=2.0.0
-pkgrel=7
+pkgrel=9
 pkgdesc="RaveOS üdvözlő ablak - első bejelentkezéskor jelenik meg"
 arch=('any')
 url="https://git.rp1.hu/RaveOS/raveos-welcome"
@@ -24,6 +24,9 @@ package() {
 
   install -Dm644 "${startdir}/raveos-welcome.svg" \
     "${pkgdir}/usr/share/raveos-welcome/raveos-welcome.svg"
+
+  install -Dm644 "${startdir}/raveos-welcome.svg" \
+    "${pkgdir}/usr/share/icons/hicolor/scalable/apps/raveos-welcome.svg"
 
   install -Dm755 "${startdir}/gaming-optimize.sh" \
     "${pkgdir}/usr/share/raveos-welcome/gaming-optimize.sh"
