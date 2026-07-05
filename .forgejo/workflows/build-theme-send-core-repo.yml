@@ -86,6 +86,21 @@ jobs:
           PKG=$(ls -t *.pkg.tar.zst | grep -v -- '-debug-' | head -n 1)
           cp -v "$PKG" /tmp/builtpkgs/
 
+      - name: Build raveos-keyring
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-keyring
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-keyring-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-keyring ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -rf build || true
+          makepkg -s --noconfirm -f
+          cp -v build/raveos-keyring-*.pkg.tar.zst /tmp/builtpkgs/
+
       - name: Build raveos-sddm-theme
         run: |
           set -euo pipefail
