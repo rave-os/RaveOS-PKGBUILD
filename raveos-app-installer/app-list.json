@@ -416,7 +416,7 @@
         "en": "FPS overlay and settings (like MSI Afterburner)"
       },
       "type": "pacman",
-      "config_dir": ".config",
+      "config_dir": ".config/MangoHud",
       "config_dest": "{HOME}/.config/MangoHud",
       "packages": [
         "mangohud",

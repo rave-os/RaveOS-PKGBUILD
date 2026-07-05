@@ -447,6 +447,51 @@ def plan_commands(apps: list, install: bool, gui: bool) -> list:
             steps.append((f"flatpak uninstall: {fid}",
                           ["flatpak", "uninstall", "--user", "-y", fid]))
 
+    # Config seedelés: pacman/aur/flatpak-user tipusu appoknal a config_dir/
+    # config_dest mezok alapjan bemasoljuk az elore elkeszitett configot a
+    # user home-jaba, telepites utan. (script tipusnal ezt a sajat bash
+    # script intezi, azoknal nem kell ez a lepes.)
+    if install:
+        _home = os.path.expanduser("~")
+        for a in apps:
+            if a.get("type") == "script":
+                continue
+            cdir = a.get("config_dir")
+            cdest = a.get("config_dest")
+            if not cdir or not cdest:
+                continue
+            src = _SCRIPT_DIR / "data" / "configs" / cdir
+            if not src.is_dir():
+                continue
+            dest = cdest.replace("{HOME}", _home)
+            steps.append((f"config: {a['name']}",
+                          ["bash", "-c",
+                           f"mkdir -p {shlex.quote(dest)} && "
+                           f"cp -rn {shlex.quote(str(src))}/. {shlex.quote(dest)}/"]))
+
+    # Config seedelés (több-utas változat): olyan appoknal, ahol tobb kulon
+    # forras/cel par van (pl. PhotoGIMP: GIMP config + .desktop + ikonok
+    # kulon-kulon helyre), a "config_mappings" listat hasznaljuk a fenti
+    # egyszeru config_dir/config_dest helyett.
+    if install:
+        _home = os.path.expanduser("~")
+        for a in apps:
+            if a.get("type") == "script":
+                continue
+            for mapping in a.get("config_mappings", []):
+                msrc = mapping.get("source")
+                mdest = mapping.get("dest")
+                if not msrc or not mdest:
+                    continue
+                src = _SCRIPT_DIR / "data" / "configs" / msrc
+                if not src.is_dir():
+                    continue
+                dest = mdest.replace("{HOME}", _home)
+                steps.append((f"config: {a['name']} ({msrc})",
+                              ["bash", "-c",
+                               f"mkdir -p {shlex.quote(dest)} && "
+                               f"cp -rn {shlex.quote(str(src))}/. {shlex.quote(dest)}/"]))
+
     # Script env: a szkript tudja ki a tényleges user (sudo után root fut)
     _caller = os.environ.get("USER") or os.environ.get("LOGNAME") or ""
     _caller_home = os.path.expanduser("~")
