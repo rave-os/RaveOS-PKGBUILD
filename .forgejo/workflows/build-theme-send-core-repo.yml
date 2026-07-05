@@ -32,6 +32,14 @@ jobs:
           git clone --depth 1 git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
           mkdir -p /tmp/builtpkgs
 
+      - name: Import GPG signing key
+        run: |
+          set -euo pipefail
+          export GNUPGHOME=/tmp/raveos-gnupg
+          rm -rf "$GNUPGHOME"
+          mkdir -m 700 "$GNUPGHOME"
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --batch --import
+
       - name: Build raveos-calamares-theme
         run: |
           set -euo pipefail
@@ -203,6 +211,23 @@ jobs:
           makepkg -s --noconfirm -f
           cp -v build/raveos-welcome-*.pkg.tar.zst /tmp/builtpkgs/
 
+      - name: Sign built packages
+        run: |
+          set -euo pipefail
+          export GNUPGHOME=/tmp/raveos-gnupg
+          BUILT=$(ls /tmp/builtpkgs/*.pkg.tar.zst 2>/dev/null || true)
+          if [ -z "$BUILT" ]; then
+            echo "Nincs csomag alairashoz -> kihagyva"
+            exit 0
+          fi
+          for pkg in $BUILT; do
+            gpg --batch --yes --pinentry-mode loopback \
+                --passphrase "${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}" \
+                --local-user 25C7668F1235F5664F037671BDB2A9CE6EBFF113 \
+                --detach-sign "$pkg"
+            echo "Alairva: $(basename "$pkg")"
+          done
+
       - name: Publish packages to raveos-core-repo (only if changed)
         run: |
           set -euo pipefail
@@ -229,6 +254,7 @@ jobs:
             fi
             rm -f "$CORE/${PKGNAME}-"*.pkg.tar.zst* 2>/dev/null || true
             cp -v "$pkg" "$CORE/"
+            [ -f "$pkg.sig" ] && cp -v "$pkg.sig" "$CORE/"
           done
 
           git add -A
@@ -244,6 +270,8 @@ jobs:
       - name: Cleanup (SAFE)
         if: always()
         run: |
+          gpgconf --homedir /tmp/raveos-gnupg --kill gpg-agent || true
+          sudo rm -rf /tmp/raveos-gnupg || true
           sudo rm -rf /tmp/builtpkgs || true
           sudo rm -rf /tmp/raveos-core-repo || true
           sudo rm -rf /var/cache/pacman/pkg/* || true

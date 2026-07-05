@@ -37,6 +37,14 @@ jobs:
           git clone --depth 1 git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
           mkdir -p /tmp/builtpkgs
 
+      - name: Import GPG signing key
+        run: |
+          set -euo pipefail
+          export GNUPGHOME=/tmp/raveos-gnupg
+          rm -rf "$GNUPGHOME"
+          mkdir -m 700 "$GNUPGHOME"
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d | gpg --batch --import
+
       - name: Check if already built
         id: check
         run: |
@@ -64,6 +72,19 @@ jobs:
           makepkg -s --noconfirm
           cp -v linux-cachyos-*.pkg.tar.zst /tmp/builtpkgs/
 
+      - name: Sign built packages
+        if: steps.check.outputs.SKIP == 'no'
+        run: |
+          set -euo pipefail
+          export GNUPGHOME=/tmp/raveos-gnupg
+          for pkg in /tmp/builtpkgs/*.pkg.tar.zst; do
+            gpg --batch --yes --pinentry-mode loopback \
+                --passphrase "${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}" \
+                --local-user 25C7668F1235F5664F037671BDB2A9CE6EBFF113 \
+                --detach-sign "$pkg"
+            echo "Alairva: $(basename "$pkg")"
+          done
+
       - name: Publish to core repo
         if: steps.check.outputs.SKIP == 'no'
         run: |
@@ -86,10 +107,14 @@ jobs:
             PKGNAME=$(echo "$PKGFILE" | sed 's/-[0-9][^-]*-[^-]*-[^-]*\.pkg\.tar\.zst$//')
             rm -f "$CORE/${PKGNAME}-"*.pkg.tar.zst* 2>/dev/null || true
             cp -v "$pkg" "$CORE/"
+            [ -f "$pkg.sig" ] && cp -v "$pkg.sig" "$CORE/"
           done
 
-          repo-add "$CORE/raveos-core-repo.db.tar.gz" "$CORE"/linux-cachyos-[^h]*.pkg.tar.zst
-          repo-add "$CORE/raveos-core-repo.db.tar.gz" "$CORE"/linux-cachyos-headers-*.pkg.tar.zst
+          export GNUPGHOME=/tmp/raveos-gnupg
+          repo-add -s -k 25C7668F1235F5664F037671BDB2A9CE6EBFF113 \
+              "$CORE/raveos-core-repo.db.tar.gz" "$CORE"/linux-cachyos-[^h]*.pkg.tar.zst
+          repo-add -s -k 25C7668F1235F5664F037671BDB2A9CE6EBFF113 \
+              "$CORE/raveos-core-repo.db.tar.gz" "$CORE"/linux-cachyos-headers-*.pkg.tar.zst
 
           git add -A
           git commit -m "kernel: linux-cachyos ${{ steps.check.outputs.PKGVER }}-${{ steps.check.outputs.PKGREL }}"
@@ -104,6 +129,8 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
+          gpgconf --homedir /tmp/raveos-gnupg --kill gpg-agent || true
+          sudo rm -rf /tmp/raveos-gnupg || true
           sudo rm -rf /tmp/builtpkgs || true
           sudo rm -rf /tmp/raveos-core-repo || true
           sudo rm -rf linux-raveos/src linux-raveos/pkg || true

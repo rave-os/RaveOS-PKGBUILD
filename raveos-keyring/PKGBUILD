@@ -1,0 +1,25 @@
+pkgname=raveos-keyring
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="RaveOS package signing keyring"
+arch=('any')
+url="https://raveos.local"
+license=('custom')
+install=raveos-keyring.install
+source=()
+sha256sums=()
+
+BUILDDIR="${startdir}/build"
+PKGDEST="${startdir}/build"
+SRCDEST="${startdir}/build"
+SRCPKGDEST="${startdir}/build"
+LOGDEST="${startdir}/build"
+
+package() {
+    install -Dm644 "${startdir}/raveos.gpg" \
+        "${pkgdir}/usr/share/pacman/keyrings/raveos.gpg"
+    install -Dm644 "${startdir}/raveos-trusted" \
+        "${pkgdir}/usr/share/pacman/keyrings/raveos-trusted"
+    install -Dm644 "${startdir}/raveos-revoked" \
+        "${pkgdir}/usr/share/pacman/keyrings/raveos-revoked"
+}
