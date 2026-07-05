@@ -1,7 +1,9 @@
 post_install() {
+    pacman-key --init 2>/dev/null || true
     pacman-key --populate raveos
 }
 
 post_upgrade() {
+    pacman-key --init 2>/dev/null || true
     pacman-key --populate raveos
 }
