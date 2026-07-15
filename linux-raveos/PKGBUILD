@@ -78,11 +78,11 @@ _pkgsuffix=cachyos
 
 pkgbase="linux-$_pkgsuffix"
 _major=7.1
-_minor=2
-_tagrel=3
+_minor=3
+_tagrel=1
 _srcname=cachyos-${_major}.${_minor}-${_tagrel}
-pkgver=7.1.2
-pkgrel=3
+pkgver=7.1.3
+pkgrel=10
 pkgdesc='Linux BORE + NTSYNC + Memory Optimized RaveOS Kernel based on CachyOS'
 _kernver="$pkgver-$pkgrel"
 _kernuname="${_major}.${_minor}-${_pkgsuffix}"
