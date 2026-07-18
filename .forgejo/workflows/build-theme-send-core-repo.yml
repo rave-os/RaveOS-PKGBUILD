@@ -226,6 +226,21 @@ jobs:
           makepkg -s --noconfirm -f
           cp -v build/raveos-welcome-*.pkg.tar.zst /tmp/builtpkgs/
 
+      - name: Build raveos-plymouth-theme
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-plymouth-theme
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-plymouth-theme-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-plymouth-theme ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+          cp -v raveos-plymouth-theme-*.pkg.tar.zst /tmp/builtpkgs/
+
       - name: Sign built packages
         run: |
           set -euo pipefail
