@@ -1,0 +1,16 @@
+pkgname=raveos-plymouth-theme
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="RaveOS Plymouth boot splash theme"
+arch=('any')
+url="https://git.rp1.hu/RaveOS"
+license=('GPL')
+depends=('plymouth')
+install=raveos-plymouth-theme.install
+source=()
+sha256sums=()
+
+package() {
+  install -d "${pkgdir}/usr/share/plymouth/themes/raveos"
+  cp -r "${startdir}/theme-data/." "${pkgdir}/usr/share/plymouth/themes/raveos/"
+}

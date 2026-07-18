@@ -1,0 +1,59 @@
+// RaveOS Plymouth boot splash script (installed system)
+
+Window.SetBackgroundTopColor(0.102, 0.106, 0.114);
+Window.SetBackgroundBottomColor(0.075, 0.078, 0.086);
+
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+
+// --- logo: owl icon, centered ---
+
+owl_image = Image("raveos-owl.png");
+owl_width = owl_image.GetWidth();
+owl_height = owl_image.GetHeight();
+
+logo_scale = 0.36;
+owl_width = owl_width * logo_scale;
+owl_height = owl_height * logo_scale;
+owl_image = owl_image.Scale(owl_width, owl_height);
+
+owl_sprite = Sprite(owl_image);
+
+owl_x = screen_width / 2 - owl_width / 2;
+owl_y = screen_height / 2 - owl_height / 2;
+owl_sprite.SetPosition(owl_x, owl_y, 10);
+
+Plymouth.SetBootProgressFunction(fun(duration, progress)
+{
+});
+
+// --- password prompt (LUKS unlock) ---
+
+fun display_password_callback(prompt, bullets)
+{
+  local.text = prompt;
+  if (local.text == "")
+    local.text = "Enter passphrase to unlock disk";
+
+  prompt_image = Image.Text(local.text, 0.9, 0.9, 0.9, 1, "Ubuntu Mono 11");
+  bullets_image = Image.Text(bullets, 0.36, 0.66, 0.32, 1, "Ubuntu Mono 11");
+
+  prompt_sprite = Sprite(prompt_image);
+  bullets_sprite = Sprite(bullets_image);
+
+  prompt_sprite.SetPosition(screen_width / 2 - prompt_image.GetWidth() / 2,
+                             screen_height / 2 + 80, 20);
+  bullets_sprite.SetPosition(screen_width / 2 - bullets_image.GetWidth() / 2,
+                              screen_height / 2 + 110, 20);
+}
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+
+fun display_normal_callback()
+{
+}
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+
+fun quit_callback()
+{
+}
+Plymouth.SetQuitFunction(quit_callback);

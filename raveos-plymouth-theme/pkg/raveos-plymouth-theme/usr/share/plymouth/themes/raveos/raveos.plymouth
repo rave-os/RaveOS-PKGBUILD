@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=RaveOS
+Description=RaveOS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/raveos
+ScriptFile=/usr/share/plymouth/themes/raveos/raveos.script

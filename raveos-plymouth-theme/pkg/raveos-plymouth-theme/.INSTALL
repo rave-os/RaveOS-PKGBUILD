@@ -1,0 +1,11 @@
+post_install() {
+    plymouth-set-default-theme raveos
+}
+
+post_upgrade() {
+    plymouth-set-default-theme raveos
+}
+
+pre_remove() {
+    plymouth-set-default-theme -R raveos 2>/dev/null || true
+}
