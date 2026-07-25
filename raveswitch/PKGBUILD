@@ -1,0 +1,54 @@
+pkgname=raveswitch
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="A modern GTK4-based window switcher and application launcher for Hyprland"
+arch=('x86_64' 'aarch64')
+conflicts=('hyprshell')
+provides=('hyprshell')
+url="https://git.rp1.hu/gabeszm/hyprland_raveswitch"
+license=("MIT")
+makedepends=('cargo' 'git')
+optdepends=('org.freedesktop.secrets: Store clipboard encryption in the keyring')
+depends=('hyprland' 'gtk4-layer-shell' 'gtk4' 'libadwaita' 'zstd')
+source=("hyprland_raveswitch::git+ssh://git@git.rp1.hu/gabeszm/hyprland_raveswitch.git")
+sha256sums=('SKIP')
+
+prepare() {
+    export RUSTUP_TOOLCHAIN=stable
+    cd hyprland_raveswitch
+    # dep-crates/hyprland-rs is vendored without a README.md, but its own
+    # src/lib.rs does include_str!("../README.md") -- create a stub so the
+    # build doesn't fail on a missing doc-comment source file.
+    [ -f dep-crates/hyprland-rs/README.md ] || echo "# hyprland-rs (vendored)" > dep-crates/hyprland-rs/README.md
+    # crates/config-edit-lib embeds assets/logo.png via include_bytes!, but
+    # the repo only ships assets/raveicon.png -- reuse it as the logo.
+    [ -f assets/logo.png ] || cp assets/raveicon.png assets/logo.png
+    cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    cd hyprland_raveswitch
+    cargo build --frozen --release
+}
+
+package() {
+    install -Dm755 "hyprland_raveswitch/target/release/raveswitch"             "$pkgdir/usr/bin/raveswitch"
+    install -Dm644 "hyprland_raveswitch/README.md"                            "$pkgdir/usr/share/doc/raveswitch/README.md"
+    install -Dm644 "hyprland_raveswitch/packaging/raveswitch.service"          "$pkgdir/usr/lib/systemd/user/raveswitch.service"
+    install -Dm644 "hyprland_raveswitch/assets/raveswitch-settings.png"     "$pkgdir/usr/share/pixmaps/raveswitch-settings.png"
+    for size in 16 24 32 48 64 128 256; do
+        install -Dm644 "hyprland_raveswitch/assets/raveswitch-settings.png" "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/raveswitch-settings.png"
+    done
+    install -Dm644 "hyprland_raveswitch/packaging/hu.rp1.raveswitch.settings.desktop" "$pkgdir/usr/share/applications/hu.rp1.raveswitch.settings.desktop"
+
+    mkdir "$pkgdir/usr/share/raveswitch"
+    tar -xf "hyprland_raveswitch/packaging/usr-share.tar" -C "$pkgdir/usr/share/raveswitch"
+
+    install -Dm644 "hyprland_raveswitch/assets/raveicon.png"   "$pkgdir/usr/share/raveswitch/assets/raveicon.png"
+
+    "$pkgdir/usr/bin/raveswitch" completions bash -p  "$pkgdir/usr/share/bash-completion/completions"
+    "$pkgdir/usr/bin/raveswitch" completions fish -p  "$pkgdir/usr/share/fish/vendor_completions.d"
+    "$pkgdir/usr/bin/raveswitch" completions zsh -p   "$pkgdir/usr/share/zsh/site-functions"
+}

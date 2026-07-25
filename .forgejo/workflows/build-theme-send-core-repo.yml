@@ -23,7 +23,7 @@ jobs:
         run: |
           set -euo pipefail
           sudo pacman -S --needed --noconfirm \
-            base-devel git pacman-contrib cmake qt6-tools go
+            base-devel git pacman-contrib cmake qt6-tools go cargo gtk4-layer-shell hyprland
 
       - name: Clone core repo
         run: |
@@ -240,6 +240,21 @@ jobs:
           rm -f *.pkg.tar.zst || true
           makepkg -s --noconfirm -f
           cp -v raveos-plymouth-theme-*.pkg.tar.zst /tmp/builtpkgs/
+
+      - name: Build raveswitch
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveswitch
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveswitch-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveswitch ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -rf src pkg hyprland_raveswitch *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+          cp -v raveswitch-*.pkg.tar.zst /tmp/builtpkgs/
 
       - name: Sign built packages
         run: |
