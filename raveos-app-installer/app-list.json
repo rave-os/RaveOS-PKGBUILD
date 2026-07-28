@@ -321,10 +321,8 @@
         "hu": "Videószerkesztő Linuxra",
         "en": "Video editor for Linux"
       },
-      "type": "pacman",
-      "packages": [
-        "kdenlive"
-      ]
+      "type": "flatpak-user",
+      "flatpak_id": "org.kde.kdenlive"
     },
     {
       "id": "keepassxc",

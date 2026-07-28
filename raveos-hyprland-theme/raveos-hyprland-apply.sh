@@ -85,8 +85,8 @@ done
 [[ -f "${PAYLOAD}/hyprland-pp.png" ]] && \
     install -Dm644 "${PAYLOAD}/hyprland-pp.png" /etc/skel/.face
 
-# GTK, Thunar, nwg-look, xsettingsd, hyprshell konfigok
-for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd hyprshell; do
+# GTK, Thunar, nwg-look, xsettingsd, Kvantum konfigok
+for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd Kvantum; do
     if [[ -d "${PAYLOAD}/${d}" ]]; then
         mkdir -p "/etc/skel/.config/${d}"
         cp -rf "${PAYLOAD}/${d}/." "/etc/skel/.config/${d}/"
@@ -170,8 +170,8 @@ SEOF
             install -Dm644 "${PAYLOAD}/fastfetch/${f}" "${home}/.config/fastfetch/${f}"
     done
 
-    # GTK, Thunar, nwg-look, xsettingsd, hyprshell konfigok
-    for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd hyprshell; do
+    # GTK, Thunar, nwg-look, xsettingsd, Kvantum konfigok
+    for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd Kvantum; do
         if [[ -d "${PAYLOAD}/${d}" ]]; then
             mkdir -p "${home}/.config/${d}"
             cp -rf "${PAYLOAD}/${d}/." "${home}/.config/${d}/"

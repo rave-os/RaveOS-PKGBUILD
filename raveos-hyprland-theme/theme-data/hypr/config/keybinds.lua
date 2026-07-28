@@ -14,13 +14,16 @@ for i = 1, 10 do
 end
 
 -- Shell Binds
-hl.bind("SUPER",                    hl.dsp.exec_cmd("dms ipc call spotlight toggle"))
+hl.bind("SUPER + SUPER_L",         hl.dsp.exec_cmd("dms ipc call spotlight toggle"), { release = true })
 hl.bind(mainMod .. " + P",         hl.dsp.exec_cmd("dms ipc call clipboard toggle"))
 hl.bind(mainMod .. " + M",         hl.dsp.exec_cmd("dms ipc call processlist toggle"))
-hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("dms ipc call spotlight toggle"))
-hl.bind(mainMod .. " + N",         hl.dsp.exec_cmd("dms ipc call notifications toggle"))
+hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("dms ipc call notifications toggle"))
+hl.bind(mainMod .. " + N",         hl.dsp.exec_cmd("dms ipc call notepad toggle"))
 hl.bind(mainMod .. " + S",         hl.dsp.exec_cmd("dms ipc call settings toggle"))
 hl.bind(mainMod .. " + Y",         hl.dsp.exec_cmd("dms ipc call dankdash wallpaper"))
+
+-- RaveSwitch
+hl.bind("SUPER + TAB",             hl.dsp.exec_cmd([[raveswitch socat '{"OpenSwitch":{"reverse":false}}']]))
 
 -- Apps
 hl.bind(secondMod .. " + T",        hl.dsp.exec_cmd("kitty"))
@@ -36,8 +39,7 @@ hl.bind("CTRL + SUPER + End",  hl.dsp.exec_cmd("poweroff"))
 -- Window management
 hl.bind(mainMod .. " + Q",   hl.dsp.window.kill())
 hl.bind(mainMod .. " + V",   hl.dsp.window.float())
-hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd([[hyprshell socat '{"OpenSwitch":{"reverse":false}}']]))
-hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.exec_cmd([[hyprshell socat '{"OpenSwitch":{"reverse":true}}']]))
+hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.exec_cmd([[raveswitch socat '{"OpenSwitch":{"reverse":true}}']]))
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
@@ -48,6 +50,11 @@ hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "down" }))
 -- Move/resize windows with mainMod + mouse
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag())
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize())
+
+-- Screenshots (Hyprshot)
+hl.bind("Print",           hl.dsp.exec_cmd("hyprshot -m output"))
+hl.bind("SHIFT + Print",   hl.dsp.exec_cmd("hyprshot -m region"))
+hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("hyprshot -m window"))
 
 -- Laptop multimedia keys
 hl.bind("XF86AudioRaiseVolume",  hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"),  { locked = true, repeating = true })

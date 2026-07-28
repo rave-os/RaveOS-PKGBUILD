@@ -711,7 +711,7 @@ class WelcomePage(QWidget):
         links_row2.setSpacing(8)
 
         all_links = [
-            ("support",  "https://ko-fi.com/ravepriest1/tiers"),
+            ("support",  "https://ko-fi.com/ravepriest1"),
             ("RP Forgejo", "https://git.rp1.hu/explore/repos"),
             ("RP YouTube", "https://www.youtube.com/@RPslair"),
             ("RP Twitch",  "https://www.twitch.tv/ravepriest1"),
@@ -960,7 +960,10 @@ _EXEC_SNIPPETS = {
     "dms ipc call notifications toggle": "Értesítések megjelenítése",
     "dms ipc call settings toggle": "Beállítások megnyitása",
     "dms ipc call dankdash wallpaper": "Háttérkép váltó megnyitása",
-    "hyprshell socat": "Ablakváltó (Alt+Tab) megnyitása",
+    "raveswitch socat": "Ablakváltó (Alt+Tab) megnyitása",
+    "hyprshot -m output": "Képernyőkép (teljes képernyő)",
+    "hyprshot -m region": "Képernyőkép (kijelölés)",
+    "hyprshot -m window": "Képernyőkép (aktív ablak)",
     "reboot": "Újraindítás",
     "poweroff": "Leállítás",
     "freetube": "FreeTube megnyitása",

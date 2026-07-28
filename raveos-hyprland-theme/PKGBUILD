@@ -2,7 +2,7 @@
 #
 # raveos-hyprland-theme
 # ---------------------
-# Hyprland DE téma csomag: Lua konfig, DankMaterialShell (DMS) shell, hyprshell
+# Hyprland DE téma csomag: Lua konfig, DankMaterialShell (DMS) shell, raveswitch
 # ablakváltó, kitty, fastfetch, GTK/ikontémák.
 #
 # Az install script (raveos-hyprland-apply.service) egyszer fut boot-kor és
@@ -14,7 +14,7 @@
 
 pkgname=raveos-hyprland-theme
 pkgver=0.0.0
-pkgrel=54
+pkgrel=55
 pkgdesc="RaveOS Hyprland theme payload and installer (includes DankMaterialShell)"
 arch=('any')
 url="https://raveos.local"
@@ -25,9 +25,10 @@ conflicts=('raveos-cosmic-theme' 'raveos-gnome-theme')
 depends=(
     'dms-shell-hyprland'  # DankMaterialShell - a fő panel/shell + wallpaper
     'matugen'             # wallpaper-alapú színséma generátor (matugen image ...)
-    'socat'               # hyprshell socket kommunikációhoz (keybinds)
-    'hyprshell'           # Alt+Tab ablakváltó overlay
-    'hyprpolkitagent'     # polkit auth agent (GUI sudo kérések), natívan Hyprland/Wayland-hoz
+    'socat'               # raveswitch socket kommunikációhoz (keybinds)
+    'raveswitch'          # Alt+Tab ablakváltó overlay (hyprshell utódja)
+    'polkit-gnome'        # polkit auth agent (GUI sudo kérések)
+    'hyprshot'            # képernyőkép: aktív ablak / kijelölés / teljes képernyő
     'qt6ct'               # Qt6 téma konfiguráció (matugen ezt írja a szín-séma alkalmazásakor)
     'kvantum'             # Qt6 SVG téma-motor (QT_STYLE_OVERRIDE=kvantum ezt igényli)
     'raveos-sddm-theme'   # közös RaveOS SDDM login téma

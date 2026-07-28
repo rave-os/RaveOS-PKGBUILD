@@ -45,7 +45,7 @@ remove_installed_packages() {
 
 if [[ "$ACTION" == "remove" ]]; then
     echo "Removing Steam for $USER..."
-    remove_installed_packages steam proton-cachyos
+    remove_installed_packages steam proton-cachyos-slr
     rm -f "$HOME/.local/bin/update-proton-ge"
     rm -f "$HOME/.local/share/Steam/steam_dev.cfg"
     rm -f "$HOME/.steam/steam/steam_dev.cfg"
@@ -100,9 +100,9 @@ chown "$USER:$USER" "$HOME/.local/bin/update-proton-ge"
 echo "Installing ProtonGE..."
 run_as_user "$HOME/.local/bin/update-proton-ge" || true
 
-# proton-cachyos telepítése (mindig legfrissebb, CachyOS repo)
-echo "Installing proton-cachyos..."
-pacman -S --noconfirm --needed proton-cachyos || true
+# proton-cachyos-slr telepítése (mindig legfrissebb, CachyOS repo, Steam Linux Runtime build)
+echo "Installing proton-cachyos-slr..."
+pacman -S --noconfirm --needed proton-cachyos-slr || true
 
 # GSK_RENDERER beállítás
 if ! grep -q "GSK_RENDERER" /etc/environment 2>/dev/null; then
