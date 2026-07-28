@@ -93,6 +93,12 @@ for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd Kvantum; do
     fi
 done
 
+# RaveSwitch alap config (modifier: Super, hogy illeszkedjen a SUPER+TAB
+# keybindhez -- az upstream default Alt-ot allitana be, ami nem zarodna be
+# a switcher-ablak SUPER elengedesekor)
+[[ -f "${PAYLOAD}/raveswitch/config.ron" ]] && \
+    install -Dm644 "${PAYLOAD}/raveswitch/config.ron" /etc/skel/.config/raveswitch/config.ron
+
 # SDDM: a téma és konfig a PKGBUILD által van telepítve, itt nincs teendő
 
 # ---------------------------------------------------------------------------
@@ -177,6 +183,11 @@ SEOF
             cp -rf "${PAYLOAD}/${d}/." "${home}/.config/${d}/"
         fi
     done
+
+    # RaveSwitch alap config (modifier: Super, lasd fentebb a skel-agnal)
+    if [[ -f "${PAYLOAD}/raveswitch/config.ron" && ! -f "${home}/.config/raveswitch/config.ron" ]]; then
+        install -Dm644 "${PAYLOAD}/raveswitch/config.ron" "${home}/.config/raveswitch/config.ron"
+    fi
 
     # Icon és GTK téma beállítása (dconf/gsettings)
     # A settings.ini nem elég — a GTK daemonok a dconf-ot olvassák

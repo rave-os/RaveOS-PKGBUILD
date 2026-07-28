@@ -1,0 +1,10 @@
+// Edit with `raveswitch config edit`
+(
+    version: 4,
+    windows: (
+        switch: Some(modifier: "Super", key: "Tab", filter_by: [current_monitor], switch_workspaces: false, exclude_workspaces: "", kill_key: 'q'),
+    ),
+    behavior: (
+        close_on_mod_release: true,
+    ),
+)

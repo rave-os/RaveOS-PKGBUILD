@@ -1,5 +1,5 @@
 pkgname=raveswitch
-pkgver=0.3.1
+pkgver=0.4.1
 pkgrel=1
 pkgdesc="A modern GTK4-based window switcher and application launcher for Hyprland"
 arch=('x86_64' 'aarch64')
