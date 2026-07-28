@@ -317,11 +317,25 @@ jobs:
 
           # Adatbazis ujraepitese HELYBEN (nincs tobbe kulon repo-add job/repo)
           # .xz celzunk (nem .gz), es minden CORE-beli csomagot atadunk a repo-add-nak.
+          # A repo-add sajat "--sign"-ja gpg-agentre tamaszkodik jelszo nelkul -- ha
+          # az agent cache hideg (pl. amikor nem epult uj csomag, igy a "Sign built
+          # packages" lepes se futott le), a signeles nesztelenul elhasal (repo-add
+          # csak warningot ir, a regi .sig marad, ami mar nem illik az uj tartalomhoz).
+          # Ezert kulon, expliciten alairjuk a db/files fajlokat a jelszo megadasaval.
           export GNUPGHOME=/tmp/raveos-gnupg
           cd "$CORE"
           ALLPKGS=$(ls *.pkg.tar.zst)
-          repo-add --sign --key 25C7668F1235F5664F037671BDB2A9CE6EBFF113 \
-            raveos-core-repo.db.tar.xz $ALLPKGS
+          repo-add raveos-core-repo.db.tar.xz $ALLPKGS
+
+          for f in raveos-core-repo.db.tar.xz raveos-core-repo.files.tar.xz; do
+            gpg --batch --yes --pinentry-mode loopback \
+                --passphrase "${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}" \
+                --local-user 25C7668F1235F5664F037671BDB2A9CE6EBFF113 \
+                --detach-sign --no-armor -o "$f.sig" "$f"
+          done
+          ln -sf raveos-core-repo.db.tar.xz.sig raveos-core-repo.db.sig
+          ln -sf raveos-core-repo.files.tar.xz.sig raveos-core-repo.files.sig
+
           rm -f raveos-core-repo.db.tar.gz* raveos-core-repo.files.tar.gz* 2>/dev/null || true
 
           # Vissza-szinkron a VPS-re (torli, ami helyben mar nincs, pl. regi verziok)
