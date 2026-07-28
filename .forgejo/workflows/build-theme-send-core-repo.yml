@@ -312,6 +312,46 @@ jobs:
 
           echo "::notice title=Published packages::Tag $TAG"
 
+      - name: Mirror raveos-core-repo to GitHub Releases
+        if: always()
+        run: |
+          set -euo pipefail
+          REPO="/tmp/raveos-core-repo"
+          [ -d "$REPO/.git" ] || { echo "Nincs mit tükrözni -> kihagyva"; exit 0; }
+
+          # Varjuk meg a szerver-oldali repo-add webhook commit-jat, majd huzzuk vissza
+          sleep 20
+          git -C "$REPO" pull origin main --ff-only || true
+
+          OWNER="rave-os"
+          GH_REPO="RaveOS-core-repo-mirror"
+          TAG="core-repo-x86_64"
+          API="https://api.github.com/repos/${OWNER}/${GH_REPO}"
+
+          release_json=$(curl -sf -H "Authorization: Bearer ${{ secrets.GH_MIRROR_TOKEN }}" \
+            "${API}/releases/tags/${TAG}") || { echo "HIBA: nincs '${TAG}' release a GitHub repoban -> kihagyva"; exit 0; }
+          release_id=$(echo "$release_json" | jq -r .id)
+
+          existing_assets=$(echo "$release_json" | jq -r '.assets[] | "\(.id) \(.name)"')
+
+          cd "$REPO/x86_64"
+          for f in *; do
+            [ -f "$f" ] || continue
+            # torolni a regi, azonos nevu asset-et, ha van
+            asset_id=$(echo "$existing_assets" | awk -v n="$f" '$2==n {print $1}')
+            if [ -n "$asset_id" ]; then
+              curl -sf -X DELETE -H "Authorization: Bearer ${{ secrets.GH_MIRROR_TOKEN }}" \
+                "${API}/releases/assets/${asset_id}" || true
+            fi
+            curl -sf -X POST \
+              -H "Authorization: Bearer ${{ secrets.GH_MIRROR_TOKEN }}" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary "@${f}" \
+              "https://uploads.github.com/repos/${OWNER}/${GH_REPO}/releases/${release_id}/assets?name=${f}" \
+              || echo "HIBA: ${f} feltoltese sikertelen"
+          done
+          echo "::notice title=GitHub mirror::Kesz"
+
       - name: Cleanup (SAFE)
         if: always()
         run: |
