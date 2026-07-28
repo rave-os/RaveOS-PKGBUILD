@@ -2007,13 +2007,16 @@ class RaveOSWelcome(QMainWindow):
 
         for i, key in enumerate(self._step_keys):
             if i > 0:
-                dot = QLabel("·····")
-                dot.setStyleSheet(f"color: {COLORS['border']}; font-size: 10px; letter-spacing: 2px;")
-                lay.addWidget(dot)
+                line = QFrame()
+                line.setFixedHeight(1)
+                line.setStyleSheet("background: #3a3a3a; border: none;")
+                lay.addSpacing(8)
+                lay.addWidget(line, 1)
+                lay.addSpacing(8)
 
             lbl = QLabel(f"{i+1}  {_t(key).upper()}")
             lbl.setStyleSheet(
-                f"font-size: 11px; font-weight: 600; letter-spacing: 2px; "
+                f"background: transparent; font-size: 11px; font-weight: 600; letter-spacing: 2px; "
                 f"color: {COLORS['text_dim']};"
             )
             lay.addWidget(lbl)
@@ -2035,17 +2038,17 @@ class RaveOSWelcome(QMainWindow):
         for i, lbl in enumerate(self.step_labels):
             if i < idx:
                 lbl.setStyleSheet(
-                    f"font-size: 11px; font-weight: 600; letter-spacing: 2px; "
+                    f"background: transparent; font-size: 11px; font-weight: 600; letter-spacing: 2px; "
                     f"color: {COLORS['success']};"
                 )
             elif i == idx:
                 lbl.setStyleSheet(
-                    f"font-size: 11px; font-weight: 700; letter-spacing: 2px; "
+                    f"background: transparent; font-size: 11px; font-weight: 700; letter-spacing: 2px; "
                     f"color: {COLORS['accent_light']};"
                 )
             else:
                 lbl.setStyleSheet(
-                    f"font-size: 11px; font-weight: 600; letter-spacing: 2px; "
+                    f"background: transparent; font-size: 11px; font-weight: 600; letter-spacing: 2px; "
                     f"color: {COLORS['text_dim']};"
                 )
 
