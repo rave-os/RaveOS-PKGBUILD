@@ -25,11 +25,14 @@ jobs:
           sudo pacman -S --needed --noconfirm \
             base-devel git pacman-contrib cmake qt6-tools go cargo gtk4-layer-shell hyprland
 
-      - name: Clone core repo
+      - name: Sync core repo from VPS (rsync pull)
         run: |
           set -euo pipefail
+          RSYNC_SSH="ssh -p 2222 -i $HOME/.ssh/vps_backup_key -o StrictHostKeyChecking=no"
           rm -rf /tmp/raveos-core-repo
-          git clone --depth 1 git@git.rp1.hu:RaveOS/raveos-core-repo.git /tmp/raveos-core-repo
+          mkdir -p /tmp/raveos-core-repo/x86_64
+          rsync -az -e "$RSYNC_SSH" \
+            root@10.66.66.1:/root/docker/repo/repo/x86_64/ /tmp/raveos-core-repo/x86_64/
           mkdir -p /tmp/builtpkgs
 
       - name: Import GPG signing key
@@ -288,7 +291,7 @@ jobs:
             echo "Alairva: $(basename "$pkg")"
           done
 
-      - name: Publish packages to raveos-core-repo (only if changed)
+      - name: Publish packages (repo-add + rsync push, only if changed)
         run: |
           set -euo pipefail
 
@@ -300,10 +303,6 @@ jobs:
             echo "No packages built -> nothing to publish"
             exit 0
           fi
-
-          cd /tmp/raveos-core-repo
-          git config user.name "Forgejo Actions"
-          git config user.email "actions@forgejo.local"
 
           for pkg in $BUILT; do
             PKGFILE=$(basename "$pkg")
@@ -317,44 +316,30 @@ jobs:
             [ -f "$pkg.sig" ] && cp -v "$pkg.sig" "$CORE/"
           done
 
-          git add -A
-          git commit -m "Publish packages ${GITHUB_SHA:0:7}"
-          git push origin main
+          # Adatbazis ujraepitese HELYBEN (nincs tobbe kulon repo-add job/repo)
+          export GNUPGHOME=/tmp/raveos-gnupg
+          cd "$CORE"
+          NEWPKGS=$(for pkg in $BUILT; do basename "$pkg"; done)
+          repo-add --sign --key 25C7668F1235F5664F037671BDB2A9CE6EBFF113 \
+            raveos-core-repo.db.tar.gz $NEWPKGS
 
-          TAG="vrepo-$(date +%Y%m%d-%H%M%S)"
-          git tag -a "$TAG" -m "Trigger repo-add (${GITHUB_SHA:0:7})"
-          git push origin "$TAG"
+          # Vissza-szinkron a VPS-re (torli, ami helyben mar nincs, pl. regi verziok)
+          RSYNC_SSH="ssh -p 2222 -i $HOME/.ssh/vps_backup_key -o StrictHostKeyChecking=no"
+          rsync -az --delete -e "$RSYNC_SSH" \
+            "$CORE/" root@10.66.66.1:/root/docker/repo/repo/x86_64/
 
-          echo "::notice title=Published packages::Tag $TAG"
+          echo "::notice title=Published packages::rsync-alapu publikalas kesz"
 
       - name: Mirror raveos-core-repo to GitHub Releases
         if: always()
         run: |
           set -euo pipefail
           REPO="/tmp/raveos-core-repo"
-          [ -d "$REPO/.git" ] || { echo "Nincs mit tükrözni -> kihagyva"; exit 0; }
+          [ -d "$REPO/x86_64" ] || { echo "Nincs mit tükrözni -> kihagyva"; exit 0; }
 
-          # Varjuk meg a kulon (Raveos-core-repo oldali) repo-add workflow-t, ami a
-          # vrepo-* tag push-ra trigerelodik, ujraepiti a .db/.files fajlokat, es
-          # visszacommitolja a main-re. Ez ~40+ masodpercig tarthat (checkout+rebuild+
-          # commit+push+tag-cleanup), ezert POLLOZUNK, nem fix ideig varunk - amig
-          # tenyleg uj commit nem jelenik meg a main-en, vagy le nem jar az idokeret.
-          before_sha=$(git -C "$REPO" rev-parse HEAD)
-          got_update=0
-          for i in $(seq 1 20); do
-            sleep 5
-            git -C "$REPO" fetch origin main --quiet || true
-            remote_sha=$(git -C "$REPO" rev-parse origin/main 2>/dev/null || echo "$before_sha")
-            if [ "$remote_sha" != "$before_sha" ]; then
-              git -C "$REPO" merge --ff-only origin/main
-              echo "Friss commit behuzva a repo-add utan (varakozas: $((i*5))s)"
-              got_update=1
-              break
-            fi
-          done
-          if [ "$got_update" -eq 0 ]; then
-            echo "FIGYELEM: nem erkezett uj commit ~100mp alatt - a jelenlegi allapotot tukrozzuk, lehet, hogy nem a legfrissebb db"
-          fi
+          # A "Publish" lepes mar szinkron modon, ugyanebben a jobban rsync-elte
+          # ki a friss allapotot a VPS-re - nincs tobbe kulon aszinkron repo-add
+          # job/webhook-lanc, amire varni kellene.
 
           OWNER="rave-os"
           GH_REPO="RaveOS-core-repo-mirror"
