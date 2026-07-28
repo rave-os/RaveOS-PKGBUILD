@@ -317,11 +317,13 @@ jobs:
           done
 
           # Adatbazis ujraepitese HELYBEN (nincs tobbe kulon repo-add job/repo)
+          # .xz celzunk (nem .gz), es minden CORE-beli csomagot atadunk a repo-add-nak.
           export GNUPGHOME=/tmp/raveos-gnupg
           cd "$CORE"
-          NEWPKGS=$(for pkg in $BUILT; do basename "$pkg"; done)
+          ALLPKGS=$(ls *.pkg.tar.zst)
           repo-add --sign --key 25C7668F1235F5664F037671BDB2A9CE6EBFF113 \
-            raveos-core-repo.db.tar.gz $NEWPKGS
+            raveos-core-repo.db.tar.xz $ALLPKGS
+          rm -f raveos-core-repo.db.tar.gz* raveos-core-repo.files.tar.gz* 2>/dev/null || true
 
           # Vissza-szinkron a VPS-re (torli, ami helyben mar nincs, pl. regi verziok)
           RSYNC_SSH="ssh -p 2222 -i $HOME/.ssh/vps_backup_key -o StrictHostKeyChecking=no"
