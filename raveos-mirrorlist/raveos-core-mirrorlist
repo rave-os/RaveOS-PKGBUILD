@@ -1,0 +1,6 @@
+# RaveOS core-repo mirrorlist
+# Elsodleges + tartalek (GitHub Releases) szerver a raveos-core-repo-hoz.
+# Pacman sorrendben probalja, automatikusan a kovetkezore valt hiba eseten.
+
+Server = https://page.rp1.hu/x86_64/
+Server = https://github.com/rave-os/RaveOS-core-repo-mirror/releases/download/core-repo-x86_64/

@@ -1,0 +1,26 @@
+post_install() {
+    _patch_pacman_conf
+}
+
+post_upgrade() {
+    _patch_pacman_conf
+}
+
+_patch_pacman_conf() {
+    conf=/etc/pacman.conf
+    [ -f "$conf" ] || return 0
+
+    # Csak akkor nyulunk hozza, ha pontosan a regi, egysoros Server= allapotot
+    # talaljuk (meg nincs Include-ra atallitva) - igy nem irunk felul kezzel
+    # modositott konfigot.
+    if grep -qF 'Server = https://page.rp1.hu/x86_64/' "$conf" \
+        && ! grep -qF 'Include = /etc/pacman.d/raveos-core-mirrorlist' "$conf"; then
+        sed -i \
+            '\|^Server = https://page.rp1.hu/x86_64/$|c\Include = /etc/pacman.d/raveos-core-mirrorlist' \
+            "$conf"
+        # Ha a masodlagos Server sor is mar ott volt kulon sorban, azt kivesszuk,
+        # mert most mar az Include fajl adja mindket szervert.
+        sed -i '\|^Server = https://github.com/rave-os/RaveOS-core-repo-mirror/releases/download/core-repo-x86_64/$|d' "$conf"
+        echo "raveos-mirrorlist: /etc/pacman.conf frissitve (raveos-core-repo -> Include mirrorlist, GitHub tartalek szerverrel)"
+    fi
+}

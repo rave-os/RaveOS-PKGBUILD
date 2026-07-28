@@ -55,6 +55,21 @@ jobs:
           makepkg -s --noconfirm -f
           cp -v raveos-calamares-theme-*.pkg.tar.zst /tmp/builtpkgs/
 
+      - name: Build raveos-mirrorlist
+        run: |
+          set -euo pipefail
+          CORE="/tmp/raveos-core-repo/x86_64"
+          cd raveos-mirrorlist
+          PKGVER=$(grep '^pkgver=' PKGBUILD | cut -d= -f2)
+          PKGREL=$(grep '^pkgrel=' PKGBUILD | cut -d= -f2)
+          if ls "$CORE/raveos-mirrorlist-${PKGVER}-${PKGREL}-"*.pkg.tar.zst 2>/dev/null | grep -q .; then
+            echo "raveos-mirrorlist ${PKGVER}-${PKGREL} unchanged -> skip"
+            exit 0
+          fi
+          rm -f *.pkg.tar.zst || true
+          makepkg -s --noconfirm -f
+          cp -v raveos-mirrorlist-*.pkg.tar.zst /tmp/builtpkgs/
+
       - name: Build raveos-calamares-module
         run: |
           set -euo pipefail

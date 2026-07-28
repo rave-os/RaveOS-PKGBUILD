@@ -1,2 +1,10 @@
 build/
 raveswitch/hyprland_raveswitch/
+
+# makepkg build-artifactok (barmelyik csomag mappajaban)
+pkg/
+src/
+*.pkg.tar.zst
+*.pkg.tar.zst.sig
+*.pkg.tar.xz
+*.pkg.tar.xz.sig

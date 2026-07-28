@@ -1,0 +1,27 @@
+# Maintainer: RaveOS Team
+#
+# raveos-mirrorlist
+# ------------------
+# A raveos-core-repo elsodleges + tartalek (GitHub Releases) szerverlistaja.
+# Telepiteskor/frissiteskor a .install script automatikusan atallitja a
+# meglevo /etc/pacman.conf [raveos-core-repo] szekciojat inline Server=
+# sorrol Include=-ra, hogy a mar telepitett rendszerek is megkapjak a
+# GitHub tartalek mirrort - de csak akkor, ha a fajl meg a regi, eredeti
+# allapotban van (kezzel modositott configot nem nyul).
+
+pkgname=raveos-mirrorlist
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="RaveOS core-repo mirrorlist (elsodleges + GitHub tartalek szerver)"
+arch=('any')
+url="https://git.rp1.hu/RaveOS"
+license=('GPL')
+backup=('etc/pacman.d/raveos-core-mirrorlist')
+install=raveos-mirrorlist.install
+source=()
+sha256sums=()
+
+package() {
+  install -Dm644 "${startdir}/raveos-core-mirrorlist" \
+    "${pkgdir}/etc/pacman.d/raveos-core-mirrorlist"
+}
