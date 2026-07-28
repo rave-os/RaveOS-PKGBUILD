@@ -334,32 +334,77 @@ jobs:
           REPO="/tmp/raveos-core-repo"
           [ -d "$REPO/.git" ] || { echo "Nincs mit tükrözni -> kihagyva"; exit 0; }
 
-          # Varjuk meg a szerver-oldali repo-add webhook commit-jat, majd huzzuk vissza
-          sleep 20
-          git -C "$REPO" pull origin main --ff-only || true
+          # Varjuk meg a kulon (Raveos-core-repo oldali) repo-add workflow-t, ami a
+          # vrepo-* tag push-ra trigerelodik, ujraepiti a .db/.files fajlokat, es
+          # visszacommitolja a main-re. Ez ~40+ masodpercig tarthat (checkout+rebuild+
+          # commit+push+tag-cleanup), ezert POLLOZUNK, nem fix ideig varunk - amig
+          # tenyleg uj commit nem jelenik meg a main-en, vagy le nem jar az idokeret.
+          before_sha=$(git -C "$REPO" rev-parse HEAD)
+          got_update=0
+          for i in $(seq 1 20); do
+            sleep 5
+            git -C "$REPO" fetch origin main --quiet || true
+            remote_sha=$(git -C "$REPO" rev-parse origin/main 2>/dev/null || echo "$before_sha")
+            if [ "$remote_sha" != "$before_sha" ]; then
+              git -C "$REPO" merge --ff-only origin/main
+              echo "Friss commit behuzva a repo-add utan (varakozas: $((i*5))s)"
+              got_update=1
+              break
+            fi
+          done
+          if [ "$got_update" -eq 0 ]; then
+            echo "FIGYELEM: nem erkezett uj commit ~100mp alatt - a jelenlegi allapotot tukrozzuk, lehet, hogy nem a legfrissebb db"
+          fi
 
           OWNER="rave-os"
           GH_REPO="RaveOS-core-repo-mirror"
           TAG="core-repo-x86_64"
           API="https://api.github.com/repos/${OWNER}/${GH_REPO}"
 
-          release_json=$(curl -sf -H "Authorization: Bearer ${{ secrets.GH_MIRROR_TOKEN }}" \
+          TOKEN="${{ secrets.GH_MIRROR_TOKEN }}"
+
+          release_json=$(curl -sf -H "Authorization: Bearer ${TOKEN}" \
             "${API}/releases/tags/${TAG}") || { echo "HIBA: nincs '${TAG}' release a GitHub repoban -> kihagyva"; exit 0; }
           release_id=$(echo "$release_json" | jq -r .id)
-
-          existing_assets=$(echo "$release_json" | jq -r '.assets[] | "\(.id) \(.name)"')
+          existing_assets=$(echo "$release_json" | jq -r '.assets[] | "\(.id)\t\(.name)"')
 
           cd "$REPO/x86_64"
+
+          # 1) regi verziojú csomag-assetek torlese verzio-prefix alapjan
+          #    (a fajlnevek tartalmazzak a pkgver-pkgrel-t, ezert egy verziofrissites
+          #    uj fajlnevet ad - enelkul a regi verziok orokre felhalmozodnanak)
+          for f in *.pkg.tar.zst; do
+            [ -f "$f" ] || continue
+            pkgname=$(echo "$f" | sed -E 's/-[0-9][^-]*-[^-]*-[^-]*\.pkg\.tar\.zst$//')
+            [ -n "$pkgname" ] || continue
+            while IFS=$'\t' read -r aid aname; do
+              [ -n "$aid" ] || continue
+              case "$aname" in
+                "${pkgname}-"*.pkg.tar.zst | "${pkgname}-"*.pkg.tar.zst.sig)
+                  if [ "$aname" != "$f" ] && [ "$aname" != "${f}.sig" ]; then
+                    curl -sf -X DELETE -H "Authorization: Bearer ${TOKEN}" \
+                      "${API}/releases/assets/${aid}" || true
+                    echo "torolve (regi verzio): $aname"
+                  fi
+                  ;;
+              esac
+            done <<< "$existing_assets"
+          done
+
+          # friss asset-lista a torlesek utan
+          existing_assets=$(curl -sf -H "Authorization: Bearer ${TOKEN}" \
+            "${API}/releases/${release_id}" | jq -r '.assets[] | "\(.id)\t\(.name)"')
+
+          # 2) minden aktualis fajl feltoltese (azonos nevu regi peldany cserevel)
           for f in *; do
             [ -f "$f" ] || continue
-            # torolni a regi, azonos nevu asset-et, ha van
-            asset_id=$(echo "$existing_assets" | awk -v n="$f" '$2==n {print $1}')
+            asset_id=$(echo "$existing_assets" | awk -F'\t' -v n="$f" '$2==n {print $1}')
             if [ -n "$asset_id" ]; then
-              curl -sf -X DELETE -H "Authorization: Bearer ${{ secrets.GH_MIRROR_TOKEN }}" \
+              curl -sf -X DELETE -H "Authorization: Bearer ${TOKEN}" \
                 "${API}/releases/assets/${asset_id}" || true
             fi
             curl -sf -X POST \
-              -H "Authorization: Bearer ${{ secrets.GH_MIRROR_TOKEN }}" \
+              -H "Authorization: Bearer ${TOKEN}" \
               -H "Content-Type: application/octet-stream" \
               --data-binary "@${f}" \
               "https://uploads.github.com/repos/${OWNER}/${GH_REPO}/releases/${release_id}/assets?name=${f}" \
