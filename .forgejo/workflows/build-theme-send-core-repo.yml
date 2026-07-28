@@ -300,21 +300,20 @@ jobs:
 
           BUILT=$(ls /tmp/builtpkgs/*.pkg.tar.zst 2>/dev/null || true)
           if [ -z "$BUILT" ]; then
-            echo "No packages built -> nothing to publish"
-            exit 0
+            echo "No packages built -> nem masolunk uj fajlt, de a db-t mindig ujraepitjuk (onjavito)"
+          else
+            for pkg in $BUILT; do
+              PKGFILE=$(basename "$pkg")
+              PKGNAME=$(echo "$PKGFILE" | sed 's/-[0-9][^-]*-[^-]*-[^-]*\.pkg\.tar\.zst$//')
+              if [[ ! "$PKGNAME" =~ ^[a-zA-Z0-9_+-]+$ ]]; then
+                echo "HIBA: Ervenytelen csomagnev: $PKGNAME -> skip"
+                continue
+              fi
+              rm -f "$CORE/${PKGNAME}-"*.pkg.tar.zst* 2>/dev/null || true
+              cp -v "$pkg" "$CORE/"
+              [ -f "$pkg.sig" ] && cp -v "$pkg.sig" "$CORE/"
+            done
           fi
-
-          for pkg in $BUILT; do
-            PKGFILE=$(basename "$pkg")
-            PKGNAME=$(echo "$PKGFILE" | sed 's/-[0-9][^-]*-[^-]*-[^-]*\.pkg\.tar\.zst$//')
-            if [[ ! "$PKGNAME" =~ ^[a-zA-Z0-9_+-]+$ ]]; then
-              echo "HIBA: Ervenytelen csomagnev: $PKGNAME -> skip"
-              continue
-            fi
-            rm -f "$CORE/${PKGNAME}-"*.pkg.tar.zst* 2>/dev/null || true
-            cp -v "$pkg" "$CORE/"
-            [ -f "$pkg.sig" ] && cp -v "$pkg.sig" "$CORE/"
-          done
 
           # Adatbazis ujraepitese HELYBEN (nincs tobbe kulon repo-add job/repo)
           # .xz celzunk (nem .gz), es minden CORE-beli csomagot atadunk a repo-add-nak.
