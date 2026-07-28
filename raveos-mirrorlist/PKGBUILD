@@ -11,7 +11,7 @@
 
 pkgname=raveos-mirrorlist
 pkgver=1.0.0
-pkgrel=2
+pkgrel=3
 pkgdesc="RaveOS core-repo mirrorlist (elsodleges + GitHub tartalek szerver)"
 arch=('any')
 url="https://git.rp1.hu/RaveOS"
