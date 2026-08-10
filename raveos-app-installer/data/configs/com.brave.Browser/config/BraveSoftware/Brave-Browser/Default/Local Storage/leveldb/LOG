@@ -1,0 +1,6 @@
+2026/08/10-16:39:08.930 5 Reusing MANIFEST /home/nippy/.config/BraveSoftware/Brave-Origin/Default/Local Storage/leveldb/MANIFEST-000001
+2026/08/10-16:39:08.933 5 Recovering log #3
+2026/08/10-16:39:08.933 5 Reusing old log /home/nippy/.config/BraveSoftware/Brave-Origin/Default/Local Storage/leveldb/000003.log 
+2026/08/10-16:43:17.304 5 Level-0 table #5: started
+2026/08/10-16:43:17.311 5 Level-0 table #5: 14577 bytes OK
+2026/08/10-16:43:17.319 5 Delete type=0 #3
