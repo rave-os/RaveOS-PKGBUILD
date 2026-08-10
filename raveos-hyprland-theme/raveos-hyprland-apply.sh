@@ -22,6 +22,30 @@ if [[ ${EUID} -ne 0 ]]; then
     exit 1
 fi
 
+# GTK/Thunar könyvjelzők: a Letöltésekből kapott lista /home/t útvonalai
+# helyett mindig az aktuális felhasználó home könyvtárára mutatunk.
+install_gtk_bookmarks() {
+    local home="$1"
+    local bookmarks="${home}/.config/gtk-3.0/bookmarks"
+    local tmp
+
+    mkdir -p "$(dirname "$bookmarks")"
+    tmp=$(mktemp)
+    [[ -f "$bookmarks" ]] && cat "$bookmarks" > "$tmp"
+
+    for entry in \
+        "file://${home}/Dokumentumok" \
+        "file://${home}/Zen%C3%A9k" \
+        "file://${home}/K%C3%A9pek" \
+        "file://${home}/Vide%C3%B3k" \
+        "file://${home}/Let%C3%B6lt%C3%A9sek"; do
+        grep -qxF "$entry" "$tmp" || printf '%s\n' "$entry" >> "$tmp"
+    done
+
+    install -m644 "$tmp" "$bookmarks"
+    rm -f "$tmp"
+}
+
 # ---------------------------------------------------------------------------
 # SKEL TELEPÍTÉS
 # Új usereknek (useradd által másolt /etc/skel tartalom)
@@ -76,6 +100,8 @@ done
 # Skel root tartalom (pl. .bashrc, .icons, .themes stb.)
 [[ -d "${PAYLOAD}/skel" ]] && \
     cp -r --no-preserve=ownership "${PAYLOAD}/skel/." /etc/skel/
+
+install_gtk_bookmarks /etc/skel
 
 # Háttérkép
 [[ -f "${PAYLOAD}/background.jpg" ]] && \
@@ -157,6 +183,8 @@ SEOF
     # Skel tartalom
     [[ -d "${PAYLOAD}/skel" ]] && \
         cp -r --no-preserve=ownership "${PAYLOAD}/skel/." "$home/"
+
+    install_gtk_bookmarks "$home"
 
     # Háttérkép
     [[ -f "${PAYLOAD}/background.jpg" ]] && \

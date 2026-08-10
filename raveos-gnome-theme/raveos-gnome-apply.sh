@@ -170,7 +170,7 @@ install_user() {
                 gsettings set org.gnome.desktop.background picture-uri 'file://${target_home}/.config/background' || true
                 gsettings set org.gnome.desktop.background picture-uri-dark 'file://${target_home}/.config/background' || true
                 gsettings set org.gnome.shell.extensions.user-theme name 'Yaru-olive-dark' || true
-            " || true
+            " </dev/null >/dev/null 2>&1 || true
     fi
 
     rm -rf "$tmpdir"

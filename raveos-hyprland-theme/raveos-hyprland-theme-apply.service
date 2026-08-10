@@ -1,6 +1,7 @@
 [Unit]
 Description=Apply RaveOS Hyprland theme payload
-After=local-fs.target systemd-user-sessions.service
+After=local-fs.target
+Before=display-manager.service
 ConditionPathExists=!/var/lib/raveos-hyprland-theme/.applied
 
 [Service]

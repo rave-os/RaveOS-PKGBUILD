@@ -1,6 +1,7 @@
 [Unit]
 Description=Apply RaveOS Plasma theme payload
-After=local-fs.target systemd-user-sessions.service
+After=local-fs.target
+Before=display-manager.service
 ConditionPathExists=!/var/lib/raveos-plasma-theme/.applied
 
 [Service]

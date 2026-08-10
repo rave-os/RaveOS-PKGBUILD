@@ -1,11 +1,15 @@
-post_install() {
-    if [[ -x /usr/lib/raveos-plasma-theme/auto-apply.sh ]]; then
-        /usr/lib/raveos-plasma-theme/auto-apply.sh || true
+_enable_apply_service() {
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl enable raveos-plasma-theme-apply.service >/dev/null 2>&1 || true
     fi
 }
 
+post_install() {
+    _enable_apply_service
+}
+
 post_upgrade() {
-    if [[ -x /usr/lib/raveos-plasma-theme/auto-apply.sh ]]; then
-        /usr/lib/raveos-plasma-theme/auto-apply.sh || true
-    fi
+    # Do not rewrite a live Plasma session from inside a pacman transaction.
+    rm -f /var/lib/raveos-plasma-theme/.applied
+    _enable_apply_service
 }
