@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QStackedWidget, QLineEdit, QListWidget,
     QListWidgetItem, QFrame, QGraphicsOpacityEffect, QProgressBar,
-    QSizePolicy, QDialog, QCheckBox, QScrollArea, QFileDialog
+    QSizePolicy, QDialog, QCheckBox, QScrollArea, QFileDialog, QMessageBox
 )
 from PyQt6.QtCore import (
     Qt, QThread, pyqtSignal, QTimer, QPropertyAnimation,
@@ -96,17 +96,7 @@ T = {
     "wifi_timeout":     {"hu": "Időtúllépés — próbáld újra","en": "Timeout — try again"},
     "wifi_unknown_err": {"hu": "Ismeretlen hiba",      "en": "Unknown error"},
     # Optimize page
-    "opt_title":        {"hu": "ALKALMAZÁSOK & OPTIMALIZÁCIÓ", "en": "APPS & OPTIMIZATION"},
-    "opt_browser":      {"hu": "BÖNGÉSZŐ",           "en": "BROWSER"},
-    "opt_brave":        {"hu": "Brave Origin",       "en": "Brave Origin"},
-    "opt_brave_desc":   {"hu": "Brave Origin — a Brave letisztított, reklám/rewards/kripto-mentes verziója",
-                         "en": "Brave Origin — Brave's stripped-down version, without ads/rewards/crypto"},
-    "opt_firefox":      {"hu": "Firefox",            "en": "Firefox"},
-    "opt_firefox_desc": {"hu": "Mozilla Firefox — nyílt forrású, privacy-fókuszú",
-                         "en": "Mozilla Firefox — open source, privacy-focused"},
-    "opt_brave_profile":      {"hu": "Brave profil visszaállítása", "en": "Restore Brave profile"},
-    "opt_brave_profile_desc": {"hu": "Előre konfigurált RaveOS Brave profil másolása (könyvjelzők, beállítások)",
-                               "en": "Copy pre-configured RaveOS Brave profile (bookmarks, settings)"},
+    "opt_title":        {"hu": "OPTIMALIZÁCIÓ", "en": "OPTIMIZATION"},
     "opt_gaming":       {"hu": "GAMING OPTIMALIZÁCIÓ  —  GPU: {gpu}", "en": "GAMING OPTIMIZATION  —  GPU: {gpu}"},
     "opt_sysctl":       {"hu": "Kernel/sysctl tweaks",
                          "en": "Kernel/sysctl tweaks"},
@@ -221,7 +211,9 @@ T = {
     "opt_apply_missing":{"hu": "Hiányzó script: ", "en": "Missing script: "},
     "opt_apply_ok":     {"hu": "Sikeresen alkalmazva!", "en": "Successfully applied!"},
     "opt_apply_err":    {"hu": "Hiba (kód: {code}) — napló: {log}",
-                         "en": "Error (code: {code}) — log: {log}"},
+                          "en": "Error (code: {code}) — log: {log}"},
+    "opt_reboot_needed": {"hu": "A GPU optimalizációk érvénybe lépéséhez a számítógépet újra kell indítani!",
+                          "en": "A reboot is required for GPU optimizations to take effect!"},
     # Hyprland page
     "hypr_title":       {"hu": "HYPRLAND — KEYBINDS", "en": "HYPRLAND — KEYBINDS"},
     "hypr_source":      {"hu": "Forrás: ", "en": "Source: "},
@@ -712,10 +704,10 @@ class WelcomePage(QWidget):
 
         all_links = [
             ("support",  "https://ko-fi.com/ravepriest1"),
-            ("RP Forgejo", "https://git.rp1.hu/explore/repos"),
+            ("RP Kick",    "https://kick.com/rpslair"),
             ("RP YouTube", "https://www.youtube.com/@RPslair"),
             ("RP Twitch",  "https://www.twitch.tv/ravepriest1"),
-            ("RP Kick",    "https://kick.com/rpslair"),
+            ("RP Forgejo", "https://git.rp1.hu/"),
             ("RP Discord", "https://discord.gg/gSdVMXRFQc"),
         ]
         self._link_btns = []
@@ -1482,6 +1474,9 @@ QCheckBox::indicator:checked {{
     background: {COLORS['accent']};
     border-color: {COLORS['accent']};
 }}
+QCheckBox:disabled {{
+    color: {COLORS['text_dim']};
+}}
 """
 
 
@@ -1499,10 +1494,6 @@ class OptimizePage(QWidget):
         lay.setContentsMargins(60, 28, 60, 20)
         lay.setSpacing(10)
 
-        self.title = QLabel(_t("opt_title"))
-        self.title.setObjectName("section_title")
-        lay.addWidget(self.title)
-
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QFrame.Shape.NoFrame)
@@ -1514,34 +1505,11 @@ class OptimizePage(QWidget):
         vlay.setContentsMargins(0, 0, 8, 0)
         vlay.setSpacing(4)
 
-        # --- Browsers ---
-        self.sec1 = QLabel(_t("opt_browser"))
-        self.sec1.setObjectName("section_title")
-        vlay.addWidget(self.sec1)
-        vlay.addSpacing(4)
-
-        browsers = [
-            ("brave",   "opt_brave",   "opt_brave_desc"),
-            ("firefox", "opt_firefox", "opt_firefox_desc"),
-        ]
-        self._browser_checks = {}
-        for key, label_key, desc_key in browsers:
-            cb = self._add_check(vlay, key, _t(label_key), _t(desc_key), default=False)
-            self._browser_checks[key] = (label_key, desc_key, cb)
-
-        cb_bp = self._add_check(vlay, "brave_profile",
-            _t("opt_brave_profile"),
-            _t("opt_brave_profile_desc"),
-            default=False)
-        self._brave_profile_check = ("opt_brave_profile", "opt_brave_profile_desc", cb_bp)
-
-        vlay.addSpacing(14)
-
         # --- Gaming optimization ---
         gpu_name = {"amd": "AMD", "nvidia": "Nvidia"}.get(self._gpu, "Ismeretlen")
-        self.sec2 = QLabel(_t("opt_gaming", gpu=gpu_name))
-        self.sec2.setObjectName("section_title")
-        vlay.addWidget(self.sec2)
+        self.sec1 = QLabel(_t("opt_gaming", gpu=gpu_name))
+        self.sec1.setObjectName("section_title")
+        vlay.addWidget(self.sec1)
         vlay.addSpacing(4)
 
         common = [
@@ -1557,6 +1525,14 @@ class OptimizePage(QWidget):
 
         self._amd_checks = {}
         self._nvidia_checks = {}
+
+        if self._gpu == "nvidia":
+            cb = self._add_check(vlay,
+                "nvidia_perf", _t("opt_nvidia_perf"),
+                _t("opt_nvidia_perf_desc"),
+                default=True)
+            self._nvidia_checks["nvidia_perf"] = ("opt_nvidia_perf", "opt_nvidia_perf_desc", cb)
+
         if self._gpu == "amd":
             amd_opts = [
                 ("gpu_profile", "opt_gpu_profile", "opt_gpu_profile_desc"),
@@ -1566,13 +1542,6 @@ class OptimizePage(QWidget):
             for key, label_key, desc_key in amd_opts:
                 cb = self._add_check(vlay, key, _t(label_key), _t(desc_key), default=(key in ("gpu_profile", "amd_powercap")))
                 self._amd_checks[key] = (label_key, desc_key, cb)
-
-        elif self._gpu == "nvidia":
-            cb = self._add_check(vlay,
-                "nvidia_perf", _t("opt_nvidia_perf"),
-                _t("opt_nvidia_perf_desc"),
-                default=True)
-            self._nvidia_checks["nvidia_perf"] = ("opt_nvidia_perf", "opt_nvidia_perf_desc", cb)
 
         vlay.addStretch()
         scroll.setWidget(inner)
@@ -1596,19 +1565,9 @@ class OptimizePage(QWidget):
         lay.addWidget(self.apply_btn, alignment=Qt.AlignmentFlag.AlignRight)
 
     def retranslate(self):
-        self.title.setText(_t("opt_title"))
-        self.sec1.setText(_t("opt_browser"))
         gpu_name = {"amd": "AMD", "nvidia": "Nvidia"}.get(self._gpu, "Ismeretlen")
-        self.sec2.setText(_t("opt_gaming", gpu=gpu_name))
+        self.sec1.setText(_t("opt_gaming", gpu=gpu_name))
         self.apply_btn.setText(_t("opt_apply"))
-        for key, (lk, dk, cb) in self._browser_checks.items():
-            cb.setText(_t(lk))
-            if key in self._hints:
-                self._hints[key].setToolTip(_t(dk))
-        bp_lk, bp_dk, bp_cb = self._brave_profile_check
-        bp_cb.setText(_t(bp_lk))
-        if "brave_profile" in self._hints:
-            self._hints["brave_profile"].setToolTip(_t(bp_dk))
         for key, (lk, dk, cb) in self._common_checks.items():
             cb.setText(_t(lk))
             if key in self._hints:
@@ -1678,6 +1637,9 @@ class OptimizePage(QWidget):
         if exit_code == 0:
             self.status_lbl.setStyleSheet(f"color: {COLORS['success']};")
             self.status_lbl.setText(_t("opt_apply_ok"))
+            gpu_keys = {"gpu_profile", "amd_overdrive", "amd_powercap", "nvidia_perf"}
+            if any(cb.isChecked() for k, cb in self._checks.items() if k in gpu_keys):
+                QMessageBox.information(self, "RaveOS", _t("opt_reboot_needed"))
         else:
             self.status_lbl.setStyleSheet(f"color: {COLORS['error']};")
             self.status_lbl.setText(_t("opt_apply_err", code=exit_code, log=OPTIMIZE_LOG))
