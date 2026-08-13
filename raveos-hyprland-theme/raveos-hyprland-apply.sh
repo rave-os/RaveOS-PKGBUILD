@@ -46,6 +46,20 @@ install_gtk_bookmarks() {
     rm -f "$tmp"
 }
 
+# Hyprland billentyuzet-kiosztas: a Calamares altal beallitott layout atvetele
+# (a /etc/default/keyboard XKBLAYOUT-ja) a hyprland.lua input szekciojaba.
+set_hypr_keyboard() {
+    local hypr_lua="$1"
+    local kb_layout="hu"
+    local kb_tmp
+    [[ -f "$hypr_lua" ]] || return 0
+    if [[ -f /etc/default/keyboard ]]; then
+        kb_tmp="$(awk -F'"' '/^XKBLAYOUT=/{print $2; exit}' /etc/default/keyboard 2>/dev/null)"
+        [[ -n "$kb_tmp" ]] && kb_layout="${kb_tmp%%,*}"
+    fi
+    sed -i "s/kb_layout[[:space:]]*=[[:space:]]*\"\"/kb_layout = \"${kb_layout}\"/" "$hypr_lua"
+}
+
 # ---------------------------------------------------------------------------
 # SKEL TELEPÍTÉS
 # Új usereknek (useradd által másolt /etc/skel tartalom)
@@ -57,6 +71,7 @@ if [[ -d "${PAYLOAD}/hypr" ]]; then
     cp -rf "${PAYLOAD}/hypr/." /etc/skel/.config/hypr/
     # Ha Lua konfig létezik, a legacy .conf-ot töröljük
     [[ -f /etc/skel/.config/hypr/hyprland.lua ]] && rm -f /etc/skel/.config/hypr/hyprland.conf
+    set_hypr_keyboard /etc/skel/.config/hypr/hyprland.lua
 fi
 
 # DankMaterialShell (DMS) felhasználói konfig
@@ -151,6 +166,7 @@ while IFS=: read -r user _ uid gid _ home shell; do
         cp -rf "${PAYLOAD}/hypr/." "${home}/.config/hypr/"
         [[ -f "${home}/.config/hypr/hyprland.lua" ]] && \
             rm -f "${home}/.config/hypr/hyprland.conf"
+        set_hypr_keyboard "${home}/.config/hypr/hyprland.lua"
     fi
 
     # hyprpaper konfig (háttérkép daemon)

@@ -141,18 +141,31 @@ void RaveWelcomeViewStep::onLanguageChanged(int index)
     Calamares::installTranslator(tid, brandingTranslationsPrefix());
 
     // Store locale in GlobalStorage for the installed system.
-    // The locale module reads gs["localeConf"]["LANG"] via Calamares::Locale::readGS.
+    // A localecfg a teljes localeConf-ot olvassa, ezért minden LC_* kulcsot
+    // beírunk, ne csak a LANG-ot.
     if (Calamares::JobQueue::instance())
     {
         Calamares::GlobalStorage* gs = Calamares::JobQueue::instance()->globalStorage();
         if (gs)
         {
-            QString fullLocale = QLocale(localeId).name(); // e.g. "hu" -> "hu_HU"
-            if (!fullLocale.contains('.'))
-                fullLocale += ".UTF-8";
+            QString lang = QLocale(localeId).name(); // e.g. "hu" -> "hu_HU"
+            if (lang.isEmpty())
+                lang = localeId;
+            QString fullLocale = lang.contains('.') ? lang : lang + ".UTF-8";
+
+            const char* lcKeys[] = {
+                "LANG", "LC_NUMERIC", "LC_TIME", "LC_MONETARY", "LC_PAPER",
+                "LC_NAME", "LC_ADDRESS", "LC_TELEPHONE", "LC_MEASUREMENT",
+                "LC_IDENTIFICATION"
+            };
             QVariantMap localeConf = gs->value("localeConf").toMap();
-            localeConf.insert("LANG", fullLocale);
+            for (const char* k : lcKeys)
+                localeConf.insert(QLatin1String(k), fullLocale);
             gs->insert("localeConf", localeConf);
+
+            // A 'locale' kulcs is kell (nyelv, kódolás nélkül), ha a standard
+            // locale modul mégis olvasná.
+            gs->insert("locale", lang);
         }
     }
 }

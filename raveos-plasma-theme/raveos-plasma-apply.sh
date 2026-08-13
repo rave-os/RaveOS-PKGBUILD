@@ -59,6 +59,20 @@ ColorScheme=RaveOS
 EOF
 }
 
+write_kxkbrc() {
+    local target_home="$1"
+    local kb_layout="hu"
+    local kb_tmp
+    if [[ -f /etc/default/keyboard ]]; then
+        kb_tmp="$(awk -F'"' '/^XKBLAYOUT=/{print $2; exit}' /etc/default/keyboard 2>/dev/null)"
+        [[ -n "$kb_tmp" ]] && kb_layout="${kb_tmp%%,*}"
+    fi
+    cat > "${target_home}/.config/kxkbrc" <<EOF
+[Layout]
+LayoutList=${kb_layout}
+EOF
+}
+
 write_plasma_wallpaper_config() {
     local target_home="$1"
     local applet_config="${target_home}/.config/plasma-org.kde.plasma.desktop-appletsrc"
@@ -294,6 +308,7 @@ apply_user_payload() {
     fi
 
     write_konsolerc "$target_home"
+    write_kxkbrc "$target_home"
     write_plasma_wallpaper_config "$target_home"
     write_kickoff_config "$target_home"
     write_kscreenlockerrc "$target_home"

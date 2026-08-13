@@ -158,6 +158,16 @@ install_user() {
     build_user_dconf_dump "${target_home}" "${tmpdir}/full-system-dump.ini"
     chmod 644 "${tmpdir}/full-system-dump.ini"
 
+    # A Calamares keyboard modul altal beallitott kiosztas kiolvasasa
+    # (a rendszerszintu konfig /etc/default/keyboard-ba kerult, de a GNOME
+    # Wayland a sajat org.gnome.desktop.input-sources-t hasznalja).
+    local kb_layout="hu"
+    if [[ -f /etc/default/keyboard ]]; then
+        local kb_tmp
+        kb_tmp="$(awk -F'"' '/^XKBLAYOUT=/{print $2; exit}' /etc/default/keyboard 2>/dev/null)"
+        [[ -n "$kb_tmp" ]] && kb_layout="${kb_tmp%%,*}"
+    fi
+
     if command -v dconf &>/dev/null && command -v dbus-run-session &>/dev/null; then
         runuser -u "$target_user" -- env \
             HOME="${target_home}" USER="${target_user}" LOGNAME="${target_user}" \
@@ -170,6 +180,7 @@ install_user() {
                 gsettings set org.gnome.desktop.background picture-uri 'file://${target_home}/.config/background' || true
                 gsettings set org.gnome.desktop.background picture-uri-dark 'file://${target_home}/.config/background' || true
                 gsettings set org.gnome.shell.extensions.user-theme name 'Yaru-olive-dark' || true
+                gsettings set org.gnome.desktop.input-sources sources \"[('xkb', '${kb_layout}')]\" || true
             " </dev/null >/dev/null 2>&1 || true
     fi
 

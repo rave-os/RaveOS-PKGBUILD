@@ -41,6 +41,19 @@ EOF
   echo "true" > "${HOME}/.config/cosmic/com.system76.CosmicBackground/v1/same-on-all"
 fi
 
+# Billentyuzet-kiosztas: a Calamares altal beallitott layout atvetele
+kb_layout="hu"
+if [[ -f /etc/default/keyboard ]]; then
+  kb_tmp="$(awk -F'"' '/^XKBLAYOUT=/{print $2; exit}' /etc/default/keyboard 2>/dev/null)"
+  [[ -n "$kb_tmp" ]] && kb_layout="${kb_tmp%%,*}"
+fi
+mkdir -p "${HOME}/.config/cosmic/com.system76.CosmicSettings/v1"
+cat > "${HOME}/.config/cosmic/com.system76.CosmicSettings/v1/keyboard" <<EOF
+(
+    xkb_layout: "${kb_layout}",
+)
+EOF
+
 pkill cosmic-bg || true
 pkill cosmic-settings-daemon || true
 pkill cosmic-panel || true
