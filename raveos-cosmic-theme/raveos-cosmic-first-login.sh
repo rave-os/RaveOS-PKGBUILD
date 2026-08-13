@@ -41,16 +41,32 @@ EOF
   echo "true" > "${HOME}/.config/cosmic/com.system76.CosmicBackground/v1/same-on-all"
 fi
 
-# Billentyuzet-kiosztas: a Calamares altal beallitott layout atvetele
+# Billentyuzet-kiosztas: a Calamares (systemd-localed) altal beallitott
+# layout/variant atvetele az X11 konfigbol; ez az, amit a cosmic-comp is olvas.
 kb_layout="hu"
-if [[ -f /etc/default/keyboard ]]; then
+kb_variant=""
+xorg_kb="/etc/X11/xorg.conf.d/00-keyboard.conf"
+if [[ -f "${xorg_kb}" ]]; then
+  kb_tmp="$(awk '/XkbLayout/ {print $3}' "${xorg_kb}" 2>/dev/null | tr -d '"' | head -1)"
+  [[ -n "$kb_tmp" ]] && kb_layout="${kb_tmp%%,*}"
+  kb_tmp="$(awk '/XkbVariant/ {print $3}' "${xorg_kb}" 2>/dev/null | tr -d '"' | head -1)"
+  [[ -n "$kb_tmp" ]] && kb_variant="${kb_tmp%%,*}"
+elif [[ -f /etc/default/keyboard ]]; then
   kb_tmp="$(awk -F'"' '/^XKBLAYOUT=/{print $2; exit}' /etc/default/keyboard 2>/dev/null)"
   [[ -n "$kb_tmp" ]] && kb_layout="${kb_tmp%%,*}"
+  kb_tmp="$(awk -F'"' '/^XKBVARIANT=/{print $2; exit}' /etc/default/keyboard 2>/dev/null)"
+  [[ -n "$kb_tmp" ]] && kb_variant="${kb_tmp%%,*}"
 fi
-mkdir -p "${HOME}/.config/cosmic/com.system76.CosmicSettings/v1"
-cat > "${HOME}/.config/cosmic/com.system76.CosmicSettings/v1/keyboard" <<EOF
+mkdir -p "${HOME}/.config/cosmic/com.system76.CosmicComp/v1"
+cat > "${HOME}/.config/cosmic/com.system76.CosmicComp/v1/xkb_config" <<EOF
 (
-    xkb_layout: "${kb_layout}",
+    rules: "",
+    model: "",
+    layout: "${kb_layout}",
+    variant: "${kb_variant}",
+    options: None,
+    repeat_delay: 600,
+    repeat_rate: 25,
 )
 EOF
 
