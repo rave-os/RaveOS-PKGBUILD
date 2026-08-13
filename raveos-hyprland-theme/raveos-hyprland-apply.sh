@@ -73,19 +73,26 @@ install_gtk_bookmarks() {
     local home="$1"
     local bookmarks="${home}/.config/gtk-3.0/bookmarks"
     local tmp
+    local sorted
 
     mkdir -p "$(dirname "$bookmarks")"
     tmp=$(mktemp)
     [[ -f "$bookmarks" ]] && cat "$bookmarks" > "$tmp"
 
-    for entry in \
-        "file://${home}/${BM_DOCUMENTS}" \
-        "file://${home}/${BM_MUSIC}" \
-        "file://${home}/${BM_PICTURES}" \
-        "file://${home}/${BM_VIDEOS}" \
-        "file://${home}/${BM_DOWNLOAD}"; do
+    sorted="$(
+        for entry in \
+            "file://${home}/${BM_DOCUMENTS}" \
+            "file://${home}/${BM_MUSIC}" \
+            "file://${home}/${BM_PICTURES}" \
+            "file://${home}/${BM_VIDEOS}" \
+            "file://${home}/${BM_DOWNLOAD}"; do
+            printf '%s\n' "$entry"
+        done | LC_ALL=C sort
+    )"
+
+    while IFS= read -r entry; do
         grep -qxF "$entry" "$tmp" || printf '%s\n' "$entry" >> "$tmp"
-    done
+    done <<< "$sorted"
 
     install -m644 "$tmp" "$bookmarks"
     rm -f "$tmp"
