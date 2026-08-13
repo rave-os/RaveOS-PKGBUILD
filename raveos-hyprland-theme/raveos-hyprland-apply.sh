@@ -1,12 +1,4 @@
 #!/usr/bin/env bash
-# raveos-hyprland-apply.sh
-# ------------------------
-# Telepíti a Hyprland téma payloadját:
-#   - /etc/skel alá (új usereknek)
-#   - minden meglévő, bejelentkező user home-jába
-#
-# Root jogosultság szükséges. A raveos-hyprland-theme-apply.service hívja
-# egyszer, első boot után. Kézzel is futtatható újratelepítéshez.
 
 set -euo pipefail
 
@@ -22,14 +14,61 @@ if [[ ${EUID} -ne 0 ]]; then
     exit 1
 fi
 
-# Telepített locale (a Calamares locale modul írta /etc/locale.conf-ba).
-# Az xdg-user-dirs-update ezzel hozza létre a mappákat a megfelelő nyelven.
-locale_lang="hu_HU.UTF-8"
-[[ -f /etc/locale.conf ]] && locale_lang="$(awk -F'=' '/^LANG=/{print $2}' /etc/locale.conf | tr -d '"')"
-[[ -n "$locale_lang" ]] || locale_lang="hu_HU.UTF-8"
+xdg_lang=""
+[[ -f /etc/locale.conf ]] && xdg_lang="$(awk -F'=' '/^LANG=/{print $2}' /etc/locale.conf | tr -d '"')"
+xdg_lang="${xdg_lang%%.*}"; xdg_lang="${xdg_lang%%_*}"
+case "$xdg_lang" in
+    hu)
+        XDG_DESKTOP="Asztal";        XDG_DOWNLOAD="Letöltések";  XDG_TEMPLATES="Sablonok"
+        XDG_PUBLIC="Nyilvános";      XDG_DOCUMENTS="Dokumentumok"; XDG_MUSIC="Zenék"
+        XDG_PICTURES="Képek";        XDG_VIDEOS="Videók";        XDG_PROJECTS="Projektek"
+        BM_DOCUMENTS="Dokumentumok"; BM_MUSIC="Zen%C3%A9k";      BM_PICTURES="K%C3%A9pek"
+        BM_VIDEOS="Vide%C3%B3k";     BM_DOWNLOAD="Let%C3%B6lt%C3%A9sek"
+        ;;
+    de)
+        XDG_DESKTOP="Schreibtisch";  XDG_DOWNLOAD="Download";    XDG_TEMPLATES="Vorlagen"
+        XDG_PUBLIC="Öffentlich";     XDG_DOCUMENTS="Dokumente";  XDG_MUSIC="Musik"
+        XDG_PICTURES="Bilder";       XDG_VIDEOS="Videos";        XDG_PROJECTS="Projekte"
+        BM_DOCUMENTS="Dokumente";    BM_MUSIC="Musik";           BM_PICTURES="Bilder"
+        BM_VIDEOS="Videos";          BM_DOWNLOAD="Download"
+        ;;
+    *)
+        XDG_DESKTOP="Desktop";       XDG_DOWNLOAD="Downloads";   XDG_TEMPLATES="Templates"
+        XDG_PUBLIC="Public";         XDG_DOCUMENTS="Documents";  XDG_MUSIC="Music"
+        XDG_PICTURES="Pictures";     XDG_VIDEOS="Videos";        XDG_PROJECTS="Projects"
+        BM_DOCUMENTS="Documents";    BM_MUSIC="Music";           BM_PICTURES="Pictures"
+        BM_VIDEOS="Videos";          BM_DOWNLOAD="Downloads"
+        ;;
+esac
 
-# GTK/Thunar könyvjelzők: a Letöltésekből kapott lista /home/t útvonalai
-# helyett mindig az aktuális felhasználó home könyvtárára mutatunk.
+setup_xdg_dirs() {
+    local home="$1"
+    local dirs="${home}/.config/user-dirs.dirs"
+
+    mkdir -p "$(dirname "$dirs")" \
+        "${home}/${XDG_DESKTOP}" \
+        "${home}/${XDG_DOWNLOAD}" \
+        "${home}/${XDG_TEMPLATES}" \
+        "${home}/${XDG_PUBLIC}" \
+        "${home}/${XDG_DOCUMENTS}" \
+        "${home}/${XDG_MUSIC}" \
+        "${home}/${XDG_PICTURES}" \
+        "${home}/${XDG_VIDEOS}" \
+        "${home}/${XDG_PROJECTS}"
+
+    cat > "${dirs}" <<EOF
+XDG_DESKTOP_DIR="\$HOME/${XDG_DESKTOP}"
+XDG_DOWNLOAD_DIR="\$HOME/${XDG_DOWNLOAD}"
+XDG_TEMPLATES_DIR="\$HOME/${XDG_TEMPLATES}"
+XDG_PUBLICSHARE_DIR="\$HOME/${XDG_PUBLIC}"
+XDG_DOCUMENTS_DIR="\$HOME/${XDG_DOCUMENTS}"
+XDG_MUSIC_DIR="\$HOME/${XDG_MUSIC}"
+XDG_PICTURES_DIR="\$HOME/${XDG_PICTURES}"
+XDG_VIDEOS_DIR="\$HOME/${XDG_VIDEOS}"
+XDG_PROJECTS_DIR="\$HOME/${XDG_PROJECTS}"
+EOF
+}
+
 install_gtk_bookmarks() {
     local home="$1"
     local bookmarks="${home}/.config/gtk-3.0/bookmarks"
@@ -40,11 +79,11 @@ install_gtk_bookmarks() {
     [[ -f "$bookmarks" ]] && cat "$bookmarks" > "$tmp"
 
     for entry in \
-        "file://${home}/Dokumentumok" \
-        "file://${home}/Zen%C3%A9k" \
-        "file://${home}/K%C3%A9pek" \
-        "file://${home}/Vide%C3%B3k" \
-        "file://${home}/Let%C3%B6lt%C3%A9sek"; do
+        "file://${home}/${BM_DOCUMENTS}" \
+        "file://${home}/${BM_MUSIC}" \
+        "file://${home}/${BM_PICTURES}" \
+        "file://${home}/${BM_VIDEOS}" \
+        "file://${home}/${BM_DOWNLOAD}"; do
         grep -qxF "$entry" "$tmp" || printf '%s\n' "$entry" >> "$tmp"
     done
 
@@ -52,8 +91,6 @@ install_gtk_bookmarks() {
     rm -f "$tmp"
 }
 
-# Hyprland billentyuzet-kiosztas: a Calamares (systemd-localed) altal beallitott
-# layout/variant atvetele az X11 konfigbol a hyprland.lua input szekciojaba.
 set_hypr_keyboard() {
     local hypr_lua="$1"
     local kb_layout="hu"
@@ -76,7 +113,6 @@ set_hypr_keyboard() {
     sed -i "s/kb_variant[[:space:]]*=[[:space:]]*\"\"/kb_variant = \"${kb_variant}\"/" "$hypr_lua"
 }
 
-# Hyprland Lua konfig (hyprland.lua + config/ könyvtár)
 mkdir -p /etc/skel/.config/hypr
 if [[ -d "${PAYLOAD}/hypr" ]]; then
     cp -rf "${PAYLOAD}/hypr/." /etc/skel/.config/hypr/
@@ -85,9 +121,6 @@ if [[ -d "${PAYLOAD}/hypr" ]]; then
     set_hypr_keyboard /etc/skel/.config/hypr/hyprland.lua
 fi
 
-# DankMaterialShell (DMS) felhasználói konfig
-# A dms-shell-hyprland package a binárist és rendszerfájlokat telepíti,
-# ez a blokk a per-user config könyvtárakat állítja be.
 mkdir -p /etc/skel/.config/dms \
          /etc/skel/.config/quickshell/pockets/DMS \
          /etc/skel/.config/DankMaterialShell
@@ -108,36 +141,30 @@ fi
     install -Dm644 "${PAYLOAD}/DankMaterialShell/.firstlaunch" \
         /etc/skel/.config/DankMaterialShell/.firstlaunch
 
-# Kitty terminál konfig
 mkdir -p /etc/skel/.config/kitty
 [[ -d "${PAYLOAD}/kitty" ]] && cp -r "${PAYLOAD}/kitty/." /etc/skel/.config/kitty/
 
-# Fastfetch konfig
 mkdir -p /etc/skel/.config/fastfetch
 for f in config.jsonc config-kitty.jsonc raveos-logo.png raveos-logo.txt; do
     [[ -f "${PAYLOAD}/fastfetch/${f}" ]] && \
         install -Dm644 "${PAYLOAD}/fastfetch/${f}" "/etc/skel/.config/fastfetch/${f}"
 done
 
-# Fastfetch profile.d script (terminál nyitáskor fut)
 [[ -f "${PAYLOAD}/profile.d/raveos-fastfetch.sh" ]] && \
     install -Dm755 "${PAYLOAD}/profile.d/raveos-fastfetch.sh" /etc/profile.d/raveos-fastfetch.sh
 
-# Skel root tartalom (pl. .bashrc, .icons, .themes stb.)
 [[ -d "${PAYLOAD}/skel" ]] && \
     cp -r --no-preserve=ownership "${PAYLOAD}/skel/." /etc/skel/
 
+setup_xdg_dirs /etc/skel
 install_gtk_bookmarks /etc/skel
 
-# Háttérkép
 [[ -f "${PAYLOAD}/background.jpg" ]] && \
     install -Dm644 "${PAYLOAD}/background.jpg" /etc/skel/.config/background.jpg
 
-# Felhasználói avatar
 [[ -f "${PAYLOAD}/hyprland-pp.png" ]] && \
     install -Dm644 "${PAYLOAD}/hyprland-pp.png" /etc/skel/.face
 
-# GTK, Thunar, nwg-look, xsettingsd, Kvantum konfigok
 for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd Kvantum; do
     if [[ -d "${PAYLOAD}/${d}" ]]; then
         mkdir -p "/etc/skel/.config/${d}"
@@ -145,13 +172,9 @@ for d in gtk-3.0 gtk-4.0 nwg-look Thunar xfce4 xsettingsd Kvantum; do
     fi
 done
 
-# RaveSwitch alap config (modifier: Super, hogy illeszkedjen a SUPER+TAB
-# keybindhez -- az upstream default Alt-ot allitana be, ami nem zarodna be
-# a switcher-ablak SUPER elengedesekor)
 [[ -f "${PAYLOAD}/raveswitch/config.ron" ]] && \
     install -Dm644 "${PAYLOAD}/raveswitch/config.ron" /etc/skel/.config/raveswitch/config.ron
 
-# SDDM: a téma és konfig a PKGBUILD által van telepítve, itt nincs teendő
 
 while IFS=: read -r user _ uid gid _ home shell; do
     [[ "$uid" -ge 1000 ]] || continue
@@ -206,6 +229,7 @@ SEOF
     [[ -d "${PAYLOAD}/skel" ]] && \
         cp -r --no-preserve=ownership "${PAYLOAD}/skel/." "$home/"
 
+    setup_xdg_dirs "$home"
     install_gtk_bookmarks "$home"
 
     # Háttérkép
@@ -246,10 +270,6 @@ SEOF
         runuser -u "$user" -- dbus-launch gsettings set org.gnome.desktop.interface gtk-theme 'Yaru-olive-dark' 2>/dev/null
         runuser -u "$user" -- dbus-launch gsettings set org.gnome.desktop.interface icon-theme 'Adwaitaru-olive' 2>/dev/null
     ) || true
-
-    # XDG user könyvtárak a telepített locale-al, hogy a mappák a
-    # megfelelő nyelven (nem angolul) jöjjenek létre.
-    runuser -u "$user" -- env LANG="$locale_lang" xdg-user-dirs-update --force 2>/dev/null || true
 
     # Tulajdonos visszaállítása
     chown -R "${uid}:${gid}" "$home"
