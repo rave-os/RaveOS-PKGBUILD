@@ -46,24 +46,29 @@ install_gtk_bookmarks() {
     rm -f "$tmp"
 }
 
-# Hyprland billentyuzet-kiosztas: a Calamares altal beallitott layout atvetele
-# (a /etc/default/keyboard XKBLAYOUT-ja) a hyprland.lua input szekciojaba.
+# Hyprland billentyuzet-kiosztas: a Calamares (systemd-localed) altal beallitott
+# layout/variant atvetele az X11 konfigbol a hyprland.lua input szekciojaba.
 set_hypr_keyboard() {
     local hypr_lua="$1"
     local kb_layout="hu"
+    local kb_variant=""
+    local xorg_kb="/etc/X11/xorg.conf.d/00-keyboard.conf"
     local kb_tmp
     [[ -f "$hypr_lua" ]] || return 0
-    if [[ -f /etc/default/keyboard ]]; then
+    if [[ -f "${xorg_kb}" ]]; then
+        kb_tmp="$(awk '/XkbLayout/ {print $3}' "${xorg_kb}" 2>/dev/null | tr -d '"' | head -1)"
+        [[ -n "$kb_tmp" ]] && kb_layout="${kb_tmp%%,*}"
+        kb_tmp="$(awk '/XkbVariant/ {print $3}' "${xorg_kb}" 2>/dev/null | tr -d '"' | head -1)"
+        [[ -n "$kb_tmp" ]] && kb_variant="${kb_tmp%%,*}"
+    elif [[ -f /etc/default/keyboard ]]; then
         kb_tmp="$(awk -F'"' '/^XKBLAYOUT=/{print $2; exit}' /etc/default/keyboard 2>/dev/null)"
         [[ -n "$kb_tmp" ]] && kb_layout="${kb_tmp%%,*}"
+        kb_tmp="$(awk -F'"' '/^XKBVARIANT=/{print $2; exit}' /etc/default/keyboard 2>/dev/null)"
+        [[ -n "$kb_tmp" ]] && kb_variant="${kb_tmp%%,*}"
     fi
     sed -i "s/kb_layout[[:space:]]*=[[:space:]]*\"\"/kb_layout = \"${kb_layout}\"/" "$hypr_lua"
+    sed -i "s/kb_variant[[:space:]]*=[[:space:]]*\"\"/kb_variant = \"${kb_variant}\"/" "$hypr_lua"
 }
-
-# ---------------------------------------------------------------------------
-# SKEL TELEPÍTÉS
-# Új usereknek (useradd által másolt /etc/skel tartalom)
-# ---------------------------------------------------------------------------
 
 # Hyprland Lua konfig (hyprland.lua + config/ könyvtár)
 mkdir -p /etc/skel/.config/hypr
@@ -141,11 +146,6 @@ done
     install -Dm644 "${PAYLOAD}/raveswitch/config.ron" /etc/skel/.config/raveswitch/config.ron
 
 # SDDM: a téma és konfig a PKGBUILD által van telepítve, itt nincs teendő
-
-# ---------------------------------------------------------------------------
-# MEGLÉVŐ USEREK FRISSÍTÉSE
-# /etc/passwd alapján minden UID >= 1000 bejelentkező user home-ja
-# ---------------------------------------------------------------------------
 
 while IFS=: read -r user _ uid gid _ home shell; do
     [[ "$uid" -ge 1000 ]] || continue
