@@ -22,6 +22,12 @@ if [[ ${EUID} -ne 0 ]]; then
     exit 1
 fi
 
+# Telepített locale (a Calamares locale modul írta /etc/locale.conf-ba).
+# Az xdg-user-dirs-update ezzel hozza létre a mappákat a megfelelő nyelven.
+locale_lang="hu_HU.UTF-8"
+[[ -f /etc/locale.conf ]] && locale_lang="$(awk -F'=' '/^LANG=/{print $2}' /etc/locale.conf | tr -d '"')"
+[[ -n "$locale_lang" ]] || locale_lang="hu_HU.UTF-8"
+
 # GTK/Thunar könyvjelzők: a Letöltésekből kapott lista /home/t útvonalai
 # helyett mindig az aktuális felhasználó home könyvtárára mutatunk.
 install_gtk_bookmarks() {
@@ -241,8 +247,9 @@ SEOF
         runuser -u "$user" -- dbus-launch gsettings set org.gnome.desktop.interface icon-theme 'Adwaitaru-olive' 2>/dev/null
     ) || true
 
-    # XDG user könyvtárak (Letöltések, Dokumentumok stb.)
-    runuser -u "$user" -- xdg-user-dirs-update 2>/dev/null || true
+    # XDG user könyvtárak a telepített locale-al, hogy a mappák a
+    # megfelelő nyelven (nem angolul) jöjjenek létre.
+    runuser -u "$user" -- env LANG="$locale_lang" xdg-user-dirs-update --force 2>/dev/null || true
 
     # Tulajdonos visszaállítása
     chown -R "${uid}:${gid}" "$home"
